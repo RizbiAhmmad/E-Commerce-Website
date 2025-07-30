@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaShoppingCart, FaSearch, FaUser, FaBars, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import ThemeChange from "@/components/ThemeChange";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,7 +24,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-background text-foreground border-b border-border fixed w-full z-50 px-4 md:px-8 shadow-sm">
+    <nav className="bg-background  text-foreground border-b border-border fixed w-full z-50 px-4 md:px-8 shadow-sm">
       <div className="max-w-7xl mx-auto flex justify-between items-center py-4">
         {/* Logo */}
         <motion.div
@@ -53,15 +55,16 @@ const Navbar = () => {
 
         {/* Right Icons */}
         <div className="flex items-center gap-4 text-xl">
+            <ThemeChange />
           <Link to="/cart" className="text-foreground hover:text-primary">
             <FaShoppingCart />
           </Link>
-          <button
+          <Button
             onClick={handleLogin}
             className="text-sm border border-border px-3 py-1 rounded-md text-primary hover:bg-accent flex items-center"
           >
             <FaUser className="mr-1" /> Login
-          </button>
+          </Button>
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-2xl text-foreground"

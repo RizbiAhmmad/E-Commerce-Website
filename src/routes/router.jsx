@@ -1,5 +1,6 @@
 
 import MainLayout from "@/Layouts/MainLayout";
+import Home from "@/Pages/Home/Home";
 import {
     createBrowserRouter,
   } from "react-router-dom";
@@ -11,7 +12,7 @@ import {
       children:[
         {
             path: "/",
-            element: <h1>Home Page</h1>
+            element: <Home />,
         },
         
       ]
