@@ -37,7 +37,7 @@ const Navbar = () => {
           animate={{ opacity: 1, x: 0 }}
           className="text-2xl font-bold text-red-600 dark:text-green-500"
         >
-          <Link to="/">EasyShop</Link>
+          <Link to="/">SostayKini</Link>
         </motion.div>
 
         {/* Desktop Search */}
@@ -66,7 +66,7 @@ const Navbar = () => {
           </Link>
           <button
             onClick={handleLogin}
-            className="text-sm border border-gray-300 dark:border-gray-600 px-3 py-1 rounded-md text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center"
+            className="text-sm border border-gray-300 bg-purple-500 dark:border-gray-600 px-3 py-1 rounded-md text-black dark:text-white hover:bg-purple-600 dark:hover:bg-purple-600 flex items-center"
           >
             <FaUser className="mr-1" /> Login
           </button>

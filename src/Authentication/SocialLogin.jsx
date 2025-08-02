@@ -1,7 +1,7 @@
+import { AuthContext } from "@/provider/AuthProvider";
 import React, { useContext } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../provider/AuthProvider";
 
 
 const SocialLogin = () => {
@@ -20,7 +20,7 @@ const SocialLogin = () => {
           role: 'user', // Changed 'normal user' to 'user'
           createdAt: new Date(),
         };
-        fetch('https://bangladeshiit-server-api.onrender.com/users', {
+        fetch('http://localhost:5000/users', {
           method: 'POST',
           headers: {
             'content-type': 'application/json',

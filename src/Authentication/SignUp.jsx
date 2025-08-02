@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import SocialLogin from "./SocialLogin";
-import { AuthContext } from "../provider/AuthProvider";
 import { FaArrowLeft } from "react-icons/fa";
+import { AuthContext } from "@/provider/AuthProvider";
 
 const SignUp = () => {
   const {
@@ -30,7 +30,7 @@ const SignUp = () => {
               role: "user",
               createdAt: new Date(),
             };
-            fetch("https://bangladeshiit-server-api.onrender.com/users", {
+            fetch("http://localhost:5000/users", {
               method: "POST",
               headers: {
                 "content-type": "application/json",
@@ -49,7 +49,7 @@ const SignUp = () => {
                     icon: "success",
                     draggable: true,
                   });
-                  navigate("/courses");
+                  navigate("/");
                 }
               })
               .catch((error) =>
