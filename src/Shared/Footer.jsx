@@ -12,7 +12,7 @@ import logo from "../assets/SostayKini.png";
 export default function Footer() {
 
   return (
-    <footer className="bg-gray-900 text-white pt-24 pb-8 px-6 md:px-12">
+    <footer className="bg-gray-900 text-white pt-16 pb-8 px-6 md:px-12">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Logo and Brand Info */}
         <div>

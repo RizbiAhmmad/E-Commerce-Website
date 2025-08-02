@@ -36,7 +36,7 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-2xl flex gap-2 font-bold text-red-600 dark:text-green-500"
+          className="text-2xl flex gap-2 font-bold text-purple-600 dark:text-green-500"
         >
           <img src={logo} alt="Logo" className="w-10 h-10 mr-2 rounded-full" />
           <Link to="/">Sostay Kini</Link>
