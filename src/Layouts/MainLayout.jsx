@@ -1,3 +1,4 @@
+import FloatingChatMenu from "@/Shared/FloatingChatMenu";
 import Footer from "@/Shared/Footer";
 import Navbar from "@/Shared/Navbar";
 import React from "react";
@@ -11,6 +12,7 @@ const MainLayout = () => {
       {!noHeaderFooter && <Navbar />}
       <Outlet />
       {!noHeaderFooter && <Footer />}
+      <FloatingChatMenu />
     </div>
   );
 };

@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
-import logo from "../assets/SostayKini.png"; 
+import logo from "../assets/SostayKini.jpg"; 
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,7 +68,7 @@ const Navbar = () => {
           </Link>
           <button
             onClick={handleLogin}
-            className="text-sm border border-gray-300 bg-purple-500 dark:border-gray-600 px-3 py-3 rounded-md text-white hover:bg-purple-600 dark:hover:bg-purple-600 flex items-center"
+            className="text-sm border border-gray-300 bg-purple-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-purple-600 dark:hover:bg-purple-600 flex items-center"
           >
             <FaUser className="mr-1" /> Login
           </button>
