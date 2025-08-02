@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
+import logo from "../assets/SostayKini.png"; 
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,14 +31,15 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
-      <div className="max-w-7xl mx-auto flex justify-between items-center py-4">
+      <div className="max-w-7xl mx-auto flex justify-between items-center py-3">
         {/* Logo */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-2xl font-bold text-red-600 dark:text-green-500"
+          className="text-2xl flex gap-2 font-bold text-red-600 dark:text-green-500"
         >
-          <Link to="/">SostayKini</Link>
+          <img src={logo} alt="Logo" className="w-10 h-10 mr-2 rounded-full" />
+          <Link to="/">Sostay Kini</Link>
         </motion.div>
 
         {/* Desktop Search */}
@@ -52,7 +54,7 @@ const Navbar = () => {
           />
           <button
             onClick={handleSearch}
-            className="rounded-r-md px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white"
+            className="rounded-r-md px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white"
           >
             <FaSearch />
           </button>
@@ -61,12 +63,12 @@ const Navbar = () => {
         {/* Right Icons */}
         <div className="flex items-center gap-4 text-xl">
           <ThemeChange />
-          <Link to="/cart" className="hover:text-blue-500">
+          <Link to="/cart" className="hover:text-purple-500">
             <FaShoppingCart />
           </Link>
           <button
             onClick={handleLogin}
-            className="text-sm border border-gray-300 bg-purple-500 dark:border-gray-600 px-3 py-1 rounded-md text-black dark:text-white hover:bg-purple-600 dark:hover:bg-purple-600 flex items-center"
+            className="text-sm border border-gray-300 bg-purple-500 dark:border-gray-600 px-3 py-3 rounded-md text-white hover:bg-purple-600 dark:hover:bg-purple-600 flex items-center"
           >
             <FaUser className="mr-1" /> Login
           </button>

@@ -1,3 +1,4 @@
+import Footer from "@/Shared/Footer";
 import Navbar from "@/Shared/Navbar";
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
