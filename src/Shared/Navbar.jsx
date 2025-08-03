@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,9 +10,11 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
-import logo from "../assets/SostayKini.jpg"; 
+import logo from "../assets/SostayKini.jpg";
+import { AuthContext } from "@/provider/AuthProvider";
 
 const Navbar = () => {
+  const { user, logOut } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
@@ -27,6 +29,10 @@ const Navbar = () => {
   const handleLogin = () => {
     navigate("/login");
     setIsOpen(false);
+  };
+
+  const handleLogOut = () => {
+    logOut().catch((error) => console.log(error));
   };
 
   return (
@@ -66,12 +72,29 @@ const Navbar = () => {
           <Link to="/cart" className="hover:text-purple-500">
             <FaShoppingCart />
           </Link>
-          <button
-            onClick={handleLogin}
-            className="text-sm border border-gray-300 bg-purple-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-purple-600 dark:hover:bg-purple-600 flex items-center"
-          >
-            <FaUser className="mr-1" /> Login
-          </button>
+          {user && (
+            <Link to="/dashboard" className="hidden md:block hover:text-purple-500">
+              Dashboard
+            </Link>
+          )}
+
+          {user ? (
+            <>
+              <button
+                onClick={handleLogOut}
+                className="text-sm border border-gray-300 bg-red-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-red-600 dark:hover:bg-red-600 flex items-center"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="text-sm border border-gray-300 bg-purple-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-purple-600 dark:hover:bg-purple-600 flex items-center"
+            >
+              <FaUser className="mr-1" /> Login
+            </button>
+          )}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-2xl"
@@ -94,31 +117,40 @@ const Navbar = () => {
               <Link
                 to="/"
                 onClick={() => setIsOpen(false)}
-                className="hover:text-blue-500"
+                className="hover:text-purple-500"
               >
                 Home
               </Link>
               <Link
                 to="/shop"
                 onClick={() => setIsOpen(false)}
-                className="hover:text-blue-500"
+                className="hover:text-purple-500"
               >
                 Shop
               </Link>
               <Link
                 to="/about"
                 onClick={() => setIsOpen(false)}
-                className="hover:text-blue-500"
+                className="hover:text-purple-500"
               >
                 About
               </Link>
               <Link
                 to="/contact"
                 onClick={() => setIsOpen(false)}
-                className="hover:text-blue-500"
+                className="hover:text-purple-500"
               >
                 Contact
               </Link>
+              {user && (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="hover:text-purple-500"
+                >
+                  Dashboard
+                </Link>
+              )}
 
               {/* Mobile Search */}
               <div className="flex items-center">
@@ -132,7 +164,7 @@ const Navbar = () => {
                 />
                 <button
                   onClick={handleSearch}
-                  className="rounded-r-md px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="rounded-r-md px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white"
                 >
                   <FaSearch />
                 </button>
@@ -141,7 +173,7 @@ const Navbar = () => {
               {/* Mobile Login Button */}
               <button
                 onClick={handleLogin}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md flex items-center justify-center"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md flex items-center justify-center"
               >
                 <FaUser className="mr-2" /> Login
               </button>
