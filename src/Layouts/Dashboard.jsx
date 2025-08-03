@@ -8,8 +8,8 @@ import { LuLayoutDashboard } from "react-icons/lu";
 import { MdOutlineDashboardCustomize } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { NavLink, Outlet } from "react-router-dom";
-import useAxiosPublic from "../Hooks/useAxiosPublic";
-import useAuth from "../Hooks/useAuth";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import useAuth from "@/Hooks/useAuth";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -57,7 +57,7 @@ const Dashboard = () => {
         <div
           className={`${
             isSidebarOpen ? "w-64" : "w-0 md:w-64"
-          } bg-green-600 text-white transition-all duration-300 flex flex-col justify-between`}
+          } bg-purple-500 text-white transition-all duration-300 flex flex-col justify-between`}
         >
           <ul onClick={toggleSidebar} className="p-8">
             {/* Admin Menu */}

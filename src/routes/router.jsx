@@ -4,6 +4,7 @@ import SignUp from "@/Authentication/SignUp";
 import Dashboard from "@/Layouts/Dashboard";
 import MainLayout from "@/Layouts/MainLayout";
 import AllUsers from "@/Pages/Dashboard/Admin/AllUsers";
+import Profile from "@/Pages/Dashboard/Admin/Profile";
 import Home from "@/Pages/Home/Home";
 import {
     createBrowserRouter,
@@ -36,6 +37,10 @@ import {
          {
         path: "users",
         element: <AllUsers></AllUsers>,
+      },
+       {
+        path: "profile",
+        element: <Profile></Profile>,
       },
       ]
     }
