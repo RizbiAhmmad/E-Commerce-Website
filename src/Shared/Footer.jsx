@@ -13,7 +13,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-gray-900 text-white pt-16 pb-8 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         {/* Logo and Brand Info */}
         <div>
           <div className="flex items-center gap-3 mb-4">
@@ -50,13 +50,6 @@ export default function Footer() {
         </div>
 
         {/* Services */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4 text-white">Our Services</h3>
-          <ul className="space-y-2 text-gray-400">
-            <li><Link to="/services/ecommerce" className="hover:text-orange-500">E-Commerce Solutions</Link></li>
-           
-          </ul>
-        </div>
 
         {/* Contact Info */}
         <div>
