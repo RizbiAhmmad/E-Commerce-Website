@@ -3,6 +3,7 @@ import {
   FaHome,
   FaListAlt,
   FaThList,
+  FaTrademark,
   FaUsers,
   
 } from "react-icons/fa";
@@ -92,6 +93,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <FaThList /> <span>All SubCategories</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allBrands"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <FaTrademark /> <span>All Brands</span>
                   </NavLink>
                 </li>
                 
