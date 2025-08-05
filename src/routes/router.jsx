@@ -5,6 +5,7 @@ import Dashboard from "@/Layouts/Dashboard";
 import MainLayout from "@/Layouts/MainLayout";
 import AddBrand from "@/Pages/Dashboard/Admin/AddBrand";
 import AddCategory from "@/Pages/Dashboard/Admin/AddCategory";
+import AddSize from "@/Pages/Dashboard/Admin/AddSize";
 import AddSubcategory from "@/Pages/Dashboard/Admin/AddSubcategory";
 import AllBrands from "@/Pages/Dashboard/Admin/AllBrands";
 import AllCategories from "@/Pages/Dashboard/Admin/AllCategories";
@@ -72,6 +73,14 @@ import {
         path: "allBrands",
         element: <AllBrands></AllBrands>,
       },     
+      {
+        path: "addSize",
+        element: <AddSize></AddSize>,
+      },
+      // {
+      //   path: "allSizes",
+      //   element: <AllSizes></AllSizes>,
+      // },
       ]
     }
   ]);
