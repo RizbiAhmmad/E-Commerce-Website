@@ -3,6 +3,7 @@ import Login from "@/Authentication/Login";
 import SignUp from "@/Authentication/SignUp";
 import Dashboard from "@/Layouts/Dashboard";
 import MainLayout from "@/Layouts/MainLayout";
+import AddBrand from "@/Pages/Dashboard/Admin/AddBrand";
 import AddCategory from "@/Pages/Dashboard/Admin/AddCategory";
 import AddSubcategory from "@/Pages/Dashboard/Admin/AddSubcategory";
 import AllCategories from "@/Pages/Dashboard/Admin/AllCategories";
@@ -61,6 +62,10 @@ import {
       {
         path: "allSubCategories",
         element: <AllSubcategories></AllSubcategories>,
+      },
+      {
+        path: "addBrand",
+        element: <AddBrand></AddBrand>,
       },
       ]
     }
