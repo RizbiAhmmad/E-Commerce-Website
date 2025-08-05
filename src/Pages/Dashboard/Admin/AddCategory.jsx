@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { AuthContext } from "../../../provider/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,44 +9,71 @@ const AddCategory = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
-    image: "",
     status: "active",
   });
-  const [uploading, setUploading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleImageUpload = async (e) => {
-    const image = e.target.files[0];
-    const form = new FormData();
-    form.append("file", image);
-    form.append("upload_preset", "your_upload_preset");
-    form.append("cloud_name", "your_cloud_name");
-    setUploading(true);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    try {
-      const res = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name/image/upload", {
-        method: "POST",
-        body: form,
-      });
-      const data = await res.json();
-      setFormData({ ...formData, image: data.secure_url });
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error", "Image upload failed", "error");
-    } finally {
-      setUploading(false);
-    }
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!imageFile) {
+      return Swal.fire("Error", "Please select an image", "error");
+    }
+
+    setLoading(true);
+
     try {
-      const res = await axios.post("https://your-server.com/categories", formData);
+      // Upload image to Cloudinary
+      const cloudinaryData = new FormData();
+      cloudinaryData.append("file", imageFile);
+      cloudinaryData.append("upload_preset", "eCommerce");
+
+      const cloudinaryRes = await axios.post(
+        "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
+        cloudinaryData
+      );
+
+      const imageUrl = cloudinaryRes.data.secure_url;
+
+      // Submit to backend
+      const categoryData = {
+        ...formData,
+        image: imageUrl,
+        email: user?.email,
+      };
+
+      const res = await axios.post(
+        "http://localhost:5000/categories",
+        JSON.stringify(categoryData),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (res.data.insertedId) {
         Swal.fire("Success", "Category added successfully!", "success");
+        setFormData({ name: "", status: "active" });
+        setImageFile(null);
         navigate("/dashboard/allCategories");
+      } else {
+        Swal.fire("Error", "Server error. Category not added.", "error");
       }
     } catch (err) {
+      console.error("❌ Add Category Error:", err.response?.data || err.message);
       Swal.fire("Error", "Something went wrong", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,25 +85,45 @@ const AddCategory = () => {
           <label className="block mb-1 font-semibold">Name</label>
           <input
             type="text"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            name="name"
             required
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Category Name"
             className="w-full px-4 py-2 border rounded"
           />
         </div>
 
         <div>
           <label className="block mb-1 font-semibold">Image</label>
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
-          {uploading && <p className="text-sm text-gray-500">Uploading...</p>}
-          {formData.image && <img src={formData.image} alt="preview" className="w-20 mt-2 rounded" />}
+          <div className="flex items-center gap-4">
+            <label
+              htmlFor="image"
+              className="px-4 py-2 text-white transition bg-purple-500 rounded-lg shadow cursor-pointer hover:bg-purple-600"
+            >
+              Choose File
+            </label>
+            <span className="text-sm text-gray-600">
+              {imageFile ? imageFile.name : "No file chosen"}
+            </span>
+          </div>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            onChange={handleImageChange}
+            accept="image/*"
+            required
+            className="hidden"
+          />
         </div>
 
         <div>
           <label className="block mb-1 font-semibold">Status</label>
           <select
+            name="status"
             value={formData.status}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            onChange={handleChange}
             className="w-full px-4 py-2 border rounded"
           >
             <option value="active">Active</option>
@@ -86,10 +133,10 @@ const AddCategory = () => {
 
         <button
           type="submit"
-          disabled={uploading}
-          className="w-full px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+          disabled={loading}
+          className="w-full px-4 py-2 text-white bg-purple-500 rounded hover:bg-purple-600"
         >
-          Add Category
+          {loading ? "Submitting..." : "Add Category"}
         </button>
       </form>
     </div>

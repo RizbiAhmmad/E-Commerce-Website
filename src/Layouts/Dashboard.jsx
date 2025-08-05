@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   FaHome,
+  FaListAlt,
   FaUsers,
   
 } from "react-icons/fa";
@@ -76,6 +77,14 @@ const Dashboard = () => {
                     <FaUsers /> <span>Users</span>
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allCategories"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <FaListAlt /> <span>All Categories</span>
+                  </NavLink>
+                </li>
                 
                 
                 <li>
@@ -115,7 +124,7 @@ const Dashboard = () => {
         {/* Dashboard Content */}
         <div className="flex-1 p-4">
           {user && (
-            <div className="p-4 mb-4 text-center text-blue-800 bg-blue-100 rounded-lg shadow">
+            <div className="p-4 mb-4 text-center text-blue-800 bg-purple-300 rounded-lg shadow">
               <h1 className="text-xl font-semibold">
                 Hey, {user.displayName || "User"}! Welcome to your Dashboard.
               </h1>
