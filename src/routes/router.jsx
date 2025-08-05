@@ -4,6 +4,7 @@ import SignUp from "@/Authentication/SignUp";
 import Dashboard from "@/Layouts/Dashboard";
 import MainLayout from "@/Layouts/MainLayout";
 import AddCategory from "@/Pages/Dashboard/Admin/AddCategory";
+import AddSubcategory from "@/Pages/Dashboard/Admin/AddSubcategory";
 import AllCategories from "@/Pages/Dashboard/Admin/AllCategories";
 import AllUsers from "@/Pages/Dashboard/Admin/AllUsers";
 import Profile from "@/Pages/Dashboard/Admin/Profile";
@@ -51,6 +52,10 @@ import {
        {
         path: "allCategories",
         element: <AllCategories></AllCategories>,
+      },
+       {
+        path: "addSubCategories",
+        element: <AddSubcategory></AddSubcategory>,
       },
       ]
     }
