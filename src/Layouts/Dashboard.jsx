@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   FaHome,
   FaListAlt,
+  FaThList,
   FaUsers,
   
 } from "react-icons/fa";
@@ -83,6 +84,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <FaListAlt /> <span>All Categories</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allSubCategories"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <FaThList /> <span>All SubCategories</span>
                   </NavLink>
                 </li>
                 
