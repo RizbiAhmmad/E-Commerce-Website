@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   FaHome,
   FaListAlt,
+  FaRulerCombined,
   FaThList,
   FaTrademark,
   FaUsers,
@@ -101,6 +102,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <FaTrademark /> <span>All Brands</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allSizes"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <FaRulerCombined /> <span>All Sizes</span>
                   </NavLink>
                 </li>
                 

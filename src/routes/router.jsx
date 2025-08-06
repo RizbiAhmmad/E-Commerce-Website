@@ -9,6 +9,7 @@ import AddSize from "@/Pages/Dashboard/Admin/AddSize";
 import AddSubcategory from "@/Pages/Dashboard/Admin/AddSubcategory";
 import AllBrands from "@/Pages/Dashboard/Admin/AllBrands";
 import AllCategories from "@/Pages/Dashboard/Admin/AllCategories";
+import AllSizes from "@/Pages/Dashboard/Admin/AllSizes";
 import AllSubcategories from "@/Pages/Dashboard/Admin/AllSubcategories";
 import AllUsers from "@/Pages/Dashboard/Admin/AllUsers";
 import Profile from "@/Pages/Dashboard/Admin/Profile";
@@ -77,10 +78,10 @@ import {
         path: "addSize",
         element: <AddSize></AddSize>,
       },
-      // {
-      //   path: "allSizes",
-      //   element: <AllSizes></AllSizes>,
-      // },
+      {
+        path: "allSizes",
+        element: <AllSizes></AllSizes>,
+      },
       ]
     }
   ]);
