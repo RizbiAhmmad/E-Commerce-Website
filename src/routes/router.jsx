@@ -10,6 +10,7 @@ import AddSize from "@/Pages/Dashboard/Admin/AddSize";
 import AddSubcategory from "@/Pages/Dashboard/Admin/AddSubcategory";
 import AllBrands from "@/Pages/Dashboard/Admin/AllBrands";
 import AllCategories from "@/Pages/Dashboard/Admin/AllCategories";
+import AllColors from "@/Pages/Dashboard/Admin/AllColors";
 import AllSizes from "@/Pages/Dashboard/Admin/AllSizes";
 import AllSubcategories from "@/Pages/Dashboard/Admin/AllSubcategories";
 import AllUsers from "@/Pages/Dashboard/Admin/AllUsers";
@@ -87,10 +88,10 @@ import {
         path: "addColor",
         element: <AddColor></AddColor>,
       },
-      // {
-      //   path: "allColors",
-      //   element: <AllColors></AllColors>,
-      // },
+      {
+        path: "allColors",
+        element: <AllColors></AllColors>,
+      },
       ]
     }
   ]);

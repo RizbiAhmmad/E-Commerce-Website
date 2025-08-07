@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   FaHome,
   FaListAlt,
+  FaPalette,
   FaRulerCombined,
   FaThList,
   FaTrademark,
@@ -110,6 +111,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <FaRulerCombined /> <span>All Sizes</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allColors"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <FaPalette /> <span>All Colors</span>
                   </NavLink>
                 </li>
                 

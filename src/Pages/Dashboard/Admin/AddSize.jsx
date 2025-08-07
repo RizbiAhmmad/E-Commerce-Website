@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddSize = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const AddSize = () => {
     status: "active",
   });
 
+  const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -72,6 +74,7 @@ const AddSize = () => {
 
         {/* Submit Button */}
         <button
+          onClick={() => navigate("/dashboard/allSizes")}
           type="submit"
           className="w-full px-4 py-2 text-white bg-purple-500 rounded hover:bg-purple-600"
         >

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddColor = () => {
   const [colorData, setColorData] = useState({
@@ -8,6 +9,7 @@ const AddColor = () => {
     hex: "#000000",
     status: "active",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,7 +19,7 @@ const AddColor = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/colors", colorData); // Update with your backend URL
+      const res = await axios.post("http://localhost:5000/colors", colorData);
       if (res.data.insertedId) {
         Swal.fire("Success!", "Color added successfully", "success");
         setColorData({ name: "", hex: "#000000", status: "active" });
@@ -53,7 +55,7 @@ const AddColor = () => {
             name="hex"
             value={colorData.hex}
             onChange={handleChange}
-            className="w-16 h-10 p-0 border cursor-pointer rounded"
+            className="w-20 h-12 p-0 border cursor-pointer rounded"
             required
           />
         </div>
@@ -74,8 +76,9 @@ const AddColor = () => {
 
         {/* Submit */}
         <button
+          onClick={() => navigate("/dashboard/allColors")}
           type="submit"
-          className="w-full py-2 font-semibold text-white bg-green-600 rounded hover:bg-green-700"
+          className="w-full py-2 font-semibold text-white bg-purple-500 rounded hover:bg-purple-600"
         >
           Add Color
         </button>
