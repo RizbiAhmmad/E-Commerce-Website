@@ -6,6 +6,7 @@ import MainLayout from "@/Layouts/MainLayout";
 import AddBrand from "@/Pages/Dashboard/Admin/AddBrand";
 import AddCategory from "@/Pages/Dashboard/Admin/AddCategory";
 import AddColor from "@/Pages/Dashboard/Admin/AddColor";
+import AddProduct from "@/Pages/Dashboard/Admin/AddProduct";
 import AddSize from "@/Pages/Dashboard/Admin/AddSize";
 import AddSubcategory from "@/Pages/Dashboard/Admin/AddSubcategory";
 import AllBrands from "@/Pages/Dashboard/Admin/AllBrands";
@@ -92,6 +93,14 @@ import {
         path: "allColors",
         element: <AllColors></AllColors>,
       },
+      {
+        path: "addProduct",
+        element: <AddProduct></AddProduct>,
+      },
+      // {
+      //   path: "allProducts",
+      //   element: <AllProducts></AllProducts>,
+      // },
       ]
     }
   ]);
