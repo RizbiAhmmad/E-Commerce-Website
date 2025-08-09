@@ -10,7 +10,7 @@ import {
   
 } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { MdOutlineDashboardCustomize } from "react-icons/md";
+import { MdInventory, MdOutlineDashboardCustomize } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { NavLink, Outlet } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
@@ -119,6 +119,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <FaPalette /> <span>All Colors</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allProducts"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <MdInventory /> <span>All Products</span>
                   </NavLink>
                 </li>
                 

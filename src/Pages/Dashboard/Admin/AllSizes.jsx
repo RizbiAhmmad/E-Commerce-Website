@@ -71,7 +71,7 @@ const AllSizes = () => {
 
   return (
     <div className="max-w-4xl p-6 mx-auto">
-      <h2 className="pb-4 mb-8 text-3xl font-bold text-center border-b-2 border-gray-200">
+      <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
         All Sizes
       </h2>
 

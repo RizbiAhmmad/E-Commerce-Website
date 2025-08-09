@@ -21,6 +21,7 @@ const AddProduct = () => {
     purchasePrice: "",
     oldPrice: "",
     newPrice: "",
+    stock: "",
     status: "active",
     variant: "",
   });
@@ -217,17 +218,18 @@ const AddProduct = () => {
         </select>
 
         <textarea
-          name="description"
-          placeholder="Description"
-          value={formData.description}
+          name="specification"
+          placeholder="Specification"
+          value={formData.specification}
           onChange={handleChange}
           rows="3"
           className="border p-2 rounded md:col-span-2"
         />
+
         <textarea
-          name="specification"
-          placeholder="Specification"
-          value={formData.specification}
+          name="description"
+          placeholder="Description"
+          value={formData.description}
           onChange={handleChange}
           rows="3"
           className="border p-2 rounded md:col-span-2"
@@ -309,6 +311,15 @@ const AddProduct = () => {
           placeholder="New Price"
           type="number"
           value={formData.newPrice}
+          onChange={handleChange}
+          required
+          className="border p-2 rounded"
+        />
+        <input
+          name="stock"
+          placeholder="Stock"
+          type="number"
+          value={formData.stock}
           onChange={handleChange}
           required
           className="border p-2 rounded"
