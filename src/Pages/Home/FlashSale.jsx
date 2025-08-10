@@ -47,7 +47,7 @@ const FlashSale = () => {
     products?.filter((product) => product.variant === "flash" && product.status === "active") || [];
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <motion.h1
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -57,7 +57,7 @@ const FlashSale = () => {
         Flash Sale Products
       </motion.h1>
 
-      <div className="grid p-4 gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid p-4 gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {activeProducts.slice(0, visibleCount).map((product) => (
           <SingleProduct
             key={product._id}
@@ -195,7 +195,7 @@ const SingleProduct = ({ product, brandName }) => {
               <IoCartOutline className="text-[1.3rem] group-hover:text-white text-[#0FABCA]" />
             </button>
 
-            <button className="py-2 px-4 border border-[#0FABCA] text-[#0FABCA] hover:text-white rounded-md flex items-center gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200">
+            <button className="py-2 px-2 border border-[#0FABCA] text-[#0FABCA] hover:text-white rounded-md flex items-center gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200">
               View Details
             </button>
           </div>

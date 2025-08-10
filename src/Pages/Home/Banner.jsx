@@ -4,19 +4,19 @@ import { motion, AnimatePresence } from "framer-motion";
 const slides = [
   {
     id: 1,
-    image: "https://mir-s3-cdn-cf.behance.net/project_modules/fs/3a5b4b130201639.617ac5e8008d9.jpg",
+    image: "https://static.vecteezy.com/system/resources/thumbnails/049/855/785/small_2x/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-free-photo.jpg",
     title: "Empower Your Online Business",
     subtitle: "Professional E-commerce Solutions",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
+    image: "https://png.pngtree.com/thumb_back/fh260/background/20241225/pngtree-download-the-above-beautiful-nature-norway-natural-landscape-background-image-and-image_16870161.jpg",
     title: "Grow Your Brand Digitally",
     subtitle: "With cutting-edge tools and support",
   },
   {
     id: 3,
-    image: "https://cdn.dribbble.com/userupload/43263235/file/original-7300dd46c40ef30d1e3a5d4ad2f49bf9.jpg?resize=752x&vertical=center",
+    image: "https://img.freepik.com/free-photo/beautiful-winter-landscape_23-2151901463.jpg?semt=ais_hybrid&w=740",
     title: "Join the Digital Revolution",
     subtitle: "We make your idea a reality",
   },
