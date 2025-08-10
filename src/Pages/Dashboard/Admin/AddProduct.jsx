@@ -214,6 +214,7 @@ const AddProduct = () => {
           <option value="">Select Variant</option>
           <option value="popular">Popular Product</option>
           <option value="new">New Arrival</option>
+          <option value="flash">Flash Sale</option>
           <option value="top">Top Rated</option>
         </select>
 

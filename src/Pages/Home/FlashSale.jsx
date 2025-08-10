@@ -17,7 +17,7 @@ const fetchBrands = async () => {
   return data;
 };
 
-const NewArrival = () => {
+const FlashSale = () => {
   const {
     data: products,
     isLoading,
@@ -44,7 +44,7 @@ const NewArrival = () => {
   };
 
   const activeProducts =
-    products?.filter((product) => product.variant === "new" && product.status === "active") || [];
+    products?.filter((product) => product.variant === "flash" && product.status === "active") || [];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -54,7 +54,7 @@ const NewArrival = () => {
         transition={{ type: "spring", stiffness: 120, damping: 12 }}
         className="text-4xl font-extrabold text-transparent bg-clip-text bg-purple-600 text-center my-8 select-none drop-shadow-lg"
       >
-        New Arrivals
+        Flash Sale Products
       </motion.h1>
 
       <div className="grid p-4 gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -205,4 +205,4 @@ const SingleProduct = ({ product, brandName }) => {
   );
 };
 
-export default NewArrival;
+export default FlashSale;

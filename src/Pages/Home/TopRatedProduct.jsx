@@ -5,6 +5,7 @@ import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { motion } from "framer-motion";
+import Loading from "@/Shared/Loading";
 
 const fetchProducts = async () => {
   const { data } = await axios.get("http://localhost:5000/products");
@@ -32,13 +33,18 @@ const TopRatedProduct = () => {
     queryFn: fetchBrands,
   });
 
-  if (isLoading) return <p className="text-center py-10">Loading...</p>;
+  const [visibleCount, setVisibleCount] = useState(2);
+
+  if (isLoading) return <Loading></Loading>;
   if (isError)
     return <p className="text-center text-red-500">{error.message}</p>;
 
   const getBrandName = (brandId) => {
     return brands?.find((b) => b._id === brandId)?.name || "Unknown";
   };
+
+  const activeProducts =
+    products?.filter((product) => product.variant === "top" && product.status === "active") || [];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -50,17 +56,28 @@ const TopRatedProduct = () => {
       >
         Top Rated Products
       </motion.h1>
+
       <div className="grid p-4 gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {products
-          ?.filter((product) => product.variant === "top" && product.status === "active")
-          .map((product) => (
-            <SingleProduct
-              key={product._id}
-              product={product}
-              brandName={getBrandName(product.brandId)}
-            />
-          ))}
+        {activeProducts.slice(0, visibleCount).map((product) => (
+          <SingleProduct
+            key={product._id}
+            product={product}
+            brandName={getBrandName(product.brandId)}
+          />
+        ))}
       </div>
+
+      {/* Load More Button */}
+      {visibleCount < activeProducts.length && (
+        <div className="text-center my-6">
+          <button
+            onClick={() => setVisibleCount((prev) => prev + 20)}
+            className="px-6 py-2 bg-[#0FABCA] text-white rounded-md hover:bg-[#0c99b3] transition-colors"
+          >
+            Load More
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -69,19 +86,16 @@ const SingleProduct = ({ product, brandName }) => {
   const [rating, setRating] = useState(5);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Convert prices to numbers safely
   const oldPriceNum = Number(product.oldPrice);
   const newPriceNum = Number(product.newPrice);
 
-  // Check if discount should show
-  const hasDiscount = oldPriceNum > newPriceNum && oldPriceNum > 0 && newPriceNum > 0;
+  const hasDiscount =
+    oldPriceNum > newPriceNum && oldPriceNum > 0 && newPriceNum > 0;
 
-  // Calculate discount percentage safely
   const discountPercent = hasDiscount
     ? Math.round(((oldPriceNum - newPriceNum) / oldPriceNum) * 100)
     : 0;
 
-  // Format price display with commas
   const formatPrice = (price) =>
     `৳ ${price.toLocaleString("en-US", { minimumFractionDigits: 0 })}`;
 
@@ -94,7 +108,6 @@ const SingleProduct = ({ product, brandName }) => {
           className="w-full h-48 object-cover rounded-md"
         />
 
-        {/* Discount Badge on top-left */}
         {hasDiscount && (
           <div className="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10">
             {discountPercent}% OFF
@@ -152,7 +165,7 @@ const SingleProduct = ({ product, brandName }) => {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
-              {product.stock === 0 ? (
+              {!product.stock || Number(product.stock) === 0 ? (
                 <span className="text-red-500 font-semibold">Out of stock</span>
               ) : (
                 `${product.stock} in stock`
@@ -165,10 +178,14 @@ const SingleProduct = ({ product, brandName }) => {
                   <span className="text-red-500 line-through mr-2">
                     {formatPrice(oldPriceNum)}
                   </span>
-                  <span className="font-bold text-black">{formatPrice(newPriceNum)}</span>
+                  <span className="font-bold text-black">
+                    {formatPrice(newPriceNum)}
+                  </span>
                 </>
               ) : (
-                <span className="font-bold text-black">{formatPrice(newPriceNum)}</span>
+                <span className="font-bold text-black">
+                  {formatPrice(newPriceNum)}
+                </span>
               )}
             </div>
           </div>
