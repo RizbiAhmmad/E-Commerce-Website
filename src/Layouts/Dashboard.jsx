@@ -62,7 +62,7 @@ const Dashboard = () => {
         <div
           className={`${
             isSidebarOpen ? "w-64" : "w-0 md:w-64"
-          } bg-purple-500 text-white transition-all duration-300 flex flex-col justify-between`}
+          } bg-gray-100 text-black transition-all duration-300 flex flex-col justify-between`}
         >
           <ul onClick={toggleSidebar} className="p-8">
             {/* Admin Menu */}
@@ -168,7 +168,7 @@ const Dashboard = () => {
         {/* Dashboard Content */}
         <div className="flex-1 p-4">
           {user && (
-            <div className="p-4 mb-4 text-center text-blue-800 bg-purple-300 rounded-lg shadow">
+            <div className="p-4 mb-4 text-center text-blue-800 bg-gray-100 rounded-lg shadow">
               <h1 className="text-xl font-semibold">
                 Hey, {user.displayName || "User"}! Welcome to your Dashboard.
               </h1>
