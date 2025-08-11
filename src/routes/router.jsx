@@ -18,6 +18,7 @@ import AllSubcategories from "@/Pages/Dashboard/Admin/AllSubcategories";
 import AllUsers from "@/Pages/Dashboard/Admin/AllUsers";
 import Profile from "@/Pages/Dashboard/Admin/Profile";
 import Home from "@/Pages/Home/Home";
+import ProductDetailsPage from "@/Pages/Home/ProductDetailsPage";
 import {
     createBrowserRouter,
   } from "react-router-dom";
@@ -39,6 +40,10 @@ import {
         path: "signup",
         element: <SignUp></SignUp>,
       },
+      {
+        path: "product/:id",
+        element: <ProductDetailsPage />,
+      }
         
       ]
     },

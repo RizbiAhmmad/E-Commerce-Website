@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Loading from "@/Shared/Loading";
+import { useNavigate } from "react-router-dom";
 
 const fetchProducts = async () => {
   const { data } = await axios.get("http://localhost:5000/products");
@@ -14,6 +15,12 @@ const fetchProducts = async () => {
 
 const fetchBrands = async () => {
   const { data } = await axios.get("http://localhost:5000/brands");
+  return data;
+};
+
+// New: fetch reviews separately
+const fetchReviews = async () => {
+  const { data } = await axios.get("http://localhost:5000/reviews");
   return data;
 };
 
@@ -33,11 +40,16 @@ const ProductCard = () => {
     queryFn: fetchBrands,
   });
 
+  // New query to get reviews
+  const { data: reviews } = useQuery({
+    queryKey: ["reviews"],
+    queryFn: fetchReviews,
+  });
+
   const [visibleCount, setVisibleCount] = useState(2);
 
-  if (isLoading) return <Loading></Loading>;
-  if (isError)
-    return <p className="text-center text-red-500">{error.message}</p>;
+  if (isLoading) return <Loading />;
+  if (isError) return <p className="text-center text-red-500">{error.message}</p>;
 
   const getBrandName = (brandId) => {
     return brands?.find((b) => b._id === brandId)?.name || "Unknown";
@@ -45,6 +57,15 @@ const ProductCard = () => {
 
   const activeProducts =
     products?.filter((product) => product.status === "active") || [];
+
+  // Helper to calculate average rating for product
+  const getAverageRating = (productId) => {
+    if (!reviews) return 0;
+    const productReviews = reviews.filter((r) => r.productId === productId);
+    if (productReviews.length === 0) return 0;
+    const sum = productReviews.reduce((acc, r) => acc + r.rating, 0);
+    return sum / productReviews.length;
+  };
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -58,12 +79,29 @@ const ProductCard = () => {
       </motion.h1>
 
       <div className="grid p-4 gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {activeProducts.slice(0, visibleCount).map((product) => (
-          <SingleProduct
+        {activeProducts.slice(0, visibleCount).map((product, index) => (
+          <motion.div
             key={product._id}
-            product={product}
-            brandName={getBrandName(product.brandId)}
-          />
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.1,
+              type: "spring",
+              stiffness: 120,
+            }}
+            whileHover={{
+              scale: 1.03,
+              y: -5,
+              boxShadow: "0px 8px 20px rgba(0,0,0,0.15)",
+            }}
+          >
+            <SingleProduct
+              product={product}
+              brandName={getBrandName(product.brandId)}
+              averageRating={getAverageRating(product._id)} // pass avg rating here
+            />
+          </motion.div>
         ))}
       </div>
 
@@ -82,9 +120,10 @@ const ProductCard = () => {
   );
 };
 
-const SingleProduct = ({ product, brandName }) => {
-  const [rating, setRating] = useState(5);
+const SingleProduct = ({ product, brandName, averageRating }) => {
+  // Removed local rating state, we show averageRating instead
   const [isFavorite, setIsFavorite] = useState(false);
+  const navigate = useNavigate();
 
   const oldPriceNum = Number(product.oldPrice);
   const newPriceNum = Number(product.newPrice);
@@ -101,17 +140,24 @@ const SingleProduct = ({ product, brandName }) => {
 
   return (
     <div className="border border-gray-300 dark:border-slate-700 rounded-xl p-2">
-      <div className="relative">
-        <img
+      <div className="relative overflow-hidden rounded-md">
+        <motion.img
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
           alt={product.name}
           src={product.images?.[0] || "https://via.placeholder.com/300"}
           className="w-full h-48 object-cover rounded-md"
         />
 
         {hasDiscount && (
-          <div className="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10">
+          <motion.div
+            initial={{ rotateY: 90, opacity: 0 }}
+            animate={{ rotateY: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
+          >
             {discountPercent}% OFF
-          </div>
+          </motion.div>
         )}
 
         <div className="p-2 rounded-full bg-gray-600 absolute top-2 right-2">
@@ -143,21 +189,22 @@ const SingleProduct = ({ product, brandName }) => {
           <div className="flex items-center gap-[10px]">
             <div className="flex items-center space-x-1">
               {[...Array(5)].map((_, index) => {
-                const starRating = index + 1;
+                const starNumber = index + 1;
                 return (
                   <FaStar
-                    key={starRating}
+                    key={starNumber}
                     className={`cursor-pointer ${
-                      starRating <= rating ? "text-yellow-400" : "text-gray-300"
+                      starNumber <= Math.round(averageRating)
+                        ? "text-yellow-400"
+                        : "text-gray-300"
                     }`}
                     size={15}
-                    onClick={() => setRating(starRating)}
                   />
                 );
               })}
             </div>
             <span className="text-[0.8rem] dark:text-slate-400 text-gray-500">
-              (4.8)
+              ({averageRating ? averageRating.toFixed(1) : "No ratings"})
             </span>
           </div>
         </div>
@@ -195,7 +242,13 @@ const SingleProduct = ({ product, brandName }) => {
               <IoCartOutline className="text-[1.3rem] group-hover:text-white text-[#0FABCA]" />
             </button>
 
-            <button className="py-2 px-2 border border-[#0FABCA] text-[#0FABCA] hover:text-white rounded-md flex items-center gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200">
+            <button
+              onClick={() => {
+                console.log("navigate to product", product._id);
+                navigate(`/product/${product._id}`);
+              }}
+              className="py-2 px-2 border border-[#0FABCA] text-[#0FABCA] hover:text-white rounded-md flex items-center gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200"
+            >
               View Details
             </button>
           </div>
