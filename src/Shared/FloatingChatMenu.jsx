@@ -65,7 +65,7 @@ export default function FloatingChatMenu() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="p-4 rounded-full bg-purple-500 text-white shadow-xl hover:scale-110 transition animate-pulse"
+          className="p-4 rounded-full bg-cyan-500 text-white shadow-xl hover:scale-110 transition animate-pulse"
           aria-label="Open chat menu"
         >
           <FaCommentDots size={20} />

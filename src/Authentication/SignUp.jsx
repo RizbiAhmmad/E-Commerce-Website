@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import SocialLogin from "./SocialLogin";
 import { FaArrowLeft } from "react-icons/fa";
@@ -16,6 +16,8 @@ const SignUp = () => {
 
   const { createUser, updateUserProfile } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/"; // ✅ আগের পেজ বা fallback "/"
 
   const onSubmit = (data) => {
     createUser(data.email, data.password)
@@ -49,7 +51,7 @@ const SignUp = () => {
                     icon: "success",
                     draggable: true,
                   });
-                  navigate("/");
+                  navigate(from, { replace: true }); // ✅ এখন সরাসরি আগের পেজে যাবে
                 }
               })
               .catch((error) =>

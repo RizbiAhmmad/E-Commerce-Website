@@ -124,6 +124,45 @@ const ProductDetailsPage = () => {
     }
   };
 
+  // Add this function inside ProductDetailsPage
+const handleAddToCart = async () => {
+  if (!user) {
+    Swal.fire({
+      icon: "error",
+      title: "You must be logged in to add to cart",
+    });
+    return;
+  }
+
+  const cartData = {
+    name: user.displayName || "Anonymous",
+    email: user.email,
+    productId: product._id,
+    quantity,
+    selectedColor,
+    selectedSize,
+  };
+
+  try {
+    const res = await axios.post("http://localhost:5000/cart", cartData);
+    if (res.data.insertedId) {
+      Swal.fire({
+        icon: "success",
+        title: "Added to cart successfully",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      icon: "error",
+      title: "Failed to add to cart",
+    });
+  }
+};
+
+
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-12 py-24">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
@@ -300,7 +339,7 @@ const ProductDetailsPage = () => {
           </div>
 
           {/* Add to Cart Button */}
-          <button className="w-full px-6 py-3 bg-[#0FABCA] text-white rounded-md hover:bg-[#0FABCA]/90">
+          <button onClick={handleAddToCart} className="w-full px-6 py-3 bg-[#0FABCA] text-white rounded-md hover:bg-[#0FABCA]/90">
             Add to Cart
           </button>
         </div>

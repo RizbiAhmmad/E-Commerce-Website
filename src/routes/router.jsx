@@ -3,6 +3,7 @@ import Login from "@/Authentication/Login";
 import SignUp from "@/Authentication/SignUp";
 import Dashboard from "@/Layouts/Dashboard";
 import MainLayout from "@/Layouts/MainLayout";
+import CartPage from "@/Pages/Cart/CartPage";
 import AddBrand from "@/Pages/Dashboard/Admin/AddBrand";
 import AddCategory from "@/Pages/Dashboard/Admin/AddCategory";
 import AddColor from "@/Pages/Dashboard/Admin/AddColor";
@@ -44,6 +45,10 @@ import {
       {
         path: "product/:id",
         element: <ProductDetailsPage />,
+      },
+      {
+        path: "cart",
+        element: <CartPage />,
       }
         
       ]
