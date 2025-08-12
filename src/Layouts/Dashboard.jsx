@@ -4,6 +4,7 @@ import {
   FaListAlt,
   FaPalette,
   FaRulerCombined,
+  FaStar,
   FaThList,
   FaTrademark,
   FaUsers,
@@ -127,6 +128,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <MdInventory /> <span>All Products</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allReviews"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <FaStar /> <span>All Reviews</span>
                   </NavLink>
                 </li>
                 

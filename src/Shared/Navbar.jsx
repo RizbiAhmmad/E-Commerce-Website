@@ -42,7 +42,7 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-2xl flex gap-2 font-bold text-purple-600 dark:text-green-500"
+          className="text-3xl  flex gap-2 font-extrabold text-cyan-500 dark:text-cyan-300"
         >
           <img src={logo} alt="Logo" className="w-10 h-10 mr-2 rounded-full" />
           <Link to="/">Sostay Kini</Link>
@@ -60,7 +60,7 @@ const Navbar = () => {
           />
           <button
             onClick={handleSearch}
-            className="rounded-r-md px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white"
+            className="rounded-r-md px-4 py-3 bg-cyan-500 hover:bg-cyan-600 text-white"
           >
             <FaSearch />
           </button>
@@ -69,11 +69,11 @@ const Navbar = () => {
         {/* Right Icons */}
         <div className="flex items-center gap-4 text-xl">
           <ThemeChange />
-          <Link to="/cart" className="hover:text-purple-500">
+          <Link to="/cart" className="hover:text-cyan-500">
             <FaShoppingCart />
           </Link>
           {user && (
-            <Link to="/dashboard" className="hidden md:block hover:text-purple-500">
+            <Link to="/dashboard" className="hidden md:block hover:text-cyan-500">
               Dashboard
             </Link>
           )}
@@ -90,7 +90,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={handleLogin}
-              className="text-sm border border-gray-300 bg-purple-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-purple-600 dark:hover:bg-purple-600 flex items-center"
+              className="text-sm border border-gray-300 bg-cyan-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-cyan-600 dark:hover:bg-cyan-600 flex items-center"
             >
               <FaUser className="mr-1" /> Login
             </button>
@@ -117,28 +117,28 @@ const Navbar = () => {
               <Link
                 to="/"
                 onClick={() => setIsOpen(false)}
-                className="hover:text-purple-500"
+                className="hover:text-cyan-500"
               >
                 Home
               </Link>
               <Link
                 to="/shop"
                 onClick={() => setIsOpen(false)}
-                className="hover:text-purple-500"
+                className="hover:text-cyan-500"
               >
                 Shop
               </Link>
               <Link
                 to="/about"
                 onClick={() => setIsOpen(false)}
-                className="hover:text-purple-500"
+                className="hover:text-cyan-500"
               >
                 About
               </Link>
               <Link
                 to="/contact"
                 onClick={() => setIsOpen(false)}
-                className="hover:text-purple-500"
+                className="hover:text-cyan-500"
               >
                 Contact
               </Link>
@@ -146,7 +146,7 @@ const Navbar = () => {
                 <Link
                   to="/dashboard"
                   onClick={() => setIsOpen(false)}
-                  className="hover:text-purple-500"
+                  className="hover:text-cyan-500"
                 >
                   Dashboard
                 </Link>
@@ -164,7 +164,7 @@ const Navbar = () => {
                 />
                 <button
                   onClick={handleSearch}
-                  className="rounded-r-md px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white"
+                  className="rounded-r-md px-4 py-3 bg-cyan-500 hover:bg-cyan-600 text-white"
                 >
                   <FaSearch />
                 </button>
@@ -173,7 +173,7 @@ const Navbar = () => {
               {/* Mobile Login Button */}
               <button
                 onClick={handleLogin}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md flex items-center justify-center"
+                className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-md flex items-center justify-center"
               >
                 <FaUser className="mr-2" /> Login
               </button>

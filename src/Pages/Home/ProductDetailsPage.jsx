@@ -195,7 +195,7 @@ const ProductDetailsPage = () => {
           <h1 className="text-3xl font-semibold">{product.name}</h1>
 
           {/* Specification */}
-          <div className="mt-4 p-6 bg-white ">
+          <div className="mt-2 p-4 bg-white ">
             <h2 className="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Specification</h2>
             <ul className="list-disc list-inside text-gray-700 space-y-2">
               {product.specification ? (

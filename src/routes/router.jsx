@@ -13,6 +13,7 @@ import AllBrands from "@/Pages/Dashboard/Admin/AllBrands";
 import AllCategories from "@/Pages/Dashboard/Admin/AllCategories";
 import AllColors from "@/Pages/Dashboard/Admin/AllColors";
 import AllProducts from "@/Pages/Dashboard/Admin/AllProducts";
+import AllReviews from "@/Pages/Dashboard/Admin/Allreviews";
 import AllSizes from "@/Pages/Dashboard/Admin/AllSizes";
 import AllSubcategories from "@/Pages/Dashboard/Admin/AllSubcategories";
 import AllUsers from "@/Pages/Dashboard/Admin/AllUsers";
@@ -106,6 +107,10 @@ import {
       {
         path: "allProducts",
         element: <AllProducts></AllProducts>,
+      },
+      {
+        path: "allReviews",
+        element: <AllReviews></AllReviews>,
       },
       ]
     }

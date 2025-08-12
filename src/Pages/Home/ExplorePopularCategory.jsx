@@ -33,7 +33,7 @@ const ExplorePopularCategory = () => {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ type: "spring", stiffness: 120, damping: 12 }}
-              className="text-4xl font-extrabold text-transparent bg-clip-text bg-purple-600 text-center my-8 select-none drop-shadow-lg"
+              className="text-4xl font-extrabold text-transparent bg-clip-text bg-cyan-500 text-center my-8 select-none drop-shadow-lg"
             >
               Explore Popular Categories
             </motion.h1>
