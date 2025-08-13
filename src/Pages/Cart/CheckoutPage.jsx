@@ -32,7 +32,6 @@ const CheckoutPage = () => {
   const total = subtotal + shippingCost;
 
   const handlePlaceOrder = async () => {
-    // Simple validation
     if (!fullName || !phone || !email || !address) {
       return Swal.fire({
         icon: "error",
@@ -41,6 +40,20 @@ const CheckoutPage = () => {
       });
     }
 
+    // ✅ Always send size and color with product details
+    const orderCartItems = cartItems.map((item) => {
+      const product = productsMap[item.productId];
+      return {
+        productId: item.productId,
+        productName: product?.name || "Product Name",
+        productImage: product?.images?.[0] || "https://via.placeholder.com/80",
+        price: product?.newPrice || 0,
+        color: item.selectedColor || product?.colors?.[0] || "-",
+        size: item.selectedSize || "-",
+        quantity: item.quantity,
+      };
+    });
+
     const orderData = {
       fullName,
       phone,
@@ -48,21 +61,19 @@ const CheckoutPage = () => {
       address,
       shipping,
       payment,
-      cartItems,
+      cartItems: orderCartItems, // ✅ sending complete cart details
       total,
       createdAt: new Date(),
     };
 
     try {
       await axios.post("http://localhost:5000/orders", orderData);
-
       Swal.fire({
         icon: "success",
         title: "Order Placed!",
         text: "Your order has been placed successfully.",
       });
-
-      // Optionally, you can redirect the user or clear the cart
+      // Optional: redirect or clear cart here
     } catch (error) {
       console.error(error);
       Swal.fire({
