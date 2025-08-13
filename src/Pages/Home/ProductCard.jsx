@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FaStar } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
 import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
@@ -7,6 +7,10 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import Loading from "@/Shared/Loading";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+
+// Assuming you have an AuthContext for user info, otherwise adjust accordingly
+import { AuthContext } from "@/provider/AuthProvider";
 
 const fetchProducts = async () => {
   const { data } = await axios.get("http://localhost:5000/products");
@@ -125,6 +129,9 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
 
+  // Get user info from your Auth context - update if your context is different
+  const { user } = useContext(AuthContext);
+
   const oldPriceNum = Number(product.oldPrice);
   const newPriceNum = Number(product.newPrice);
 
@@ -137,6 +144,44 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
   const formatPrice = (price) =>
     `৳ ${price.toLocaleString("en-US", { minimumFractionDigits: 0 })}`;
+
+  // Add to Cart handler
+  const handleAddToCart = async () => {
+    if (!user) {
+      Swal.fire({
+        icon: "error",
+        title: "Please login to add items to cart",
+      });
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const cartData = {
+        name: user.displayName || "Anonymous",
+        email: user.email,
+        productId: product._id,
+        quantity: 1,
+      };
+
+      const res = await axios.post("http://localhost:5000/cart", cartData);
+      if (res.data.insertedId) {
+        Swal.fire({
+          icon: "success",
+          title: "Added to cart successfully",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        window.dispatchEvent(new Event("cartUpdated")); // Notify cart update globally
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed to add to cart",
+      });
+    }
+  };
 
   return (
     <div className="border border-gray-300 dark:border-slate-700 rounded-xl p-2">
@@ -238,7 +283,10 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           </div>
 
           <div className="flex items-center gap-[10px]">
-            <button className="py-2 px-4 border border-[#0FABCA] text-white rounded-md flex items-center group gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200">
+            <button
+              onClick={handleAddToCart}
+              className="py-2 px-4 border border-[#0FABCA] text-white rounded-md flex items-center group gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200"
+            >
               <IoCartOutline className="text-[1.3rem] group-hover:text-white text-[#0FABCA]" />
             </button>
 

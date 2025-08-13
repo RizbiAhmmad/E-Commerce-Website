@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,12 +12,49 @@ import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
 import logo from "../assets/SostayKini.jpg";
 import { AuthContext } from "@/provider/AuthProvider";
+import axios from "axios";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
+
+  // Function to fetch cart count from backend
+  const fetchCartCount = () => {
+    if (!user?.email) {
+      setCartCount(0);
+      return;
+    }
+    axios
+      .get(`http://localhost:5000/cart?email=${user.email}`)
+      .then((res) => {
+        const totalCount = res.data.reduce(
+          (acc, item) => acc + (item.quantity || 1),
+          0
+        );
+        setCartCount(totalCount);
+      })
+      .catch(() => {
+        setCartCount(0);
+      });
+  };
+
+  useEffect(() => {
+    fetchCartCount();
+
+    // Listen for cart update event
+    const onCartUpdated = () => {
+      fetchCartCount();
+    };
+
+    window.addEventListener("cartUpdated", onCartUpdated);
+
+    return () => {
+      window.removeEventListener("cartUpdated", onCartUpdated);
+    };
+  }, [user]);
 
   const handleSearch = () => {
     if (searchText.trim()) {
@@ -42,7 +79,7 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-2xl  flex gap-2 font-bold text-cyan-500 dark:text-cyan-300"
+          className="text-2xl flex gap-2 font-bold text-cyan-500 dark:text-cyan-300"
         >
           <img src={logo} alt="Logo" className="w-10 h-10 mr-2 rounded-full" />
           <Link to="/">Sostay Kini</Link>
@@ -67,10 +104,15 @@ const Navbar = () => {
         </div>
 
         {/* Right Icons */}
-        <div className="flex items-center gap-4 text-xl">
+        <div className="flex items-center gap-4 text-xl relative">
           <ThemeChange />
-          <Link to="/cart" className="hover:text-cyan-500">
+          <Link to="/cart" className="hover:text-cyan-500 relative">
             <FaShoppingCart />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">
+                {cartCount}
+              </span>
+            )}
           </Link>
           {user && (
             <Link to="/dashboard" className="hidden md:block hover:text-cyan-500">
@@ -79,14 +121,12 @@ const Navbar = () => {
           )}
 
           {user ? (
-            <>
-              <button
-                onClick={handleLogOut}
-                className="text-sm border border-gray-300 bg-red-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-red-600 dark:hover:bg-red-600 flex items-center"
-              >
-                Logout
-              </button>
-            </>
+            <button
+              onClick={handleLogOut}
+              className="text-sm border border-gray-300 bg-red-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-red-600 dark:hover:bg-red-600 flex items-center"
+            >
+              Logout
+            </button>
           ) : (
             <button
               onClick={handleLogin}
@@ -95,10 +135,7 @@ const Navbar = () => {
               <FaUser className="mr-1" /> Login
             </button>
           )}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-2xl"
-          >
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-2xl">
             {isOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>
@@ -114,40 +151,20 @@ const Navbar = () => {
             className="overflow-hidden md:hidden bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-t border-gray-200 dark:border-gray-700"
           >
             <div className="flex flex-col px-4 py-4 space-y-3">
-              <Link
-                to="/"
-                onClick={() => setIsOpen(false)}
-                className="hover:text-cyan-500"
-              >
+              <Link to="/" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
                 Home
               </Link>
-              <Link
-                to="/shop"
-                onClick={() => setIsOpen(false)}
-                className="hover:text-cyan-500"
-              >
+              <Link to="/shop" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
                 Shop
               </Link>
-              <Link
-                to="/about"
-                onClick={() => setIsOpen(false)}
-                className="hover:text-cyan-500"
-              >
+              <Link to="/about" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
                 About
               </Link>
-              <Link
-                to="/contact"
-                onClick={() => setIsOpen(false)}
-                className="hover:text-cyan-500"
-              >
+              <Link to="/contact" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
                 Contact
               </Link>
               {user && (
-                <Link
-                  to="/dashboard"
-                  onClick={() => setIsOpen(false)}
-                  className="hover:text-cyan-500"
-                >
+                <Link to="/dashboard" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
                   Dashboard
                 </Link>
               )}

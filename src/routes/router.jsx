@@ -24,6 +24,7 @@ import ProductDetailsPage from "@/Pages/Home/ProductDetailsPage";
 import {
     createBrowserRouter,
   } from "react-router-dom";
+import CheckoutPage from "../Pages/Cart/CheckoutPage";
 
   export const router = createBrowserRouter([
     {
@@ -49,6 +50,10 @@ import {
       {
         path: "cart",
         element: <CartPage />,
+      },
+      {
+        path: "checkout",
+        element: <CheckoutPage />
       }
         
       ]

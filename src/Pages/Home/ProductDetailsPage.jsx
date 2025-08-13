@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaStar } from "react-icons/fa6";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -28,6 +28,8 @@ const ProductDetailsPage = () => {
   const [reviewEmail, setReviewEmail] = useState(user?.email || "");
   const [reviews, setReviews] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     // Fetch product data
     axios.get(`http://localhost:5000/products/${id}`).then((res) => {
@@ -51,10 +53,11 @@ const ProductDetailsPage = () => {
   }, [id]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/brands").then((res) => setBrands(res.data));
+    axios
+      .get("http://localhost:5000/brands")
+      .then((res) => setBrands(res.data));
   }, []);
 
-  // Keep name and email synced if user changes (rare)
   useEffect(() => {
     if (user) {
       setReviewName(user.displayName || "");
@@ -64,11 +67,13 @@ const ProductDetailsPage = () => {
 
   if (!product) return <Loading />;
 
-  const getBrandName = (id) => brands.find((b) => b._id === id)?.name || "Unknown";
+  const getBrandName = (id) =>
+    brands.find((b) => b._id === id)?.name || "Unknown";
 
   const oldPriceNum = Number(product.oldPrice);
   const newPriceNum = Number(product.newPrice);
-  const hasDiscount = oldPriceNum > newPriceNum && oldPriceNum > 0 && newPriceNum > 0;
+  const hasDiscount =
+    oldPriceNum > newPriceNum && oldPriceNum > 0 && newPriceNum > 0;
   const discountPercent = hasDiscount
     ? Math.round(((oldPriceNum - newPriceNum) / oldPriceNum) * 100)
     : 0;
@@ -88,7 +93,10 @@ const ProductDetailsPage = () => {
       return;
     }
     if (!user) {
-      Swal.fire({ icon: "error", title: "You must be logged in to submit a review." });
+      Swal.fire({
+        icon: "error",
+        title: "You must be logged in to submit a review.",
+      });
       return;
     }
 
@@ -101,7 +109,10 @@ const ProductDetailsPage = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/reviews", reviewData);
+      const response = await axios.post(
+        "http://localhost:5000/reviews",
+        reviewData
+      );
       if (response.data.acknowledged) {
         setReviews((prev) => [...prev, response.data.review]);
         setReviewRating(0);
@@ -125,43 +136,45 @@ const ProductDetailsPage = () => {
   };
 
   // Add this function inside ProductDetailsPage
-const handleAddToCart = async () => {
-  if (!user) {
-    Swal.fire({
-      icon: "error",
-      title: "You must be logged in to add to cart",
-    });
-    return;
-  }
-
-  const cartData = {
-    name: user.displayName || "Anonymous",
-    email: user.email,
-    productId: product._id,
-    quantity,
-    selectedColor,
-    selectedSize,
-  };
-
-  try {
-    const res = await axios.post("http://localhost:5000/cart", cartData);
-    if (res.data.insertedId) {
+  const handleAddToCart = async () => {
+    if (!user) {
       Swal.fire({
-        icon: "success",
-        title: "Added to cart successfully",
-        timer: 1500,
-        showConfirmButton: false,
+        icon: "error",
+        title: "You must be logged in to add to cart",
+      });
+      navigate("/login");
+      return;
+    }
+
+    const cartData = {
+      name: user.displayName || "Anonymous",
+      email: user.email,
+      productId: product._id,
+      quantity,
+      selectedColor,
+      selectedSize,
+    };
+
+    try {
+      const res = await axios.post("http://localhost:5000/cart", cartData);
+      if (res.data.insertedId) {
+        Swal.fire({
+          icon: "success",
+          title: "Added to cart successfully",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        window.dispatchEvent(new Event("cartUpdated"));
+        navigate("/cart");
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed to add to cart",
       });
     }
-  } catch (error) {
-    console.error(error);
-    Swal.fire({
-      icon: "error",
-      title: "Failed to add to cart",
-    });
-  }
-};
-
+  };
 
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-12 py-24">
@@ -183,7 +196,10 @@ const handleAddToCart = async () => {
             </div>
             <div className="relative h-full">
               <img
-                src={product.images?.[currentImageIndex] || "https://via.placeholder.com/400"}
+                src={
+                  product.images?.[currentImageIndex] ||
+                  "https://via.placeholder.com/400"
+                }
                 alt={product.name}
                 className="w-full h-full object-cover rounded-md"
               />
@@ -192,7 +208,9 @@ const handleAddToCart = async () => {
                   <button
                     onClick={() =>
                       setCurrentImageIndex(
-                        (prev) => (prev - 1 + product.images.length) % product.images.length
+                        (prev) =>
+                          (prev - 1 + product.images.length) %
+                          product.images.length
                       )
                     }
                     className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white"
@@ -201,7 +219,11 @@ const handleAddToCart = async () => {
                     <BiChevronLeft className="w-6 h-6" />
                   </button>
                   <button
-                    onClick={() => setCurrentImageIndex((prev) => (prev + 1) % product.images.length)}
+                    onClick={() =>
+                      setCurrentImageIndex(
+                        (prev) => (prev + 1) % product.images.length
+                      )
+                    }
                     className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white"
                     aria-label="Next image"
                   >
@@ -219,11 +241,17 @@ const handleAddToCart = async () => {
                 key={idx}
                 onClick={() => setCurrentImageIndex(idx)}
                 className={`relative transition-all duration-300 w-[5rem] aspect-square rounded-md overflow-hidden ${
-                  currentImageIndex === idx ? "ring-2 ring-[#0FABCA]" : "hover:ring-2 hover:ring-[#0FABCA]"
+                  currentImageIndex === idx
+                    ? "ring-2 ring-[#0FABCA]"
+                    : "hover:ring-2 hover:ring-[#0FABCA]"
                 }`}
                 aria-label={`Select image ${idx + 1}`}
               >
-                <img src={img} alt={`${product.name} image ${idx + 1}`} className="w-full h-full object-cover" />
+                <img
+                  src={img}
+                  alt={`${product.name} image ${idx + 1}`}
+                  className="w-full h-full object-cover"
+                />
               </button>
             ))}
           </div>
@@ -235,7 +263,9 @@ const handleAddToCart = async () => {
 
           {/* Specification */}
           <div className="mt-2 p-4 bg-white ">
-            <h2 className="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Specification</h2>
+            <h2 className="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">
+              Specification
+            </h2>
             <ul className="list-disc list-inside text-gray-700 space-y-2">
               {product.specification ? (
                 product.specification
@@ -251,24 +281,35 @@ const handleAddToCart = async () => {
           {/* Brand */}
           <div className="flex justify-between gap-4 text-gray-700">
             <p>
-              <span className="font-semibold">Brand:</span> {getBrandName(product.brandId)}
+              <span className="font-semibold">Brand:</span>{" "}
+              {getBrandName(product.brandId)}
             </p>
             <div className="flex items-center gap-2">
               {[...Array(5)].map((_, i) => (
                 <FaStar key={i} className="w-5 h-5 fill-yellow-500" />
               ))}
-              <span className="text-sm text-gray-600">{reviews.length} Reviews</span>
+              <span className="text-sm text-gray-600">
+                {reviews.length} Reviews
+              </span>
             </div>
           </div>
 
           {/* Prices */}
           <div className="flex items-center gap-3 text-xl font-semibold mt-3">
             <span className="text-[#0FABCA]">{formatPrice(newPriceNum)}</span>
-            {hasDiscount && <span className="line-through text-gray-500">{formatPrice(oldPriceNum)}</span>}
+            {hasDiscount && (
+              <span className="line-through text-gray-500">
+                {formatPrice(oldPriceNum)}
+              </span>
+            )}
           </div>
 
           {/* Stock Status */}
-          <p className={`mt-2 font-semibold ${product.stock > 0 ? "text-green-600" : "text-red-600"}`}>
+          <p
+            className={`mt-2 font-semibold ${
+              product.stock > 0 ? "text-green-600" : "text-red-600"
+            }`}
+          >
             {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
           </p>
 
@@ -283,7 +324,9 @@ const handleAddToCart = async () => {
                     key={color}
                     onClick={() => setSelectedColor(color)}
                     className={`w-8 h-8 rounded-full border-2 ${
-                      selectedColor === color ? "border-[#0FABCA]" : "border-transparent"
+                      selectedColor === color
+                        ? "border-[#0FABCA]"
+                        : "border-transparent"
                     }`}
                     style={{ backgroundColor: color }}
                     aria-label={`Select color ${color}`}
@@ -303,7 +346,9 @@ const handleAddToCart = async () => {
                     key={size}
                     onClick={() => setSelectedSize(size)}
                     className={`border rounded px-3 py-1 text-sm cursor-pointer select-none ${
-                      selectedSize === size ? "bg-[#0FABCA] text-white border-[#0FABCA]" : "border-gray-400"
+                      selectedSize === size
+                        ? "bg-[#0FABCA] text-white border-[#0FABCA]"
+                        : "border-gray-400"
                     }`}
                   >
                     {size}
@@ -316,16 +361,24 @@ const handleAddToCart = async () => {
           {/* Quantity + Wishlist */}
           <div className="flex gap-4 items-center pt-6">
             <div className="flex items-center bg-gray-100 rounded-md">
-              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="px-4"
+              >
                 −
               </button>
               <input
                 type="number"
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                onChange={(e) =>
+                  setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+                }
                 className="w-12 text-center bg-transparent"
               />
-              <button onClick={() => setQuantity(quantity + 1)} className="px-4">
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="px-4"
+              >
                 +
               </button>
             </div>
@@ -333,13 +386,20 @@ const handleAddToCart = async () => {
               onClick={() => setIsFavorite(!isFavorite)}
               className="py-3 border rounded-md flex items-center justify-center gap-2 grow hover:bg-gray-50"
             >
-              {isFavorite ? <FaHeart className="w-5 h-5 text-purple-500" /> : <FaRegHeart className="w-5 h-5" />}
+              {isFavorite ? (
+                <FaHeart className="w-5 h-5 text-purple-500" />
+              ) : (
+                <FaRegHeart className="w-5 h-5" />
+              )}
               Wishlist
             </button>
           </div>
 
           {/* Add to Cart Button */}
-          <button onClick={handleAddToCart} className="w-full px-6 py-3 bg-[#0FABCA] text-white rounded-md hover:bg-[#0FABCA]/90">
+          <button
+            onClick={handleAddToCart}
+            className="w-full px-6 py-3 bg-[#0FABCA] text-white rounded-md hover:bg-[#0FABCA]/90"
+          >
             Add to Cart
           </button>
         </div>
@@ -375,7 +435,9 @@ const handleAddToCart = async () => {
         <div className="mt-6 text-center">
           {activeTab === "description" && (
             <div>
-              <p className="text-gray-600 whitespace-pre-line">{product.description}</p>
+              <p className="text-gray-600 whitespace-pre-line">
+                {product.description}
+              </p>
             </div>
           )}
 
@@ -383,7 +445,10 @@ const handleAddToCart = async () => {
             <div>
               {/* Review Form */}
               <h2 className="text-2xl font-semibold mb-4">Give a Review</h2>
-              <form onSubmit={handleReviewSubmit} className="space-y-4 max-w-xl mx-auto">
+              <form
+                onSubmit={handleReviewSubmit}
+                className="space-y-4 max-w-xl mx-auto"
+              >
                 {/* Name */}
                 <input
                   type="text"
@@ -413,7 +478,9 @@ const handleAddToCart = async () => {
                     <FaStar
                       key={star}
                       className={`w-8 h-8 mt-4 cursor-pointer ${
-                        reviewRating >= star ? "fill-yellow-400" : "fill-gray-300"
+                        reviewRating >= star
+                          ? "fill-yellow-400"
+                          : "fill-gray-300"
                       }`}
                       onClick={() => setReviewRating(star)}
                     />
@@ -445,7 +512,10 @@ const handleAddToCart = async () => {
                 ) : (
                   <ul className="space-y-4">
                     {reviews.map((r) => (
-                      <li key={r._id || r.id} className="border p-4 rounded-md bg-gray-50">
+                      <li
+                        key={r._id || r.id}
+                        className="border p-4 rounded-md bg-gray-50"
+                      >
                         <div className="flex items-center gap-2 mb-2">
                           <strong>{r.name || "Anonymous"}</strong>
                         </div>
@@ -456,13 +526,17 @@ const handleAddToCart = async () => {
                               <FaStar
                                 key={i}
                                 className={`w-5 h-5 ${
-                                  starNumber <= r.rating ? "fill-yellow-400" : "fill-gray-300"
+                                  starNumber <= r.rating
+                                    ? "fill-yellow-400"
+                                    : "fill-gray-300"
                                 }`}
                               />
                             );
                           })}
                         </div>
-                        <p className="text-gray-800 whitespace-pre-line">{r.text}</p>
+                        <p className="text-gray-800 whitespace-pre-line">
+                          {r.text}
+                        </p>
                       </li>
                     ))}
                   </ul>
