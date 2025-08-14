@@ -3,6 +3,7 @@ import {
   FaHome,
   FaListAlt,
   FaPalette,
+  FaReceipt,
   FaRulerCombined,
   FaStar,
   FaThList,
@@ -84,10 +85,18 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
+                    to="/dashboard/allProducts"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <MdInventory /> <span>Products</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
                     to="/dashboard/allCategories"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <FaListAlt /> <span>All Categories</span>
+                    <FaListAlt /> <span>Categories</span>
                   </NavLink>
                 </li>
                 <li>
@@ -95,7 +104,7 @@ const Dashboard = () => {
                     to="/dashboard/allSubCategories"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <FaThList /> <span>All SubCategories</span>
+                    <FaThList /> <span>SubCategories</span>
                   </NavLink>
                 </li>
                 <li>
@@ -103,7 +112,7 @@ const Dashboard = () => {
                     to="/dashboard/allBrands"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <FaTrademark /> <span>All Brands</span>
+                    <FaTrademark /> <span>Brands</span>
                   </NavLink>
                 </li>
                 <li>
@@ -111,7 +120,7 @@ const Dashboard = () => {
                     to="/dashboard/allSizes"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <FaRulerCombined /> <span>All Sizes</span>
+                    <FaRulerCombined /> <span>Sizes</span>
                   </NavLink>
                 </li>
                 <li>
@@ -119,23 +128,16 @@ const Dashboard = () => {
                     to="/dashboard/allColors"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <FaPalette /> <span>All Colors</span>
+                    <FaPalette /> <span>Colors</span>
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink
-                    to="/dashboard/allProducts"
-                    className="flex items-center py-2 space-x-3"
-                  >
-                    <MdInventory /> <span>All Products</span>
-                  </NavLink>
-                </li>
+                
                 <li>
                   <NavLink
                     to="/dashboard/allReviews"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <FaStar /> <span>All Reviews</span>
+                    <FaStar /> <span>Reviews</span>
                   </NavLink>
                 </li>
                 <li>
@@ -143,7 +145,7 @@ const Dashboard = () => {
                     to="/dashboard/allOrders"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <FaStar /> <span>All Orders</span>
+                    <FaReceipt /> <span>Orders</span>
                   </NavLink>
                 </li>
                 
@@ -165,6 +167,14 @@ const Dashboard = () => {
                 <li>
                   <NavLink to="/" className="flex items-center py-2 space-x-3">
                     <FaHome /> <span>Home</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/myOrders"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <FaReceipt /> <span>My Orders</span>
                   </NavLink>
                 </li>
                

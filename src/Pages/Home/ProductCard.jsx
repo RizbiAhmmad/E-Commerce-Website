@@ -125,11 +125,10 @@ const ProductCard = () => {
 };
 
 const SingleProduct = ({ product, brandName, averageRating }) => {
-  // Removed local rating state, we show averageRating instead
+  
   const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
 
-  // Get user info from your Auth context - update if your context is different
   const { user } = useContext(AuthContext);
 
   const oldPriceNum = Number(product.oldPrice);

@@ -26,6 +26,7 @@ import {
   } from "react-router-dom";
 import CheckoutPage from "../Pages/Cart/CheckoutPage";
 import AllOrders from "@/Pages/Dashboard/Admin/AllOrders";
+import MyOrders from "@/Pages/Dashboard/User/MyOrders";
 
   export const router = createBrowserRouter([
     {
@@ -55,7 +56,8 @@ import AllOrders from "@/Pages/Dashboard/Admin/AllOrders";
       {
         path: "checkout",
         element: <CheckoutPage />
-      }
+      },
+
         
       ]
     },
@@ -126,6 +128,10 @@ import AllOrders from "@/Pages/Dashboard/Admin/AllOrders";
       {
         path: "allOrders",
         element: <AllOrders></AllOrders>,
+      },
+      {
+        path: "myOrders",
+        element: <MyOrders />
       },
       ]
     }

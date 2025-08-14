@@ -36,7 +36,7 @@ export default function Banner() {
   }, []);
 
   return (
-    <div className="relative w-full h-[70vh] md:h-[90vh] overflow-hidden">
+    <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden">
       <AnimatePresence>
         <motion.div
           key={slides[current].id}

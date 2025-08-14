@@ -6,43 +6,10 @@ import axios from "axios";
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
 
-  // Fetch orders from backend
   const fetchOrders = async () => {
     try {
       const res = await axios.get("http://localhost:5000/orders");
-      const ordersData = res.data;
-
-      // For each order, fetch product details for cart items
-      const ordersWithProducts = await Promise.all(
-        ordersData.map(async (order) => {
-          const cartItemsWithDetails = await Promise.all(
-            order.cartItems.map(async (item) => {
-              try {
-                const productRes = await axios.get(
-                  `http://localhost:5000/products/${item.productId}`
-                );
-                const product = productRes.data;
-                return {
-                  ...item, // Keep size, color, quantity from DB
-                  productName: product.name || item.productName,
-                  productImage:
-                    product.images?.[0] ||
-                    item.productImage ||
-                    "https://via.placeholder.com/50",
-                  price: product.newPrice || item.price || 0,
-                };
-              } catch (err) {
-                console.error("Error fetching product:", err);
-                return item; // fallback to original item
-              }
-            })
-          );
-
-          return { ...order, cartItems: cartItemsWithDetails };
-        })
-      );
-
-      setOrders(ordersWithProducts);
+      setOrders(res.data);
     } catch (error) {
       console.error(error);
       setOrders([]);
@@ -66,12 +33,47 @@ const AllOrders = () => {
       if (result.isConfirmed) {
         axios.delete(`http://localhost:5000/orders/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
-            fetchOrders(); // refetch after delete
+            fetchOrders();
             Swal.fire("Deleted!", "Order removed.", "success");
           }
         });
       }
     });
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const res = await axios.patch(`http://localhost:5000/orders/${id}/status`, {
+        status: newStatus,
+      });
+
+      if (res.data.success) {
+        Swal.fire("Updated!", "Order status updated.", "success");
+        fetchOrders();
+      } else {
+        Swal.fire("Error!", res.data.message, "error");
+      }
+    } catch (error) {
+      Swal.fire("Error!", "Failed to update status", "error");
+    }
+  };
+
+  // 🔹 Color classes for each status
+  const getStatusClasses = (status) => {
+    switch (status?.toLowerCase()) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+      case "processing":
+        return "bg-blue-100 text-blue-800 border border-blue-300";
+      case "shipped":
+        return "bg-purple-100 text-purple-800 border border-purple-300";
+      case "delivered":
+        return "bg-green-100 text-green-800 border border-green-300";
+      case "cancelled":
+        return "bg-red-100 text-red-800 border border-red-300";
+      default:
+        return "bg-gray-100 text-gray-800 border border-gray-300";
+    }
   };
 
   return (
@@ -88,45 +90,29 @@ const AllOrders = () => {
               <th className="px-6 py-3">Customer</th>
               <th className="px-6 py-3">Address</th>
               <th className="px-6 py-3">Shipping</th>
-              <th className="px-6 py-3">Payment</th>
+              {/* <th className="px-6 py-3">Payment</th> */}
               <th className="px-6 py-3">Cart Items</th>
               <th className="px-6 py-3">Total</th>
+              <th className="px-6 py-3">Date & Time</th>
+              <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {orders.map((order, index) => (
-              <tr
-                key={order._id}
-                className="transition duration-200 hover:bg-gray-50"
-              >
+              <tr key={order._id} className="transition duration-200 hover:bg-gray-50">
                 <td className="px-6 py-4">{index + 1}</td>
-
-                {/* Customer Info */}
                 <td className="px-6 py-4">
-                  <div className="font-semibold text-gray-800">
-                    {order.fullName}
-                  </div>
+                  <div className="font-semibold text-gray-800">{order.fullName}</div>
                   <div className="text-gray-500">{order.email}</div>
                   <div className="text-gray-500">{order.phone}</div>
                 </td>
-
-                {/* Address */}
                 <td className="px-6 py-4">{order.address}</td>
-
-                {/* Shipping */}
                 <td className="px-6 py-4">{order.shipping}</td>
-
-                {/* Payment */}
-                <td className="px-6 py-4">{order.payment}</td>
-
-                {/* Cart Items */}
+                {/* <td className="px-6 py-4">{order.payment}</td> */}
                 <td className="px-6 py-4">
                   {order.cartItems.map((item) => (
-                    <div
-                      key={item.productId}
-                      className="flex items-center gap-2 mb-2"
-                    >
+                    <div key={item.productId} className="flex items-center gap-2 mb-2">
                       <img
                         src={item.productImage}
                         alt={item.productName}
@@ -135,19 +121,41 @@ const AllOrders = () => {
                       <div>
                         <div className="font-semibold">{item.productName}</div>
                         <div className="text-sm text-gray-500">
-                          Size: {item.size || "-"}, Color:{" "}
-                          {item.color || "-"}, Qty: {item.quantity}
+                          Size: {item.size || "-"}, Color: {item.color || "-"}, Qty: {item.quantity}
                         </div>
                       </div>
                     </div>
                   ))}
                 </td>
-
-                {/* Total */}
                 <td className="px-6 py-4 font-bold">৳{order.total}</td>
+                <td className="px-6 py-4 font-bold">{new Date(order.createdAt).toLocaleString()}</td>
+
+                {/* Beautiful Status */}
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusClasses(
+                        order.status
+                      )}`}
+                    >
+                      {order.status?.toUpperCase() || "PENDING"}
+                    </span>
+                    <select
+                      value={order.status || "pending"}
+                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1 text-xs focus:ring focus:ring-red-200"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                </td>
 
                 {/* Actions */}
-                <td className="flex gap-4 px-6 py-4">
+                <td className="flex gap-4 px-6 py-6">
                   <button onClick={() => handleDelete(order._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
                   </button>
@@ -157,7 +165,7 @@ const AllOrders = () => {
 
             {orders.length === 0 && (
               <tr>
-                <td colSpan="8" className="py-6 text-center text-gray-500">
+                <td colSpan="9" className="py-6 text-center text-gray-500">
                   No orders found.
                 </td>
               </tr>

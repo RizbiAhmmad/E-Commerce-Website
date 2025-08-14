@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { AuthContext } from "@/provider/AuthProvider";
@@ -7,6 +7,7 @@ import { AuthContext } from "@/provider/AuthProvider";
 const CheckoutPage = () => {
   const { user } = useContext(AuthContext);
   const { state } = useLocation();
+  const navigate = useNavigate();
   const { cartItems = [], productsMap = {} } = state || {};
 
   const [fullName, setFullName] = useState("");
@@ -14,7 +15,7 @@ const CheckoutPage = () => {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [shipping, setShipping] = useState("outside");
-  const [payment, setPayment] = useState("cod");
+  const [payment, setPayment] = useState("cash on delivery");
 
   // Autofill name and email if logged in
   useEffect(() => {
@@ -61,8 +62,9 @@ const CheckoutPage = () => {
       address,
       shipping,
       payment,
-      cartItems: orderCartItems, // ✅ sending complete cart details
+      cartItems: orderCartItems, 
       total,
+      status: "pending",
       createdAt: new Date(),
     };
 
@@ -71,8 +73,9 @@ const CheckoutPage = () => {
       Swal.fire({
         icon: "success",
         title: "Order Placed!",
-        text: "Your order has been placed successfully.",
+        text: "Your order has been placed successfully.",      
       });
+      navigate("/dashboard/myorders");
       // Optional: redirect or clear cart here
     } catch (error) {
       console.error(error);
@@ -98,6 +101,7 @@ const CheckoutPage = () => {
               className="border p-2 rounded"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
+              required
             />
             <input
               type="number"
@@ -105,6 +109,7 @@ const CheckoutPage = () => {
               className="border p-2 rounded"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              required
             />
             <input
               type="email"
@@ -112,12 +117,14 @@ const CheckoutPage = () => {
               className="border p-2 rounded md:col-span-2"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
             <textarea
               placeholder="Delivery Address *"
               className="border p-2 rounded md:col-span-2"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
+              required
             ></textarea>
           </div>
         </div>
@@ -166,9 +173,9 @@ const CheckoutPage = () => {
             <input
               type="radio"
               name="payment"
-              value="cod"
-              checked={payment === "cod"}
-              onChange={() => setPayment("cod")}
+              value="cash on delivery"
+              checked={payment === "cash on delivery"}
+              onChange={() => setPayment("cash on delivery")}
             />{" "}
             Cash on Delivery
           </label>
