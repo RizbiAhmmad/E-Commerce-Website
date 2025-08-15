@@ -5,6 +5,7 @@ import axios from "axios";
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const fetchOrders = async () => {
     try {
@@ -58,7 +59,6 @@ const AllOrders = () => {
     }
   };
 
-  // 🔹 Color classes for each status
   const getStatusClasses = (status) => {
     switch (status?.toLowerCase()) {
       case "pending":
@@ -76,12 +76,38 @@ const AllOrders = () => {
     }
   };
 
+  // Apply status filter
+  const filteredOrders =
+    statusFilter === "all"
+      ? orders
+      : orders.filter((order) => order.status?.toLowerCase() === statusFilter);
+
   return (
     <div className="max-w-7xl p-6 mx-auto">
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
         All Orders
       </h2>
 
+      {/* Filter Dropdown */}
+      <div className="mb-4 flex justify-end">
+        <label htmlFor="statusFilter" className="mr-2 text-lg font-medium text-gray-700">
+          Filter by Status:
+        </label>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="border border-gray-300 rounded px-3 py-2 text-sm shadow-sm"
+        >
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="processing">Processing</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      {/* Orders Table */}
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
@@ -90,7 +116,6 @@ const AllOrders = () => {
               <th className="px-6 py-3">Customer</th>
               <th className="px-6 py-3">Address</th>
               <th className="px-6 py-3">Shipping</th>
-              {/* <th className="px-6 py-3">Payment</th> */}
               <th className="px-6 py-3">Cart Items</th>
               <th className="px-6 py-3">Total</th>
               <th className="px-6 py-3">Date & Time</th>
@@ -99,7 +124,7 @@ const AllOrders = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {orders.map((order, index) => (
+            {filteredOrders.map((order, index) => (
               <tr key={order._id} className="transition duration-200 hover:bg-gray-50">
                 <td className="px-6 py-4">{index + 1}</td>
                 <td className="px-6 py-4">
@@ -109,7 +134,6 @@ const AllOrders = () => {
                 </td>
                 <td className="px-6 py-4">{order.address}</td>
                 <td className="px-6 py-4">{order.shipping}</td>
-                {/* <td className="px-6 py-4">{order.payment}</td> */}
                 <td className="px-6 py-4">
                   {order.cartItems.map((item) => (
                     <div key={item.productId} className="flex items-center gap-2 mb-2">
@@ -130,7 +154,6 @@ const AllOrders = () => {
                 <td className="px-6 py-4 font-bold">৳{order.total}</td>
                 <td className="px-6 py-4 font-bold">{new Date(order.createdAt).toLocaleString()}</td>
 
-                {/* Beautiful Status */}
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <span
@@ -154,7 +177,6 @@ const AllOrders = () => {
                   </div>
                 </td>
 
-                {/* Actions */}
                 <td className="flex gap-4 px-6 py-6">
                   <button onClick={() => handleDelete(order._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
@@ -163,7 +185,7 @@ const AllOrders = () => {
               </tr>
             ))}
 
-            {orders.length === 0 && (
+            {filteredOrders.length === 0 && (
               <tr>
                 <td colSpan="9" className="py-6 text-center text-gray-500">
                   No orders found.

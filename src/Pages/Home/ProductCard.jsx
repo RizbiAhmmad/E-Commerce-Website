@@ -50,7 +50,7 @@ const ProductCard = () => {
     queryFn: fetchReviews,
   });
 
-  const [visibleCount, setVisibleCount] = useState(2);
+  const [visibleCount, setVisibleCount] = useState(20);
 
   if (isLoading) return <Loading />;
   if (isError) return <p className="text-center text-red-500">{error.message}</p>;

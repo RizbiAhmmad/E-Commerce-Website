@@ -27,6 +27,7 @@ import {
 import CheckoutPage from "../Pages/Cart/CheckoutPage";
 import AllOrders from "@/Pages/Dashboard/Admin/AllOrders";
 import MyOrders from "@/Pages/Dashboard/User/MyOrders";
+import DashboardHome from "@/Layouts/DashboardHome";
 
   export const router = createBrowserRouter([
     {
@@ -65,6 +66,7 @@ import MyOrders from "@/Pages/Dashboard/User/MyOrders";
        path: "dashboard",
       element: <Dashboard></Dashboard>,
       children:[
+        { index: true, element: <DashboardHome /> },
          {
         path: "users",
         element: <AllUsers></AllUsers>,

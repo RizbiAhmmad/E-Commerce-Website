@@ -33,7 +33,7 @@ const Login = () => {
       className="min-h-screen flex justify-center items-center bg-cover bg-center"
       style={{
         backgroundImage:
-          "url('https://img.freepik.com/free-vector/gradient-geometric-shapes-dark-background_23-2148423542.jpg?ga=GA1.1.1331979436.1739300930&semt=ais_hybrid&w=740')",
+          "url('https://gimgs2.nohat.cc/thumb/f/640/worldwide-connection-blue-background-illustration-vector--5387531193417728.jpg')",
       }}
     >
       <div className="bg-white/20 backdrop-blur-lg shadow-xl rounded-xl p-8 max-w-md w-full">

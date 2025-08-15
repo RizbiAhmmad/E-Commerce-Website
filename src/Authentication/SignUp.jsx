@@ -70,7 +70,7 @@ const SignUp = () => {
       className="flex items-center justify-center min-h-screen px-4 bg-center bg-cover"
       style={{
         backgroundImage:
-          "url('https://img.freepik.com/free-vector/gradient-geometric-shapes-dark-background_23-2148423542.jpg')",
+          "url('https://gimgs2.nohat.cc/thumb/f/640/worldwide-connection-blue-background-illustration-vector--5387531193417728.jpg')",
       }}
     >
       <div className="w-full max-w-md p-6 shadow-xl bg-white/20 backdrop-blur-lg rounded-xl sm:p-8">

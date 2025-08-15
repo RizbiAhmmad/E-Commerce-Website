@@ -17,6 +17,7 @@ import { CgProfile } from "react-icons/cg";
 import { NavLink, Outlet } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import useAuth from "@/Hooks/useAuth";
+import Loading from "@/Shared/Loading";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -40,7 +41,7 @@ const Dashboard = () => {
   };
 
   if (!userRole) {
-    return <div className="p-10 text-center">Loading dashboard...</div>;
+    return <Loading />;
   }
 
   return (

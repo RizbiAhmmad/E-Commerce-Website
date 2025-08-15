@@ -86,7 +86,7 @@ const Navbar = () => {
         </motion.div>
 
         {/* Desktop Search */}
-        <div className="hidden md:flex items-center w-1/2">
+        <div className="hidden md:flex items-center w-1/3">
           <input
             type="text"
             placeholder="Search products..."
