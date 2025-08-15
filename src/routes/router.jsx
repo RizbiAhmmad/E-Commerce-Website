@@ -28,6 +28,7 @@ import CheckoutPage from "../Pages/Cart/CheckoutPage";
 import AllOrders from "@/Pages/Dashboard/Admin/AllOrders";
 import MyOrders from "@/Pages/Dashboard/User/MyOrders";
 import DashboardHome from "@/Layouts/DashboardHome";
+import AddCoupon from "@/Pages/Dashboard/Admin/AddCoupon";
 
   export const router = createBrowserRouter([
     {
@@ -134,6 +135,10 @@ import DashboardHome from "@/Layouts/DashboardHome";
       {
         path: "myOrders",
         element: <MyOrders />
+      },
+      {
+        path: "addCoupon",
+        element: <AddCoupon />
       },
       ]
     }
