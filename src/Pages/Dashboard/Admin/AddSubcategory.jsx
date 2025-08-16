@@ -80,7 +80,7 @@ const AddSubcategory = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+          className="w-full bg-cyan-500 text-white py-2 rounded hover:bg-cyan-600"
         >
           Add Subcategory
         </button>

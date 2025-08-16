@@ -81,7 +81,7 @@ const AllCategories = () => {
       <div className="flex justify-end mb-4">
         <button
           onClick={() => navigate("/dashboard/addCategory")}
-          className="flex items-center gap-2 px-4 py-2 text-white bg-purple-500 rounded hover:bg-purple-600"
+          className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
           <FaPlus /> Add Category
         </button>
@@ -116,7 +116,7 @@ const AllCategories = () => {
                 </td>
                 <td className="flex gap-4 px-6 py-4">
                   <button onClick={() => openEditModal(cat)}>
-                    <FaEdit className="text-2xl text-blue-500 hover:text-blue-700" />
+                    <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(cat._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
@@ -179,7 +179,7 @@ const AllCategories = () => {
               </div>
               <button
                 type="submit"
-                className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+                className="px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
               >
                 Update Category
               </button>

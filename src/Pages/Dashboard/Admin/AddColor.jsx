@@ -9,23 +9,32 @@ const AddColor = () => {
     hex: "#000000",
     status: "active",
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setColorData({ ...colorData, [name]: value });
+    setColorData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!colorData.name.trim()) {
+      return Swal.fire("Error", "Color name is required", "error");
+    }
+
+    setLoading(true);
     try {
       const res = await axios.post("http://localhost:5000/colors", colorData);
       if (res.data.insertedId) {
         Swal.fire("Success!", "Color added successfully", "success");
         setColorData({ name: "", hex: "#000000", status: "active" });
+        navigate("/dashboard/allColors");
       }
     } catch (error) {
       Swal.fire("Error", "Failed to add color", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,11 +85,11 @@ const AddColor = () => {
 
         {/* Submit */}
         <button
-          onClick={() => navigate("/dashboard/allColors")}
           type="submit"
-          className="w-full py-2 font-semibold text-white bg-purple-500 rounded hover:bg-purple-600"
+          disabled={loading}
+          className="w-full py-2 font-semibold text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
-          Add Color
+          {loading ? "Adding..." : "Add Color"}
         </button>
       </form>
     </div>

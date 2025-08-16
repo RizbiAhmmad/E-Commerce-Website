@@ -238,7 +238,7 @@ const AllProducts = () => {
             <div className="flex justify-end mb-4">
               <button
                 onClick={() => navigate("/dashboard/addProduct")}
-                className="flex items-center gap-2 px-4 py-2 text-white bg-purple-500 rounded hover:bg-purple-600"
+                className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
               >
                 <FaPlus /> Add Product
               </button>
@@ -326,7 +326,7 @@ const AllProducts = () => {
                 <td className="flex gap-4 px-6 py-6">
                   <button
                     onClick={() => handleEdit(p)}
-                    className="text-blue-500 hover:text-blue-700"
+                    className="text-cyan-500 hover:text-cyan-600"
                     title="Edit"
                   >
                     <FaEdit className="text-xl" />
@@ -488,7 +488,7 @@ const AllProducts = () => {
                 />
                 <label
                   htmlFor="addImageUpload"
-                  className="inline-block bg-purple-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-purple-700"
+                  className="inline-block bg-cyan-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-cyan-600"
                 >
                   Upload Images
                 </label>
@@ -568,7 +568,7 @@ const AllProducts = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full px-4 py-2 text-white bg-purple-600 rounded hover:bg-purple-700 md:col-span-2"
+                className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 md:col-span-2"
               >
                 {loading ? "Submitting..." : "Add Product"}
               </button>
@@ -720,7 +720,7 @@ const AllProducts = () => {
                 />
                 <label
                   htmlFor="editImageUpload"
-                  className="inline-block bg-purple-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-purple-700"
+                  className="inline-block bg-cyan-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-cyan-600"
                 >
                   Upload Images
                 </label>
@@ -829,7 +829,7 @@ const AllProducts = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full px-4 py-2 text-white bg-purple-600 rounded hover:bg-purple-700 md:col-span-2"
+                className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 md:col-span-2"
               >
                 {loading ? "Updating..." : "Update Product"}
               </button>

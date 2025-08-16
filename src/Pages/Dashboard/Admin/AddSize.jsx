@@ -10,6 +10,7 @@ const AddSize = () => {
   });
 
   const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -30,10 +31,8 @@ const AddSize = () => {
       const res = await axios.post("http://localhost:5000/sizes", formData);
       if (res.data.insertedId) {
         Swal.fire("Success", "Size added successfully", "success");
-        setFormData({
-          name: "",
-          status: "active",
-        });
+        setFormData({ name: "", status: "active" });
+        navigate("/dashboard/allSizes"); // Navigate after successful submission
       }
     } catch (error) {
       Swal.fire("Error", "Failed to add size", "error");
@@ -74,9 +73,8 @@ const AddSize = () => {
 
         {/* Submit Button */}
         <button
-          onClick={() => navigate("/dashboard/allSizes")}
           type="submit"
-          className="w-full px-4 py-2 text-white bg-purple-500 rounded hover:bg-purple-600"
+          className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
           Add Size
         </button>

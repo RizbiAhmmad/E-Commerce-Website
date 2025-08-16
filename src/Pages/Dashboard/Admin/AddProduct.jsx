@@ -264,7 +264,7 @@ const AddProduct = () => {
           {/* Custom upload button */}
           <label
             htmlFor="imageUpload"
-            className="inline-block bg-purple-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-purple-700"
+            className="inline-block bg-cyan-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-cyan-600"
           >
             Upload Images
           </label>
@@ -349,7 +349,7 @@ const AddProduct = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2 text-white bg-purple-600 rounded hover:bg-purple-700 md:col-span-2"
+          className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 md:col-span-2"
         >
           {loading ? "Submitting..." : "Add Product"}
         </button>

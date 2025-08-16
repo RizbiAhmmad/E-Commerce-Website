@@ -18,6 +18,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import useAuth from "@/Hooks/useAuth";
 import Loading from "@/Shared/Loading";
+import { BiSolidCoupon } from "react-icons/bi";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -130,6 +131,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <FaPalette /> <span>Colors</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allCoupons"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <BiSolidCoupon /> <span>Coupons</span>
                   </NavLink>
                 </li>
                 

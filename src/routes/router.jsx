@@ -29,6 +29,7 @@ import AllOrders from "@/Pages/Dashboard/Admin/AllOrders";
 import MyOrders from "@/Pages/Dashboard/User/MyOrders";
 import DashboardHome from "@/Layouts/DashboardHome";
 import AddCoupon from "@/Pages/Dashboard/Admin/AddCoupon";
+import AllCoupons from "@/Pages/Dashboard/Admin/AllCoupons";
 
   export const router = createBrowserRouter([
     {
@@ -139,6 +140,10 @@ import AddCoupon from "@/Pages/Dashboard/Admin/AddCoupon";
       {
         path: "addCoupon",
         element: <AddCoupon />
+      },
+      {
+        path: "allCoupons",
+        element: <AllCoupons />
       },
       ]
     }

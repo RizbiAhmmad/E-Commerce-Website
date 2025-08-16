@@ -96,7 +96,7 @@ const AddCoupon = () => {
 
         <input
           name="discountValue"
-          placeholder="Discount Value"
+          placeholder="Discount Price"
           type="number"
           value={formData.discountValue}
           onChange={handleChange}
@@ -118,7 +118,7 @@ const AddCoupon = () => {
           <div className="flex items-center gap-4">
             <label
               htmlFor="image"
-              className="px-4 py-2 text-white transition bg-purple-500 rounded-lg shadow cursor-pointer hover:bg-purple-600"
+              className="px-4 py-2 text-white transition bg-cyan-500 rounded-lg shadow cursor-pointer hover:bg-cyan-600"
             >
               Choose File
             </label>
@@ -136,7 +136,7 @@ const AddCoupon = () => {
             className="hidden"
           />
         </div>
-        
+
 <div>
 <label className="block mb-1 font-semibold">Start Date</label>
         <input
@@ -161,25 +161,6 @@ const AddCoupon = () => {
         />
 </div>
 
-        {/* <div className="md:col-span-2">
-          <label className="block mb-2 font-semibold">Coupon Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="border p-2 rounded w-full"
-          />
-          {imageFile && (
-            <img
-              src={URL.createObjectURL(imageFile)}
-              alt="preview"
-              className="mt-3 w-32 h-32 object-cover rounded border"
-            />
-          )}
-        </div> */}
-
-        
-
         <div>
           <label className="block mb-1 font-semibold">Status</label>
           <select
@@ -196,7 +177,7 @@ const AddCoupon = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2 text-white bg-purple-600 rounded hover:bg-purple-700 md:col-span-2"
+          className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 md:col-span-2"
         >
           {loading ? "Submitting..." : "Add Coupon"}
         </button>

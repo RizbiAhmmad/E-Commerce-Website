@@ -88,7 +88,7 @@ const AddBrand = () => {
           <div className="flex items-center gap-4">
             <label
               htmlFor="logo"
-              className="px-4 py-2 text-white bg-purple-500 rounded cursor-pointer hover:bg-purple-600"
+              className="px-4 py-2 text-white bg-cyan-500 rounded cursor-pointer hover:bg-cyan-600"
             >
               Choose File
             </label>
@@ -122,7 +122,7 @@ const AddBrand = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2 text-white bg-purple-500 rounded hover:bg-purple-600 disabled:opacity-60"
+          className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 disabled:opacity-60"
         >
           {loading ? "Submitting..." : "Add Brand"}
         </button>
