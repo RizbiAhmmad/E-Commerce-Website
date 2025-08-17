@@ -27,7 +27,8 @@ const AddCoupon = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!imageFile) return Swal.fire("Error", "Please select an image", "error");
+    if (!imageFile)
+      return Swal.fire("Error", "Please select an image", "error");
     setLoading(true);
 
     try {
@@ -44,9 +45,13 @@ const AddCoupon = () => {
       const imageUrl = uploadRes.data.secure_url;
       const couponData = { ...formData, image: imageUrl };
 
-      const res = await axios.post("http://localhost:5000/coupons", couponData, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await axios.post(
+        "http://localhost:5000/coupons",
+        couponData,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       if (res.data.insertedId) {
         Swal.fire("Success", "Coupon added successfully!", "success");
@@ -137,29 +142,29 @@ const AddCoupon = () => {
           />
         </div>
 
-<div>
-<label className="block mb-1 font-semibold">Start Date</label>
-        <input
-          name="startDate"
-          type="date"
-          value={formData.startDate}
-          onChange={handleChange}
-          required
-          className="border p-2 rounded"
-        />
-</div>
+        <div>
+          <label className="block mb-1 font-semibold">Start Date</label>
+          <input
+            name="startDate"
+            type="date"
+            value={formData.startDate}
+            onChange={handleChange}
+            required
+            className="border p-2 rounded"
+          />
+        </div>
 
-<div>
-<label className="block mb-1 font-semibold">Expire Date</label>
-        <input
-          name="expiryDate"
-          type="date"
-          value={formData.expiryDate}
-          onChange={handleChange}
-          required
-          className="border p-2 rounded"
-        />
-</div>
+        <div>
+          <label className="block mb-1 font-semibold">Expire Date</label>
+          <input
+            name="expiryDate"
+            type="date"
+            value={formData.expiryDate}
+            onChange={handleChange}
+            required
+            className="border p-2 rounded"
+          />
+        </div>
 
         <div>
           <label className="block mb-1 font-semibold">Status</label>

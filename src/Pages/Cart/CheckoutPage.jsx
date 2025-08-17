@@ -17,6 +17,11 @@ const CheckoutPage = () => {
   const [shipping, setShipping] = useState("outside");
   const [payment, setPayment] = useState("cash on delivery");
 
+  // Coupon states
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+
   // Autofill name and email if logged in
   useEffect(() => {
     if (user) {
@@ -30,62 +35,114 @@ const CheckoutPage = () => {
     const product = productsMap[item.productId];
     return total + (product?.newPrice || 0) * item.quantity;
   }, 0);
-  const total = subtotal + shippingCost;
+  const total = subtotal + shippingCost - discount;
 
-  const handlePlaceOrder = async () => {
-    if (!fullName || !phone || !email || !address) {
-      return Swal.fire({
-        icon: "error",
-        title: "Missing Fields",
-        text: "Please fill all required fields!",
-      });
+  // Apply coupon
+  const handleApplyCoupon = async () => {
+    const code = couponCode.trim();
+    if (!code) {
+      return Swal.fire("Error!", "Please enter a coupon code", "error");
     }
-
-    // ✅ Always send size and color with product details
-    const orderCartItems = cartItems.map((item) => {
-      const product = productsMap[item.productId];
-      return {
-        productId: item.productId,
-        productName: product?.name || "Product Name",
-        productImage: product?.images?.[0] || "https://via.placeholder.com/80",
-        price: product?.newPrice || 0,
-        color: item.selectedColor || product?.colors?.[0] || "-",
-        size: item.selectedSize || "-",
-        quantity: item.quantity,
-      };
-    });
-
-    const orderData = {
-      fullName,
-      phone,
-      email,
-      address,
-      shipping,
-      payment,
-      cartItems: orderCartItems, 
-      total,
-      status: "pending",
-      createdAt: new Date(),
-    };
-
     try {
-      await axios.post("http://localhost:5000/orders", orderData);
-      Swal.fire({
-        icon: "success",
-        title: "Order Placed!",
-        text: "Your order has been placed successfully.",      
+      // IMPORTANT: discount against subtotal (products only), not shipping
+      const res = await axios.post("http://localhost:5000/apply-coupon", {
+        code,
+        totalAmount: subtotal,
       });
-      navigate("/dashboard/myorders");
-      // Optional: redirect or clear cart here
+
+      const { discount: serverDiscount, code: applied } = res.data || {};
+      setDiscount(serverDiscount || 0);
+      setAppliedCoupon({ code: applied });
+
+      Swal.fire("Success!", `Coupon applied: -৳${serverDiscount}`, "success");
     } catch (error) {
-      console.error(error);
-      Swal.fire({
-        icon: "error",
-        title: "Failed",
-        text: "Something went wrong. Please try again.",
-      });
+      const msg = error?.response?.data?.message || "Failed to apply coupon";
+      setDiscount(0);
+      setAppliedCoupon(null);
+      Swal.fire("Invalid!", msg, "error");
     }
   };
+
+  const handlePlaceOrder = async () => {
+  if (!fullName || !phone || !email || !address) {
+    return Swal.fire({
+      icon: "error",
+      title: "Missing Fields",
+      text: "Please fill all required fields!",
+    });
+  }
+
+  // send size and color with product details
+  const orderCartItems = cartItems.map((item) => {
+    const product = productsMap[item.productId];
+    return {
+      productId: item.productId,
+      productName: product?.name || "Product Name",
+      productImage: product?.images?.[0] || "https://via.placeholder.com/80",
+      price: product?.newPrice || 0,
+      color: item.selectedColor || product?.colors?.[0] || "-",
+      size: item.selectedSize || "-",
+      quantity: item.quantity,
+    };
+  });
+
+  const orderData = {
+    fullName,
+    phone,
+    email,
+    address,
+    shipping,
+    payment,
+    cartItems: orderCartItems,
+    subtotal,
+    shippingCost,
+    discount,
+    total,
+    coupon: appliedCoupon?.code || null,
+    status: "pending",
+    createdAt: new Date(),
+  };
+
+  try {
+    if (payment === "online") {
+      // 🔹 Step 1: Call your backend to init SSLCommerz
+      const { data } = await axios.post("http://localhost:5000/sslcommerz/init", {
+        orderId: `order_${Date.now()}`, // unique transaction id
+        totalAmount: total,
+        fullName,
+        email,
+        phone,
+        address,
+      });
+
+      // 🔹 Step 2: Redirect user to payment gateway
+      if (data?.GatewayPageURL) {
+        window.location.href = data.GatewayPageURL;
+      } else {
+        Swal.fire("Error!", "Failed to initiate online payment", "error");
+      }
+      return; // stop here (no COD logic)
+    }
+
+    // 🔹 Cash on Delivery Flow
+    await axios.post("http://localhost:5000/orders", orderData);
+    Swal.fire({
+      icon: "success",
+      title: "Order Placed!",
+      text: "Your order has been placed successfully.",
+    });
+    console.log("Order Data:", orderData);
+    navigate("/dashboard/myorders");
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      icon: "error",
+      title: "Failed",
+      text: "Something went wrong. Please try again.",
+    });
+  }
+};
+
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-24 grid md:grid-cols-3 gap-8">
@@ -179,10 +236,17 @@ const CheckoutPage = () => {
             />{" "}
             Cash on Delivery
           </label>
-          <label className="flex items-center gap-3 border p-3 rounded cursor-pointer opacity-50">
-            <input type="radio" name="payment" value="online" disabled /> Online
-            Payment (Coming Soon)
-          </label>
+          <label className="flex items-center gap-3 border p-3 rounded cursor-pointer">
+  <input
+    type="radio"
+    name="payment"
+    value="online"
+    checked={payment === "online"}
+    onChange={() => setPayment("online")}
+  />{" "}
+  Online Payment
+</label>
+
         </div>
       </div>
 
@@ -209,10 +273,35 @@ const CheckoutPage = () => {
           <span>Shipping</span>
           <span>৳{shippingCost}</span>
         </div>
+        {discount > 0 && (
+          <div className="flex justify-between mb-2 text-green-600">
+            <span>Discount ({appliedCoupon?.code})</span>
+            <span>-৳{discount}</span>
+          </div>
+        )}
         <div className="flex justify-between font-bold text-lg">
           <span>Total</span>
           <span>৳{total}</span>
         </div>
+
+        {/* Coupon Input */}
+        <div className="mt-4 flex gap-2">
+          <input
+            type="text"
+            placeholder="Enter coupon code"
+            value={couponCode}
+            onChange={(e) => setCouponCode(e.target.value)}
+            className="flex-1 border p-2 rounded"
+          />
+          <button
+            type="button"
+            onClick={handleApplyCoupon}
+            className="px-4 bg-cyan-500 text-white rounded hover:bg-cyan-600"
+          >
+            Apply
+          </button>
+        </div>
+
         <button
           onClick={handlePlaceOrder}
           className="mt-6 w-full bg-cyan-500 text-white py-3 rounded hover:bg-cyan-600 transition"

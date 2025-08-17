@@ -30,6 +30,8 @@ import MyOrders from "@/Pages/Dashboard/User/MyOrders";
 import DashboardHome from "@/Layouts/DashboardHome";
 import AddCoupon from "@/Pages/Dashboard/Admin/AddCoupon";
 import AllCoupons from "@/Pages/Dashboard/Admin/AllCoupons";
+import PaymentSuccess from "@/Pages/Cart/PaymentSuccess";
+import PaymentCancel from "@/Pages/Cart/PaymentCancel";
 
   export const router = createBrowserRouter([
     {
@@ -59,6 +61,14 @@ import AllCoupons from "@/Pages/Dashboard/Admin/AllCoupons";
       {
         path: "checkout",
         element: <CheckoutPage />
+      },
+      {
+        path: "payment-success",
+        element: <PaymentSuccess />
+      },
+      {
+        path: "payment-cancel",
+        element: <PaymentCancel />
       },
 
         
