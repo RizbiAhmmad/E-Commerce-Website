@@ -259,7 +259,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
               {!product.stock || Number(product.stock) === 0 ? (
                 <span className="text-red-500 font-semibold">Out of stock</span>
               ) : (
-                `${product.stock} in stock`
+                <span className="text-green-500 font-semibold">In Stock</span>
               )}
             </span>
 

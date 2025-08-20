@@ -32,6 +32,7 @@ import AddCoupon from "@/Pages/Dashboard/Admin/AddCoupon";
 import AllCoupons from "@/Pages/Dashboard/Admin/AllCoupons";
 import PaymentSuccess from "@/Pages/Cart/PaymentSuccess";
 import PaymentCancel from "@/Pages/Cart/PaymentCancel";
+import CategoryProducts from "@/Pages/Home/CategoryProducts";
 
   export const router = createBrowserRouter([
     {
@@ -53,6 +54,10 @@ import PaymentCancel from "@/Pages/Cart/PaymentCancel";
       {
         path: "product/:id",
         element: <ProductDetailsPage />,
+      },
+      {
+        path: "category/:id",
+        element: <CategoryProducts />,
       },
       {
         path: "cart",
