@@ -17,11 +17,13 @@ import axios from "axios";
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]); 
   const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
 
-  // Function to fetch cart count from backend
+  // Fetch cart count
   const fetchCartCount = () => {
     if (!user?.email) {
       setCartCount(0);
@@ -43,25 +45,27 @@ const Navbar = () => {
 
   useEffect(() => {
     fetchCartCount();
-
-    // Listen for cart update event
-    const onCartUpdated = () => {
-      fetchCartCount();
-    };
-
+    const onCartUpdated = () => fetchCartCount();
     window.addEventListener("cartUpdated", onCartUpdated);
-
-    return () => {
-      window.removeEventListener("cartUpdated", onCartUpdated);
-    };
+    return () => window.removeEventListener("cartUpdated", onCartUpdated);
   }, [user]);
 
-  const handleSearch = () => {
-    if (searchText.trim()) {
-      navigate(`/search?query=${encodeURIComponent(searchText.trim())}`);
-      setIsOpen(false);
-    }
-  };
+  // 🔥 Live search products
+  useEffect(() => {
+  if (searchText.trim()) {
+    axios.get("http://localhost:5000/products")
+      .then((res) => {
+        const filtered = res.data.filter(p =>
+          p.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setSearchResults(filtered);
+      })
+      .catch(() => setSearchResults([]));
+  } else {
+    setSearchResults([]);
+  }
+}, [searchText]);
+
 
   const handleLogin = () => {
     navigate("/login");
@@ -86,26 +90,46 @@ const Navbar = () => {
         </motion.div>
 
         {/* Desktop Search */}
-        <div className="hidden md:flex items-center w-1/3">
+        <div className="hidden md:flex items-center w-1/3 relative">
+          <FaSearch className="absolute left-3 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             placeholder="Search products..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="rounded-l-md px-4 py-2 w-full bg-gray-100 dark:bg-gray-800 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none"
+            className="pl-10 pr-4 py-2 w-full rounded-md bg-gray-100 dark:bg-gray-800 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none"
           />
-          <button
-            onClick={handleSearch}
-            className="rounded-r-md px-4 py-3 bg-cyan-500 hover:bg-cyan-600 text-white"
-          >
-            <FaSearch />
-          </button>
+
+          {/* 🔥 Dropdown results */}
+          {searchResults.length > 0 && (
+            <div className="absolute top-12 left-0 w-full bg-white dark:bg-gray-800 border rounded-md shadow-md max-h-60 overflow-y-auto z-50">
+              {searchResults.map((product) => (
+                <Link
+                  key={product._id}
+                  to={`/product/${product._id}`}
+                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={() => setSearchText("")}
+                >
+                  {product.name}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right Icons */}
         <div className="flex items-center gap-4 text-xl relative">
           <ThemeChange />
+
+          {/* Mobile Search Icon */}
+          <button
+            onClick={() => setSearchOpen(!searchOpen)}
+            className="md:hidden hover:text-cyan-500"
+          >
+            <FaSearch />
+          </button>
+
+          {/* Cart */}
           <Link to="/cart" className="hover:text-cyan-500 relative">
             <FaShoppingCart />
             {cartCount > 0 && (
@@ -114,32 +138,87 @@ const Navbar = () => {
               </span>
             )}
           </Link>
+
+          {/* Dashboard (Desktop) */}
           {user && (
-            <Link to="/dashboard" className="hidden md:block hover:text-cyan-500">
+            <Link
+              to="/dashboard"
+              className="hidden md:block hover:text-cyan-500"
+            >
               Dashboard
             </Link>
           )}
 
+          {/* Auth */}
           {user ? (
             <button
               onClick={handleLogOut}
-              className="text-sm border border-gray-300 bg-red-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-red-600 dark:hover:bg-red-600 flex items-center"
+              className="text-sm border border-gray-300 bg-red-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-red-600 flex items-center"
             >
               Logout
             </button>
           ) : (
             <button
               onClick={handleLogin}
-              className="text-sm border border-gray-300 bg-cyan-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-cyan-600 dark:hover:bg-cyan-600 flex items-center"
+              className="text-sm border border-gray-300 bg-cyan-500 dark:border-gray-600 px-3 py-2 rounded-md text-white hover:bg-cyan-600 flex items-center"
             >
               <FaUser className="mr-1" /> Login
             </button>
           )}
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-2xl">
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden text-2xl"
+          >
             {isOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>
       </div>
+
+      {/* Mobile Search Expand */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="md:hidden bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-4 py-2"
+          >
+            <div className="flex flex-col relative w-full">
+              <div className="flex items-center relative">
+                <FaSearch className="absolute left-3 text-gray-400 dark:text-gray-500" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="pl-10 pr-4 py-2 w-full rounded-md bg-gray-100 dark:bg-gray-800 text-black dark:text-white placeholder-gray-500 border border-gray-300 dark:border-gray-600 focus:outline-none"
+                />
+              </div>
+
+              {/* 🔥 Mobile results */}
+              {searchResults.length > 0 && (
+                <div className="mt-2 bg-white dark:bg-gray-800 border rounded-md shadow-md max-h-60 overflow-y-auto z-50">
+                  {searchResults.map((product) => (
+                    <Link
+                      key={product._id}
+                      to={`/product/${product._id}`}
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => {
+                        setSearchText("");
+                        setSearchOpen(false);
+                      }}
+                    >
+                      {product.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile Menu */}
       <AnimatePresence>
@@ -151,49 +230,22 @@ const Navbar = () => {
             className="overflow-hidden md:hidden bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-t border-gray-200 dark:border-gray-700"
           >
             <div className="flex flex-col px-4 py-4 space-y-3">
-              <Link to="/" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
-                Home
-              </Link>
-              <Link to="/shop" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
-                Shop
-              </Link>
-              <Link to="/about" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
-                About
-              </Link>
-              <Link to="/contact" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
-                Contact
-              </Link>
+              <Link to="/" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">Home</Link>
+              <Link to="/shop" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">Shop</Link>
+              <Link to="/about" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">About</Link>
+              <Link to="/contact" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">Contact</Link>
               {user && (
-                <Link to="/dashboard" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">
-                  Dashboard
-                </Link>
+                <Link to="/dashboard" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">Dashboard</Link>
               )}
 
-              {/* Mobile Search */}
-              <div className="flex items-center">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="rounded-l-md px-4 py-2 w-full bg-gray-100 dark:bg-gray-800 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none"
-                />
+              {!user && (
                 <button
-                  onClick={handleSearch}
-                  className="rounded-r-md px-4 py-3 bg-cyan-500 hover:bg-cyan-600 text-white"
+                  onClick={handleLogin}
+                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-md flex items-center justify-center"
                 >
-                  <FaSearch />
+                  <FaUser className="mr-2" /> Login
                 </button>
-              </div>
-
-              {/* Mobile Login Button */}
-              <button
-                onClick={handleLogin}
-                className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-md flex items-center justify-center"
-              >
-                <FaUser className="mr-2" /> Login
-              </button>
+              )}
             </div>
           </motion.div>
         )}

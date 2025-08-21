@@ -53,7 +53,7 @@ const ExplorePopularCategory = () => {
             onClick={() => navigate(`/category/${cat._id}`)}
             className="text-center cursor-pointer"
           >
-            <div className="w-28 h-28 mx-auto rounded-full overflow-hidden border shadow">
+            <div className="w-28 h-28 mx-auto rounded-xl overflow-hidden border shadow">
               <img
                 src={cat.image}
                 alt={cat.name}

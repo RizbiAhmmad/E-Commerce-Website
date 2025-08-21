@@ -147,6 +147,7 @@ const CategoryProducts = () => {
                     <span className="text-red-500 line-through mr-2">
                       {formatPrice(oldPriceNum)}
                     </span>
+                    <br/>
                     <span className="font-bold text-black">
                       {formatPrice(newPriceNum)}
                     </span>
@@ -161,7 +162,7 @@ const CategoryProducts = () => {
             <div className="flex items-center gap-[8px]">
               <button
                 onClick={handleAddToCart}
-                className="py-2 px-4 border border-[#0FABCA] text-white rounded-md flex items-center gap-[0.5rem] hover:bg-[#0FABCA] transition-all duration-200"
+                className="py-2 px-4 border border-[#0FABCA] text-white rounded-md flex items-center gap-[0.5rem] hover:bg-[#0FABCA] hover:text-white transition-all duration-200"
               >
                 <IoCartOutline className="text-[1.3rem] text-[#0FABCA] group-hover:text-white" />
               </button>
