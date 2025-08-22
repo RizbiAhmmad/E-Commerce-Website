@@ -65,19 +65,14 @@ const CheckoutPage = () => {
 
   const handlePlaceOrder = async () => {
   if (!fullName || !phone || !email || !address) {
-    return Swal.fire({
-      icon: "error",
-      title: "Missing Fields",
-      text: "Please fill all required fields!",
-    });
+    return Swal.fire("Error", "Please fill all required fields", "error");
   }
 
-  // send size and color with product details
   const orderCartItems = cartItems.map((item) => {
     const product = productsMap[item.productId];
     return {
       productId: item.productId,
-      productName: product?.name || "Product Name",
+      productName: product?.name || "Product",
       productImage: product?.images?.[0] || "https://via.placeholder.com/80",
       price: product?.newPrice || 0,
       color: item.selectedColor || product?.colors?.[0] || "-",
@@ -99,15 +94,19 @@ const CheckoutPage = () => {
     discount,
     total,
     coupon: appliedCoupon?.code || null,
-    status: "pending",
+    status: payment === "cash on delivery" ? "pending" : "initiated",
+    tran_id: `order_${Date.now()}`, // unique transaction ID
     createdAt: new Date(),
   };
 
   try {
+    // 1️⃣ Save order first
+    await axios.post("http://localhost:5000/orders", orderData);
+
+    // 2️⃣ Online payment flow
     if (payment === "online") {
-      // 🔹 Step 1: Call your backend to init SSLCommerz
       const { data } = await axios.post("http://localhost:5000/sslcommerz/init", {
-        orderId: `order_${Date.now()}`, // unique transaction id
+        orderId: orderData.tran_id,
         totalAmount: total,
         fullName,
         email,
@@ -115,33 +114,23 @@ const CheckoutPage = () => {
         address,
       });
 
-      // 🔹 Step 2: Redirect user to payment gateway
       if (data?.GatewayPageURL) {
         window.location.href = data.GatewayPageURL;
       } else {
-        Swal.fire("Error!", "Failed to initiate online payment", "error");
+        Swal.fire("Error", "Failed to initiate online payment", "error");
       }
-      return; // stop here (no COD logic)
+      return;
     }
 
-    // 🔹 Cash on Delivery Flow
-    await axios.post("http://localhost:5000/orders", orderData);
-    Swal.fire({
-      icon: "success",
-      title: "Order Placed!",
-      text: "Your order has been placed successfully.",
-    });
-    console.log("Order Data:", orderData);
+    // 3️⃣ Cash on delivery
+    Swal.fire("Success!", "Order placed successfully", "success");
     navigate("/dashboard/myorders");
-  } catch (error) {
-    console.error(error);
-    Swal.fire({
-      icon: "error",
-      title: "Failed",
-      text: "Something went wrong. Please try again.",
-    });
+  } catch (err) {
+    console.error(err);
+    Swal.fire("Error", "Something went wrong", "error");
   }
 };
+
 
 
   return (

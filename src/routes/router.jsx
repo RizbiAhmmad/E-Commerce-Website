@@ -33,6 +33,7 @@ import AllCoupons from "@/Pages/Dashboard/Admin/AllCoupons";
 import PaymentSuccess from "@/Pages/Cart/PaymentSuccess";
 import PaymentCancel from "@/Pages/Cart/PaymentCancel";
 import CategoryProducts from "@/Pages/Home/CategoryProducts";
+import POSPage from "@/Pages/POS/PosPage";
 
   export const router = createBrowserRouter([
     {
@@ -159,6 +160,10 @@ import CategoryProducts from "@/Pages/Home/CategoryProducts";
       {
         path: "allCoupons",
         element: <AllCoupons />
+      },
+      {
+        path: "pos",
+        element: <POSPage />
       },
       ]
     }

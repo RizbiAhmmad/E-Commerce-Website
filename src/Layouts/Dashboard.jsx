@@ -19,6 +19,7 @@ import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import useAuth from "@/Hooks/useAuth";
 import Loading from "@/Shared/Loading";
 import { BiSolidCoupon } from "react-icons/bi";
+import { BsCashCoin } from "react-icons/bs";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -158,6 +159,14 @@ const Dashboard = () => {
                     <FaReceipt /> <span>Orders</span>
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/pos"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <BsCashCoin /> <span>POS</span>
+                  </NavLink>
+                </li>
                 
                 
                 <li>
@@ -209,7 +218,9 @@ const Dashboard = () => {
               <h1 className="text-xl font-semibold">
                 Hey, {user.displayName || "User"}! Welcome to your Dashboard.
               </h1>
+              
             </div>
+            
           )}
           <Outlet />
         </div>
