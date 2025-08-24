@@ -3,7 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../../provider/AuthProvider";
 import Select from "react-select";
-import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaPlus, FaSearch, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const AllProducts = () => {
@@ -20,6 +20,10 @@ const AllProducts = () => {
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Form states for Add and Edit
   const initialFormData = {
@@ -227,22 +231,59 @@ const AllProducts = () => {
     }));
   };
 
+  // search + pagination একসাথে কাজ করবে
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // pagination on filtered products
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  // total pages (search এর উপর ভিত্তি করে)
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
     <div className="p-4 max-w-6xl mx-auto">
-
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
-              All Products
-            </h2>
+        All Products
+      </h2>
 
-            {/* Add Product Button */}
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => navigate("/dashboard/addProduct")}
-                className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
-              >
-                <FaPlus /> Add Product
-              </button>
-            </div>
+      {/* Add Product Button */}
+      <div className="flex justify-between mb-4">
+        <div className="relative w-64">
+          {/* Search Icon */}
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+
+          {/* Input */}
+          <input
+            type="text"
+            placeholder="Search by product name..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          />
+        </div>
+        <button
+          onClick={() => navigate("/dashboard/addProduct")}
+          className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
+        >
+          <FaPlus /> Add Product
+        </button>
+      </div>
 
       {/* Product Table */}
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
@@ -270,12 +311,12 @@ const AllProducts = () => {
                 </td>
               </tr>
             )}
-            {products.map((p, index) => (
+            {currentProducts.map((p, index) => (
               <tr
                 key={p._id}
                 className="transition duration-200 hover:bg-gray-50"
               >
-                <td className="px-6 py-4">{index + 1}</td>
+                <td className="px-6 py-4">{indexOfFirstProduct + index + 1}</td>
                 <td className="px-6 py-4">
                   {p.images && p.images.length > 0 ? (
                     <div className="grid grid-cols-2 gap-1 max-w-[100px]">
@@ -311,7 +352,7 @@ const AllProducts = () => {
                 <td className="px-6 py-4">{p.sizes?.join(", ") || "-"}</td>
                 <td className="px-6 py-4">{p.colors?.join(", ") || "-"}</td>
 
-<td className="px-6 py-4">
+                <td className="px-6 py-4">
                   {p.status === "active" ? (
                     <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
                       Active
@@ -837,6 +878,35 @@ const AllProducts = () => {
           </div>
         </div>
       )}
+      <div className="mt-6 flex justify-center items-center gap-4">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-lg font-semibold text-white ${
+            currentPage === 1
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-cyan-500 hover:bg-cyan-600"
+          }`}
+        >
+          Previous
+        </button>
+
+        <span className="px-4 py-2 rounded-lg bg-gray-100">
+          Page {currentPage} of {totalPages}
+        </span>
+
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded-lg font-semibold text-white ${
+            currentPage === totalPages
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-cyan-500 hover:bg-cyan-600"
+          }`}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

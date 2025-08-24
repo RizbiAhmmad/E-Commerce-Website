@@ -36,27 +36,30 @@ const AddProduct = () => {
   const [colors, setColors] = useState([]);
 
   useEffect(() => {
-  axios
-    .get("http://localhost:5000/categories")
-    .then((res) => setCategories(res.data.filter((cat) => cat.status === "active")));
+    axios
+      .get("http://localhost:5000/categories")
+      .then((res) =>
+        setCategories(res.data.filter((cat) => cat.status === "active"))
+      );
 
-  axios
-    .get("http://localhost:5000/subcategories")
-    .then((res) => setSubcategories(res.data.filter((sub) => sub.status === "active")));
+    axios
+      .get("http://localhost:5000/subcategories")
+      .then((res) =>
+        setSubcategories(res.data.filter((sub) => sub.status === "active"))
+      );
 
-  axios
-    .get("http://localhost:5000/brands")
-    .then((res) => setBrands(res.data.filter((b) => b.status === "active")));
+    axios
+      .get("http://localhost:5000/brands")
+      .then((res) => setBrands(res.data.filter((b) => b.status === "active")));
 
-  axios
-    .get("http://localhost:5000/sizes")
-    .then((res) => setSizes(res.data.filter((s) => s.status === "active")));
+    axios
+      .get("http://localhost:5000/sizes")
+      .then((res) => setSizes(res.data.filter((s) => s.status === "active")));
 
-  axios
-    .get("http://localhost:5000/colors")
-    .then((res) => setColors(res.data.filter((c) => c.status === "active")));
-}, []);
-
+    axios
+      .get("http://localhost:5000/colors")
+      .then((res) => setColors(res.data.filter((c) => c.status === "active")));
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -97,6 +100,10 @@ const AddProduct = () => {
 
       const productData = {
         ...formData,
+        purchasePrice: Number(formData.purchasePrice),
+        oldPrice: Number(formData.oldPrice),
+        newPrice: Number(formData.newPrice),
+        stock: Number(formData.stock),
         images: imageUrls,
         email: user?.email,
       };

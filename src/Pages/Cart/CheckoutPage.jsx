@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { AuthContext } from "@/provider/AuthProvider";
+import { FaMoneyBillWave, FaCreditCard } from "react-icons/fa";
 
 const CheckoutPage = () => {
   const { user } = useContext(AuthContext);
@@ -64,74 +65,93 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
-  if (!fullName || !phone || !email || !address) {
-    return Swal.fire("Error", "Please fill all required fields", "error");
-  }
-
-  const orderCartItems = cartItems.map((item) => {
-    const product = productsMap[item.productId];
-    return {
-      productId: item.productId,
-      productName: product?.name || "Product",
-      productImage: product?.images?.[0] || "https://via.placeholder.com/80",
-      price: product?.newPrice || 0,
-      color: item.selectedColor || product?.colors?.[0] || "-",
-      size: item.selectedSize || "-",
-      quantity: item.quantity,
-    };
-  });
-
-  const orderData = {
-    fullName,
-    phone,
-    email,
-    address,
-    shipping,
-    payment,
-    cartItems: orderCartItems,
-    subtotal,
-    shippingCost,
-    discount,
-    total,
-    coupon: appliedCoupon?.code || null,
-    status: payment === "cash on delivery" ? "pending" : "initiated",
-    tran_id: `order_${Date.now()}`, // unique transaction ID
-    createdAt: new Date(),
-  };
-
-  try {
-    // 1️⃣ Save order first
-    await axios.post("http://localhost:5000/orders", orderData);
-
-    // 2️⃣ Online payment flow
-    if (payment === "online") {
-      const { data } = await axios.post("http://localhost:5000/sslcommerz/init", {
-        orderId: orderData.tran_id,
-        totalAmount: total,
-        fullName,
-        email,
-        phone,
-        address,
-      });
-
-      if (data?.GatewayPageURL) {
-        window.location.href = data.GatewayPageURL;
-      } else {
-        Swal.fire("Error", "Failed to initiate online payment", "error");
-      }
-      return;
+    if (!fullName || !phone || !email || !address) {
+      return Swal.fire("Error", "Please fill all required fields", "error");
     }
 
-    // 3️⃣ Cash on delivery
-    Swal.fire("Success!", "Order placed successfully", "success");
-    navigate("/dashboard/myorders");
-  } catch (err) {
-    console.error(err);
-    Swal.fire("Error", "Something went wrong", "error");
-  }
-};
+    // 🔴 Stock Check
+    const outOfStockItems = cartItems.filter((item) => {
+      const product = productsMap[item.productId];
+      return (
+        Number(product?.stock) === 0 || item.quantity > Number(product?.stock)
+      );
+    });
 
+    if (outOfStockItems.length > 0) {
+      return Swal.fire(
+        "Out of Stock",
+        `These items are out of stock: ${outOfStockItems
+          .map((i) => productsMap[i.productId]?.name)
+          .join(", ")}`,
+        "error"
+      );
+    }
 
+    const orderCartItems = cartItems.map((item) => {
+      const product = productsMap[item.productId];
+      return {
+        productId: item.productId,
+        productName: product?.name || "Product",
+        productImage: product?.images?.[0] || "https://via.placeholder.com/80",
+        price: product?.newPrice || 0,
+        color: item.selectedColor || product?.colors?.[0] || "-",
+        size: item.selectedSize || "-",
+        quantity: item.quantity,
+      };
+    });
+
+    const orderData = {
+      fullName,
+      phone,
+      email,
+      address,
+      shipping,
+      payment,
+      cartItems: orderCartItems,
+      subtotal,
+      shippingCost,
+      discount,
+      total,
+      coupon: appliedCoupon?.code || null,
+      status: payment === "cash on delivery" ? "pending" : "initiated",
+      tran_id: `order_${Date.now()}`, // unique transaction ID
+      createdAt: new Date(),
+    };
+
+    try {
+      // Save order first
+      await axios.post("http://localhost:5000/orders", orderData);
+
+      // Online payment flow
+      if (payment === "online") {
+        const { data } = await axios.post(
+          "http://localhost:5000/sslcommerz/init",
+          {
+            orderId: orderData.tran_id,
+            totalAmount: total,
+            fullName,
+            email,
+            phone,
+            address,
+          }
+        );
+
+        if (data?.GatewayPageURL) {
+          window.location.href = data.GatewayPageURL;
+        } else {
+          Swal.fire("Error", "Failed to initiate online payment", "error");
+        }
+        return;
+      }
+
+      // Cash on delivery
+      Swal.fire("Success!", "Order placed successfully", "success");
+      navigate("/dashboard/myorders");
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Something went wrong", "error");
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-24 grid md:grid-cols-3 gap-8">
@@ -213,29 +233,65 @@ const CheckoutPage = () => {
         </div>
 
         {/* Payment */}
-        <div className="border rounded p-6">
-          <h2 className="font-semibold text-lg mb-4">Payment Method</h2>
-          <label className="flex items-center gap-3 border p-3 rounded mb-3 cursor-pointer">
-            <input
-              type="radio"
-              name="payment"
-              value="cash on delivery"
-              checked={payment === "cash on delivery"}
-              onChange={() => setPayment("cash on delivery")}
-            />{" "}
-            Cash on Delivery
-          </label>
-          <label className="flex items-center gap-3 border p-3 rounded cursor-pointer">
-  <input
-    type="radio"
-    name="payment"
-    value="online"
-    checked={payment === "online"}
-    onChange={() => setPayment("online")}
-  />{" "}
-  Online Payment
-</label>
 
+        <div className="border rounded-2xl p-6 shadow-md bg-white">
+          <h2 className="font-semibold text-xl mb-5 text-gray-800">
+            Select Payment Method
+          </h2>
+
+          <div className="grid gap-4">
+            {/* Cash on Delivery */}
+            <label
+              className={`flex items-center gap-4 border p-4 rounded-xl cursor-pointer transition-all duration-200 ${
+                payment === "cash on delivery"
+                  ? "border-green-500 bg-green-50 ring-2 ring-green-400"
+                  : "hover:border-green-400 hover:bg-green-50"
+              }`}
+            >
+              <input
+                type="radio"
+                name="payment"
+                value="cash on delivery"
+                checked={payment === "cash on delivery"}
+                onChange={() => setPayment("cash on delivery")}
+                className="hidden"
+              />
+              <FaMoneyBillWave
+                className={`text-2xl ${
+                  payment === "cash on delivery"
+                    ? "text-green-600"
+                    : "text-gray-400"
+                }`}
+              />
+              <span className="font-medium text-gray-700">
+                Cash on Delivery
+              </span>
+            </label>
+
+            {/* Online Payment */}
+            <label
+              className={`flex items-center gap-4 border p-4 rounded-xl cursor-pointer transition-all duration-200 ${
+                payment === "online"
+                  ? "border-cyan-500 bg-cyan-50 ring-2 ring-cyan-400"
+                  : "hover:border-cyan-400 hover:bg-cyan-50"
+              }`}
+            >
+              <input
+                type="radio"
+                name="payment"
+                value="online"
+                checked={payment === "online"}
+                onChange={() => setPayment("online")}
+                className="hidden"
+              />
+              <FaCreditCard
+                className={`text-2xl ${
+                  payment === "online" ? "text-cyan-600" : "text-gray-400"
+                }`}
+              />
+              <span className="font-medium text-gray-700">Online Payment</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -285,7 +341,7 @@ const CheckoutPage = () => {
           <button
             type="button"
             onClick={handleApplyCoupon}
-            className="px-4 bg-cyan-500 text-white rounded hover:bg-cyan-600"
+            className="px-4 bg-green-500 text-white rounded hover:bg-green-600"
           >
             Apply
           </button>

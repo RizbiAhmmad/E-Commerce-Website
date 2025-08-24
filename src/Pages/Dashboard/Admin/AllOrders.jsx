@@ -6,6 +6,8 @@ import axios from "axios";
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 10;
 
   const fetchOrders = async () => {
     try {
@@ -44,9 +46,12 @@ const AllOrders = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await axios.patch(`http://localhost:5000/orders/${id}/status`, {
-        status: newStatus,
-      });
+      const res = await axios.patch(
+        `http://localhost:5000/orders/${id}/status`,
+        {
+          status: newStatus,
+        }
+      );
 
       if (res.data.success) {
         Swal.fire("Updated!", "Order status updated.", "success");
@@ -82,6 +87,23 @@ const AllOrders = () => {
       ? orders
       : orders.filter((order) => order.status?.toLowerCase() === statusFilter);
 
+  // page wise orders show
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
+
+  // total pages
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
     <div className="max-w-7xl p-6 mx-auto">
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
@@ -90,7 +112,10 @@ const AllOrders = () => {
 
       {/* Filter Dropdown */}
       <div className="mb-4 flex justify-end">
-        <label htmlFor="statusFilter" className="mr-2 text-lg font-medium text-gray-700">
+        <label
+          htmlFor="statusFilter"
+          className="mr-2 text-lg font-medium text-gray-700"
+        >
           Filter by Status:
         </label>
         <select
@@ -116,6 +141,7 @@ const AllOrders = () => {
               <th className="px-6 py-3">Customer</th>
               <th className="px-6 py-3">Address</th>
               <th className="px-6 py-3">Shipping</th>
+              <th className="px-6 py-3">Payment</th>
               <th className="px-6 py-3">Cart Items</th>
               <th className="px-6 py-3">Total</th>
               <th className="px-6 py-3">Date & Time</th>
@@ -124,19 +150,28 @@ const AllOrders = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {filteredOrders.map((order, index) => (
-              <tr key={order._id} className="transition duration-200 hover:bg-gray-50">
-                <td className="px-6 py-4">{index + 1}</td>
+            {currentOrders.map((order, index) => (
+              <tr
+                key={order._id}
+                className="transition duration-200 hover:bg-gray-50"
+              >
+                <td className="px-6 py-4">{indexOfFirstOrder + index + 1}</td>
                 <td className="px-6 py-4">
-                  <div className="font-semibold text-gray-800">{order.fullName}</div>
+                  <div className="font-semibold text-gray-800">
+                    {order.fullName}
+                  </div>
                   <div className="text-gray-500">{order.email}</div>
                   <div className="text-gray-500">{order.phone}</div>
                 </td>
                 <td className="px-6 py-4">{order.address}</td>
                 <td className="px-6 py-4">{order.shipping}</td>
+                <td className="px-6 py-4">{order.payment}</td>
                 <td className="px-6 py-4">
                   {order.cartItems.map((item) => (
-                    <div key={item.productId} className="flex items-center gap-2 mb-2">
+                    <div
+                      key={item.productId}
+                      className="flex items-center gap-2 mb-2"
+                    >
                       <img
                         src={item.productImage}
                         alt={item.productName}
@@ -145,14 +180,17 @@ const AllOrders = () => {
                       <div>
                         <div className="font-semibold">{item.productName}</div>
                         <div className="text-sm text-gray-500">
-                          Size: {item.size || "-"}, Color: {item.color || "-"}, Qty: {item.quantity}
+                          Size: {item.size || "-"}, Color: {item.color || "-"},
+                          Qty: {item.quantity}
                         </div>
                       </div>
                     </div>
                   ))}
                 </td>
                 <td className="px-6 py-4 font-bold">৳{order.total}</td>
-                <td className="px-6 py-4 font-bold">{new Date(order.createdAt).toLocaleString()}</td>
+                <td className="px-6 py-4 font-bold">
+                  {new Date(order.createdAt).toLocaleString()}
+                </td>
 
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
@@ -165,7 +203,9 @@ const AllOrders = () => {
                     </span>
                     <select
                       value={order.status || "pending"}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                      onChange={(e) =>
+                        handleStatusChange(order._id, e.target.value)
+                      }
                       className="border border-gray-300 rounded px-2 py-1 text-xs focus:ring focus:ring-red-200"
                     >
                       <option value="pending">Pending</option>
@@ -194,6 +234,35 @@ const AllOrders = () => {
             )}
           </tbody>
         </table>
+      </div>
+      <div className="mt-6 flex justify-center items-center gap-4">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-lg font-semibold text-white ${
+            currentPage === 1
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-cyan-500 hover:bg-cyan-600"
+          }`}
+        >
+          Previous
+        </button>
+
+        <span className="px-4 py-2 rounded-lg bg-gray-100">
+          Page {currentPage} of {totalPages}
+        </span>
+
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded-lg font-semibold text-white ${
+            currentPage === totalPages
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-cyan-500 hover:bg-cyan-600"
+          }`}
+        >
+          Next
+        </button>
       </div>
     </div>
   );

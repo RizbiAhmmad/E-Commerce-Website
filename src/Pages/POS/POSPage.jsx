@@ -49,7 +49,7 @@ const POSPage = () => {
       .then((res) => setCoupons(res.data))
       .catch((err) => console.error(err));
 
-    fetchPosCart(); 
+    fetchPosCart();
   }, []);
 
   // Fetch POS cart
@@ -112,7 +112,7 @@ const POSPage = () => {
   }, []);
 
   // Add to cart
-  const addToCart = (product, qty = 1, color = "", size = "") => {
+  const addToCart = (product, qty = 1, color = "", size = "", productImage) => {
     axios
       .post("http://localhost:5000/pos/cart", {
         productId: product._id,
@@ -121,6 +121,7 @@ const POSPage = () => {
         quantity: qty,
         color,
         size,
+        productImage: product.images?.[0] || productImage || "",
       })
       .then(() => {
         fetchPosCart();
@@ -245,6 +246,11 @@ const POSPage = () => {
     setInputAmount("");
     setSelectedPaymentMethod("cash");
     searchInputRef.current?.focus();
+
+    await axios
+    .get("http://localhost:5000/products")
+    .then((res) => setProducts(res.data))
+    .catch((err) => console.error(err));
   };
   const handlePrint = () => {
     window.print();
@@ -262,7 +268,6 @@ const POSPage = () => {
     setSelectedSize(product.sizes?.[0] || "");
     setModalOpen(true);
   };
-
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-8">
@@ -285,7 +290,10 @@ const POSPage = () => {
             <button
               key={p._id}
               onClick={() => openModal(p)}
-              className="border rounded p-2 flex flex-col items-center justify-center hover:bg-cyan-100 transition shadow"
+              disabled={Number(p.stock) === 0}
+              className={`border rounded p-2 flex flex-col items-center justify-center transition shadow
+      ${Number(p.stock) === 0 ? "bg-red-200 " : "hover:bg-cyan-100"}
+    `}
             >
               <img
                 src={p.images?.[0] || "https://via.placeholder.com/60"}
@@ -294,6 +302,11 @@ const POSPage = () => {
               />
               <span className="text-sm text-center">{p.name}</span>
               <span className="font-semibold">৳{p.newPrice}</span>
+              {p.stock === 0 && (
+                <span className="text-red-500 font-bold text-xs mt-1">
+                  Out of Stock
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -442,7 +455,7 @@ const POSPage = () => {
               ))}
             </div>
             {selectedProduct.colors && (
-              <div className="mb-2 flex items-center gap-2 flex-wrap">
+              <div className="mb-2 font-bold flex items-center gap-2 flex-wrap">
                 Color:
                 {selectedProduct.colors.map((c, idx) => (
                   <button
@@ -460,7 +473,7 @@ const POSPage = () => {
               </div>
             )}
             {selectedProduct.sizes && (
-              <div className="mb-2 flex items-center gap-2 flex-wrap">
+              <div className="mb-2 font-bold flex items-center gap-2 flex-wrap">
                 Size:
                 {selectedProduct.sizes.map((s, idx) => (
                   <button
@@ -477,7 +490,7 @@ const POSPage = () => {
                 ))}
               </div>
             )}
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex font-bold items-center gap-2 mb-4">
               <button
                 onClick={() => setSelectedQty(Math.max(1, selectedQty - 1))}
                 className="px-3 py-1 bg-gray-200 rounded"
@@ -499,15 +512,25 @@ const POSPage = () => {
                 +
               </button>
             </div>
+
+                <div className="mb-4 font-bold">
+                  Stock: {selectedProduct.stock}
+                </div>
+
             <button
-              onClick={() =>
+              onClick={() => {
+                if (Number(selectedProduct.stock) === 0) {
+                  alert("This product is out of stock!");
+                  return;
+                }
+
                 addToCart(
                   selectedProduct,
                   selectedQty,
                   selectedColor,
                   selectedSize
-                )
-              }
+                );
+              }}
               className="w-full bg-cyan-500 text-white py-2 rounded hover:bg-cyan-600"
             >
               Add to Cart
@@ -719,7 +742,7 @@ const POSPage = () => {
             <div className="text-sm mt-1">
               {new Date(receiptData.createdAt).toLocaleDateString()}
             </div>
-           <hr className="border-t-2 border-dashed border-gray-400 my-3" />
+            <hr className="border-t-2 border-dashed border-gray-400 my-3" />
 
             <div className="text-sm font-semibold mb-1">Items</div>
             <div className="space-y-2 text-sm">
@@ -778,8 +801,8 @@ const POSPage = () => {
             </div>
 
             <div className="text-[10px] text-center text-gray-500 mt-4">
-              Sostay Kini  eCommerce CMS with POS & WhatsApp Ordering |
-              Inventory Management
+              Sostay Kini eCommerce CMS with POS & WhatsApp Ordering | Inventory
+              Management
             </div>
           </div>
         </div>

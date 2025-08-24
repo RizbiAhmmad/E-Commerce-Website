@@ -20,6 +20,7 @@ import useAuth from "@/Hooks/useAuth";
 import Loading from "@/Shared/Loading";
 import { BiSolidCoupon } from "react-icons/bi";
 import { BsCashCoin } from "react-icons/bs";
+import { IoIosCash } from "react-icons/io";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -167,8 +168,15 @@ const Dashboard = () => {
                     <BsCashCoin /> <span>POS</span>
                   </NavLink>
                 </li>
-                
-                
+                <li>
+                  <NavLink
+                    to="/dashboard/posOrders"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <IoIosCash /> <span>POS Orders</span>
+                  </NavLink>
+                </li>
+      
                 <li>
                   <NavLink
                     to="/dashboard/profile"

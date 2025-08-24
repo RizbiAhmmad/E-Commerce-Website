@@ -34,6 +34,7 @@ import PaymentSuccess from "@/Pages/Cart/PaymentSuccess";
 import PaymentCancel from "@/Pages/Cart/PaymentCancel";
 import CategoryProducts from "@/Pages/Home/CategoryProducts";
 import POSPage from "@/Pages/POS/PosPage";
+import AllPOSOrders from "@/Pages/POS/AllPOSOrders";
 
   export const router = createBrowserRouter([
     {
@@ -164,6 +165,10 @@ import POSPage from "@/Pages/POS/PosPage";
       {
         path: "pos",
         element: <POSPage />
+      },
+      {
+        path: "posOrders",
+        element: <AllPOSOrders />
       },
       ]
     }
