@@ -27,6 +27,9 @@ const POSPage = () => {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
 
+  const [manualDiscountValue, setManualDiscountValue] = useState("");
+  const [manualDiscountType, setManualDiscountType] = useState("flat");
+
   // NEW: Receipt modal state
   const [receiptData, setReceiptData] = useState(null);
   const receiptRef = useRef(null);
@@ -61,12 +64,47 @@ const POSPage = () => {
   };
 
   // Reset coupon if cart is empty
-  useEffect(() => {
-    if (posCart.length === 0) {
-      setAppliedCoupon(null);
-      setCouponCode("");
-    }
-  }, [posCart]);
+  // useEffect(() => {
+  //   if (posCart.length === 0) {
+  //     setAppliedCoupon(null);
+  //     setCouponCode("");
+  //   }
+  // }, [posCart]);
+
+//   useEffect(() => {
+//   const style = document.createElement("style");
+//   style.innerHTML = `
+//     @media print {
+//       body * {
+//         visibility: hidden !important;
+//         margin: 0 !important;
+//         padding: 0 !important;
+//       }
+//       #printable-receipt, #printable-receipt * {
+//         visibility: visible !important;
+//       }
+//       #printable-receipt {
+//         position: absolute !important;
+//         top: 0 !important;
+//         left: 0 !important;
+//         width: 80mm !important; /* standard thermal receipt width */
+//         max-width: 80mm !important;
+//         margin: 0 !important;
+//         padding: 0 !important;
+//         border: none !important;
+//         border-radius: 0 !important;
+//         box-shadow: none !important;
+//         font-size: 11px !important;
+//         line-height: 1.2 !important;
+//       }
+//       .fixed, .z-50, .z-[60] {
+//         display: none !important;
+//       }
+//     }
+//   `;
+//   document.head.appendChild(style);
+//   return () => document.head.removeChild(style);
+// }, []);
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -166,17 +204,32 @@ const POSPage = () => {
     alert(`Coupon ${coupon.code} applied successfully!`);
   };
 
-  // Calculate subtotal
   const subtotal = posCart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
-  // Calculate total after coupon
-  const total = appliedCoupon
-    ? appliedCoupon.discountType === "percentage"
-      ? subtotal - (subtotal * appliedCoupon.discountValue) / 100
-      : subtotal - appliedCoupon.discountValue
-    : subtotal;
+  // Manual discount
+  const manualDiscount =
+    manualDiscountType === "percentage"
+      ? (subtotal * manualDiscountValue) / 100
+      : manualDiscountValue;
 
-  // Calculate paid and change based on total
+  // Coupon discount
+  const couponDiscount = appliedCoupon
+    ? appliedCoupon.discountType === "percentage"
+      ? (subtotal * appliedCoupon.discountValue) / 100
+      : appliedCoupon.discountValue
+    : 0;
+
+  // Final discount (coupon OR manual, preference to manual)
+  const totalDiscount = manualDiscount > 0 ? manualDiscount : couponDiscount;
+
+  // Tax (10% on subtotal - discount)
+  const taxableAmount = Math.max(0, subtotal - totalDiscount);
+  const tax = taxableAmount * 0.1;
+
+  // Final total
+  const total = taxableAmount + tax;
+
+  // Paid & Change
   const paid = parseFloat(inputAmount || "0");
   const change =
     selectedPaymentMethod === "cash" ? Math.max(0, paid - total) : 0;
@@ -195,9 +248,10 @@ const POSPage = () => {
     const orderData = {
       cartItems: posCart,
       subtotal,
+      discount: totalDiscount,
+      tax,
       total,
       coupon: appliedCoupon ? appliedCoupon.code : null,
-      discount: appliedCoupon ? appliedCoupon.discountValue : 0,
       orderType: "pos",
       status: "paid",
       createdAt: new Date(),
@@ -210,7 +264,6 @@ const POSPage = () => {
         amount: paid,
         change: change,
       },
-      // generate a temp order id for receipt UI
       orderId: `#${Date.now()}`,
     };
 
@@ -248,9 +301,9 @@ const POSPage = () => {
     searchInputRef.current?.focus();
 
     await axios
-    .get("http://localhost:5000/products")
-    .then((res) => setProducts(res.data))
-    .catch((err) => console.error(err));
+      .get("http://localhost:5000/products")
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error(err));
   };
   const handlePrint = () => {
     window.print();
@@ -285,35 +338,37 @@ const POSPage = () => {
               openModal(filteredProducts[0]);
           }}
         />
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-          {filteredProducts.slice(0, 20).map((p) => (
-            <button
-              key={p._id}
-              onClick={() => openModal(p)}
-              disabled={Number(p.stock) === 0}
-              className={`border rounded p-2 flex flex-col items-center justify-center transition shadow
-      ${Number(p.stock) === 0 ? "bg-red-200 " : "hover:bg-cyan-100"}
-    `}
-            >
-              <img
-                src={p.images?.[0] || "https://via.placeholder.com/60"}
-                alt={p.name}
-                className="w-30 h-30 object-cover mb-2 rounded"
-              />
-              <span className="text-sm text-center">{p.name}</span>
-              <span className="font-semibold">৳{p.newPrice}</span>
-              {p.stock === 0 && (
-                <span className="text-red-500 font-bold text-xs mt-1">
-                  Out of Stock
-                </span>
-              )}
-            </button>
-          ))}
+        <div className="h-[450px] overflow-y-auto pr-2">
+          <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+            {filteredProducts.map((p) => (
+              <button
+                key={p._id}
+                onClick={() => openModal(p)}
+                disabled={Number(p.stock) === 0}
+                className={`border rounded p-2 flex flex-col items-center justify-center transition shadow
+          ${Number(p.stock) === 0 ? "bg-red-200 " : "hover:bg-cyan-100"}
+        `}
+              >
+                <img
+                  src={p.images?.[0] || "https://via.placeholder.com/60"}
+                  alt={p.name}
+                  className="w-30 h-30 object-cover mb-2 rounded"
+                />
+                <span className="text-sm text-center">{p.name}</span>
+                <span className="font-semibold">৳{p.newPrice}</span>
+                {p.stock === 0 && (
+                  <span className="text-red-500 font-bold text-xs mt-1">
+                    Out of Stock
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Right: POS Cart + Customer Info */}
-      <div className="border rounded p-4 flex flex-col h-full">
+      <div className="border rounded p-4 flex flex-col">
         <h2 className="font-semibold text-lg mb-4">POS Cart</h2>
 
         {/* Customer Info */}
@@ -334,7 +389,8 @@ const POSPage = () => {
           />
         </div>
 
-        <div className="flex-grow overflow-y-auto">
+        {/* Cart Items */}
+        <div className="overflow-y-auto">
           {posCart.length === 0 ? (
             <p>Cart is empty</p>
           ) : (
@@ -388,7 +444,7 @@ const POSPage = () => {
         </div>
 
         {/* Coupon input */}
-        {posCart.length > 0 && (
+        {/* {posCart.length > 0 && (
           <div className="my-2">
             <input
               type="text"
@@ -404,12 +460,12 @@ const POSPage = () => {
               Apply Coupon
             </button>
           </div>
-        )}
+        )} */}
 
         {posCart.length > 0 && (
           <>
-            <hr className="my-2" />
-            <div className="flex justify-between font-bold text-lg mb-2">
+            {/* <hr className="my-2" /> */}
+            {/* <div className="flex justify-between font-bold text-lg mb-2">
               <span>Subtotal:</span>
               <span>৳{fmt(subtotal)}</span>
             </div>
@@ -422,7 +478,50 @@ const POSPage = () => {
             <div className="flex justify-between font-bold text-xl mb-2">
               <span>Total:</span>
               <span>৳{fmt(total)}</span>
+            </div> */}
+
+            {/* Manual Discount */}
+            <div className="my-2 flex gap-2">
+              <h1 className="mt-2 font-bold text-lg">Discount:</h1>
+              <select
+                value={manualDiscountType}
+                onChange={(e) => setManualDiscountType(e.target.value)}
+                className="border p-2 w-1/2 rounded"
+              >
+                <option value="flat">৳ Flat</option>
+                <option value="percentage">% Percentage</option>
+              </select>
+              <input
+                type="number"
+                value={manualDiscountValue}
+                onChange={(e) => setManualDiscountValue(Number(e.target.value))}
+                placeholder="Discount"
+                className="border p-2 w-1/2 rounded"
+              />
             </div>
+
+            <div className="flex justify-between font-bold text-lg mb-2">
+              <span>Subtotal:</span>
+              <span>৳{fmt(subtotal)}</span>
+            </div>
+
+            {totalDiscount > 0 && (
+              <div className="flex justify-between font-bold text-lg mb-2 text-green-600">
+                <span>Discount:</span>
+                <span>-৳{fmt(totalDiscount)}</span>
+              </div>
+            )}
+
+            <div className="flex justify-between font-bold text-lg mb-2 text-blue-600">
+              <span>Tax (10%):</span>
+              <span>৳{fmt(tax)}</span>
+            </div>
+
+            <div className="flex justify-between font-bold text-xl mb-2">
+              <span>Total:</span>
+              <span>৳{fmt(total)}</span>
+            </div>
+
             <button
               onClick={() => setPaymentModalOpen(true)}
               className="w-full bg-cyan-500 text-white py-2 rounded hover:bg-cyan-600"
@@ -513,9 +612,7 @@ const POSPage = () => {
               </button>
             </div>
 
-                <div className="mb-4 font-bold">
-                  Stock: {selectedProduct.stock}
-                </div>
+            <div className="mb-4 font-bold">Stock: {selectedProduct.stock}</div>
 
             <button
               onClick={() => {
@@ -768,11 +865,11 @@ const POSPage = () => {
             </div>
             <div className="flex justify-between text-sm">
               <span>DISCOUNT:</span>
-              <span>
-                {receiptData.coupon
-                  ? `৳${fmt(receiptData.subtotal - receiptData.total)}`
-                  : "৳0"}
-              </span>
+              <span>৳{fmt(receiptData.discount || 0)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>TAX (10%):</span>
+              <span>৳{fmt(receiptData.tax || 0)}</span>
             </div>
             <div className="flex justify-between font-semibold text-base mt-1">
               <span>TOTAL:</span>

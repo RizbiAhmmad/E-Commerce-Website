@@ -35,6 +35,7 @@ import PaymentCancel from "@/Pages/Cart/PaymentCancel";
 import CategoryProducts from "@/Pages/Home/CategoryProducts";
 import POSPage from "@/Pages/POS/PosPage";
 import AllPOSOrders from "@/Pages/POS/AllPOSOrders";
+import StockReport from "@/Pages/Dashboard/Admin/StockReport";
 
   export const router = createBrowserRouter([
     {
@@ -153,6 +154,10 @@ import AllPOSOrders from "@/Pages/POS/AllPOSOrders";
       {
         path: "myOrders",
         element: <MyOrders />
+      },
+      {
+        path: "stock",
+        element: <StockReport />
       },
       {
         path: "addCoupon",
