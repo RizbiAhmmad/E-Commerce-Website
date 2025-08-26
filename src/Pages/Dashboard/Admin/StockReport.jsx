@@ -63,7 +63,7 @@ const StockReport = () => {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="pb-4 mb-8 text-3xl font-bold text-center border-b-2 border-gray-200">
-        📊 Product Stock Report
+        Product Stock Report
       </h2>
 
       {/* Search */}

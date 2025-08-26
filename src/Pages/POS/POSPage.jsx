@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FaTrashAlt } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const POSPage = () => {
   const [products, setProducts] = useState([]);
@@ -71,40 +72,40 @@ const POSPage = () => {
   //   }
   // }, [posCart]);
 
-//   useEffect(() => {
-//   const style = document.createElement("style");
-//   style.innerHTML = `
-//     @media print {
-//       body * {
-//         visibility: hidden !important;
-//         margin: 0 !important;
-//         padding: 0 !important;
-//       }
-//       #printable-receipt, #printable-receipt * {
-//         visibility: visible !important;
-//       }
-//       #printable-receipt {
-//         position: absolute !important;
-//         top: 0 !important;
-//         left: 0 !important;
-//         width: 80mm !important; /* standard thermal receipt width */
-//         max-width: 80mm !important;
-//         margin: 0 !important;
-//         padding: 0 !important;
-//         border: none !important;
-//         border-radius: 0 !important;
-//         box-shadow: none !important;
-//         font-size: 11px !important;
-//         line-height: 1.2 !important;
-//       }
-//       .fixed, .z-50, .z-[60] {
-//         display: none !important;
-//       }
-//     }
-//   `;
-//   document.head.appendChild(style);
-//   return () => document.head.removeChild(style);
-// }, []);
+  //   useEffect(() => {
+  //   const style = document.createElement("style");
+  //   style.innerHTML = `
+  //     @media print {
+  //       body * {
+  //         visibility: hidden !important;
+  //         margin: 0 !important;
+  //         padding: 0 !important;
+  //       }
+  //       #printable-receipt, #printable-receipt * {
+  //         visibility: visible !important;
+  //       }
+  //       #printable-receipt {
+  //         position: absolute !important;
+  //         top: 0 !important;
+  //         left: 0 !important;
+  //         width: 80mm !important; /* standard thermal receipt width */
+  //         max-width: 80mm !important;
+  //         margin: 0 !important;
+  //         padding: 0 !important;
+  //         border: none !important;
+  //         border-radius: 0 !important;
+  //         box-shadow: none !important;
+  //         font-size: 11px !important;
+  //         line-height: 1.2 !important;
+  //       }
+  //       .fixed, .z-50, .z-[60] {
+  //         display: none !important;
+  //       }
+  //     }
+  //   `;
+  //   document.head.appendChild(style);
+  //   return () => document.head.removeChild(style);
+  // }, []);
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -304,6 +305,13 @@ const POSPage = () => {
       .get("http://localhost:5000/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
+
+    Swal.fire({
+      title: "✅ Order Completed!",
+      text: "Receipt is ready. You can print now.",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
   };
   const handlePrint = () => {
     window.print();
@@ -488,7 +496,7 @@ const POSPage = () => {
                 onChange={(e) => setManualDiscountType(e.target.value)}
                 className="border p-2 w-1/2 rounded"
               >
-                <option value="flat">৳ Flat</option>
+                <option value="flat">৳ Fixed</option>
                 <option value="percentage">% Percentage</option>
               </select>
               <input

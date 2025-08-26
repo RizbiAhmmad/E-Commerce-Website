@@ -69,7 +69,7 @@ const CheckoutPage = () => {
       return Swal.fire("Error", "Please fill all required fields", "error");
     }
 
-    // 🔴 Stock Check
+    //  Stock Check
     const outOfStockItems = cartItems.filter((item) => {
       const product = productsMap[item.productId];
       return (
@@ -114,7 +114,7 @@ const CheckoutPage = () => {
       total,
       coupon: appliedCoupon?.code || null,
       status: payment === "cash on delivery" ? "pending" : "initiated",
-      tran_id: `order_${Date.now()}`, // unique transaction ID
+      tran_id: `order_${Date.now()}`,
       createdAt: new Date(),
     };
 

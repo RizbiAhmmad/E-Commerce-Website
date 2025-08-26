@@ -36,6 +36,7 @@ import CategoryProducts from "@/Pages/Home/CategoryProducts";
 import POSPage from "@/Pages/POS/PosPage";
 import AllPOSOrders from "@/Pages/POS/AllPOSOrders";
 import StockReport from "@/Pages/Dashboard/Admin/StockReport";
+import SalesReport from "@/Pages/Dashboard/Admin/SalesReport";
 
   export const router = createBrowserRouter([
     {
@@ -158,6 +159,10 @@ import StockReport from "@/Pages/Dashboard/Admin/StockReport";
       {
         path: "stock",
         element: <StockReport />
+      },
+      {
+        path: "sales",
+        element: <SalesReport />
       },
       {
         path: "addCoupon",

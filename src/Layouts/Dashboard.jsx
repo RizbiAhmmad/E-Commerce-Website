@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
+  FaChartBar,
+  FaChartLine,
   FaHome,
   FaListAlt,
   FaPalette,
@@ -21,7 +23,6 @@ import Loading from "@/Shared/Loading";
 import { BiSolidCoupon } from "react-icons/bi";
 import { BsCashCoin } from "react-icons/bs";
 import { IoIosCash } from "react-icons/io";
-import { AiOutlineStock } from "react-icons/ai";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -166,7 +167,15 @@ const Dashboard = () => {
                     to="/dashboard/stock"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <AiOutlineStock /> <span>Stock</span>
+                    <FaChartLine /> <span>Stock Report</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/sales"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                     <FaChartBar /> <span>Sales Report</span>
                   </NavLink>
                 </li>
                 <li>
