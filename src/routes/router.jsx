@@ -37,6 +37,7 @@ import POSPage from "@/Pages/POS/PosPage";
 import AllPOSOrders from "@/Pages/POS/AllPOSOrders";
 import StockReport from "@/Pages/Dashboard/Admin/StockReport";
 import SalesReport from "@/Pages/Dashboard/Admin/SalesReport";
+import AddExpenseCategory from "@/Pages/Dashboard/Admin/AddExpenseCategory";
 
   export const router = createBrowserRouter([
     {
@@ -179,6 +180,10 @@ import SalesReport from "@/Pages/Dashboard/Admin/SalesReport";
       {
         path: "posOrders",
         element: <AllPOSOrders />
+      },
+      {
+        path: "addExpenseCategory",
+        element: <AddExpenseCategory />
       },
       ]
     }
