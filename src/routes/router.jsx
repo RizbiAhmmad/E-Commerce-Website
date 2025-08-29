@@ -38,6 +38,7 @@ import AllPOSOrders from "@/Pages/POS/AllPOSOrders";
 import StockReport from "@/Pages/Dashboard/Admin/StockReport";
 import SalesReport from "@/Pages/Dashboard/Admin/SalesReport";
 import AddExpenseCategory from "@/Pages/Dashboard/Admin/AddExpenseCategory";
+import AllExpenseCategory from "@/Pages/Dashboard/Admin/AllExpenseCategory";
 
   export const router = createBrowserRouter([
     {
@@ -184,6 +185,10 @@ import AddExpenseCategory from "@/Pages/Dashboard/Admin/AddExpenseCategory";
       {
         path: "addExpenseCategory",
         element: <AddExpenseCategory />
+      },
+      {
+        path: "allExpenseCategories",
+        element: <AllExpenseCategory />
       },
       ]
     }

@@ -4,6 +4,7 @@ import {
   FaChartLine,
   FaHome,
   FaListAlt,
+  FaMoneyBillWave,
   FaPalette,
   FaReceipt,
   FaRulerCombined,
@@ -192,6 +193,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <IoIosCash /> <span>POS Orders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allExpenseCategories"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <FaMoneyBillWave /> <span>Expense Categories</span>
                   </NavLink>
                 </li>
       
