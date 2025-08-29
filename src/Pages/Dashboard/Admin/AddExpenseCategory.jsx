@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddExpenseCategory = () => {
   const [formData, setFormData] = useState({
     name: "",
     status: "active",
   });
-
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,6 +21,7 @@ const AddExpenseCategory = () => {
       if (res.data.insertedId) {
         Swal.fire("Success", "Expense category added!", "success");
         setFormData({ name: "", status: "active" });
+        navigate("/dashboard/allExpenseCategories");
       }
     } catch (err) {
       console.error(err);

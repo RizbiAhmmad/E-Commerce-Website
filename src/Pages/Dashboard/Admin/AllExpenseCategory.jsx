@@ -180,7 +180,7 @@ const AllExpenseCategory = () => {
                 Update Category
               </button>
             </form>
-          </div>
+          </div>a
         </div>
       )}
     </div>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddSubcategory = () => {
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     categoryId: "",
@@ -27,6 +29,7 @@ const AddSubcategory = () => {
       if (res.data.insertedId) {
         Swal.fire("Success", "Subcategory added!", "success");
         setFormData({ name: "", categoryId: "", status: "active" });
+        navigate("/dashboard/allsubCategories");
       }
     } catch (err) {
       console.error(err);

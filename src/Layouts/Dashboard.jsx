@@ -194,6 +194,14 @@ const Dashboard = () => {
                   >
                     <IoIosCash /> <span>POS Orders</span>
                   </NavLink>
+                </li>         
+                <li>
+                  <NavLink
+                    to="/dashboard/allExpense"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <FaMoneyBillWave /> <span>Expense</span>
+                  </NavLink>
                 </li>
                 <li>
                   <NavLink

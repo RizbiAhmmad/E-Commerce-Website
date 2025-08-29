@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddExpense = () => {
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     category: "",
     name: "",
@@ -41,6 +43,7 @@ const AddExpense = () => {
     if (res.data.insertedId) {
       Swal.fire("Success", "Expense added successfully!", "success");
       setFormData({ category: "", name: "", price: "", date: "" });
+      navigate("/dashboard/allExpense");
     }
   } catch (err) {
     console.error(err);
@@ -64,11 +67,13 @@ const AddExpense = () => {
             required
             className="w-full border p-2 rounded"
           >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat._id} value={cat.name}>
-                {cat.name}
-              </option>
+             <option value="">Select Category</option>
+    {categories
+      .filter((cat) => cat.status === "active") 
+      .map((cat) => (
+        <option key={cat._id} value={cat.name}>
+          {cat.name}
+        </option>
             ))}
           </select>
         </div>
@@ -114,7 +119,7 @@ const AddExpense = () => {
 
         <button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
+          className="w-full bg-cyan-500 text-white py-2 rounded hover:bg-cyan-600"
         >
           Add Expense
         </button>

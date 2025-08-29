@@ -40,6 +40,7 @@ import SalesReport from "@/Pages/Dashboard/Admin/SalesReport";
 import AddExpenseCategory from "@/Pages/Dashboard/Admin/AddExpenseCategory";
 import AllExpenseCategory from "@/Pages/Dashboard/Admin/AllExpenseCategory";
 import AddExpense from "@/Pages/Dashboard/Admin/AddExpense";
+import AllExpense from "@/Pages/Dashboard/Admin/AllExpense";
 
   export const router = createBrowserRouter([
     {
@@ -194,6 +195,10 @@ import AddExpense from "@/Pages/Dashboard/Admin/AddExpense";
       {
         path: "addExpense",
         element: <AddExpense />
+      },
+      {
+        path: "allExpense",
+        element: <AllExpense />
       },
       ]
     }
