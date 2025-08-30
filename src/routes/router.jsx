@@ -27,7 +27,7 @@ import {
 import CheckoutPage from "../Pages/Cart/CheckoutPage";
 import AllOrders from "@/Pages/Dashboard/Admin/AllOrders";
 import MyOrders from "@/Pages/Dashboard/User/MyOrders";
-import DashboardHome from "@/Layouts/DashboardHome";
+// import DashboardHome from "@/Layouts/DashboardHome";
 import AddCoupon from "@/Pages/Dashboard/Admin/AddCoupon";
 import AllCoupons from "@/Pages/Dashboard/Admin/AllCoupons";
 import PaymentSuccess from "@/Pages/Cart/PaymentSuccess";
@@ -41,6 +41,7 @@ import AddExpenseCategory from "@/Pages/Dashboard/Admin/AddExpenseCategory";
 import AllExpenseCategory from "@/Pages/Dashboard/Admin/AllExpenseCategory";
 import AddExpense from "@/Pages/Dashboard/Admin/AddExpense";
 import AllExpense from "@/Pages/Dashboard/Admin/AllExpense";
+import ExpenseReport from "@/Pages/Dashboard/Admin/ExpenseReport";
 
   export const router = createBrowserRouter([
     {
@@ -91,7 +92,12 @@ import AllExpense from "@/Pages/Dashboard/Admin/AllExpense";
        path: "dashboard",
       element: <Dashboard></Dashboard>,
       children:[
-        { index: true, element: <DashboardHome /> },
+        // { index: true, element: <DashboardHome /> },
+      //   {
+      //   path: "/",
+      //   element: <DashboardHome />,
+      // },
+
          {
         path: "users",
         element: <AllUsers></AllUsers>,
@@ -199,6 +205,10 @@ import AllExpense from "@/Pages/Dashboard/Admin/AllExpense";
       {
         path: "allExpense",
         element: <AllExpense />
+      },
+      {
+        path: "ExpenseReport",
+        element: <ExpenseReport />
       },
       ]
     }

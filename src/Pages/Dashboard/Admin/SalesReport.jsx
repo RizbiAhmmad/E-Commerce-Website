@@ -14,16 +14,17 @@ import {
   Cell,
   LineChart,
   Line,
-  RadialBarChart,
-  RadialBar,
 } from "recharts";
 
 const SalesReport = () => {
   const [report, setReport] = useState({
     allTime: 0,
     thisMonth: 0,
+    lastMonth: 0,
     thisWeek: 0,
+    lastWeek: 0,
     today: 0,
+    yesterday: 0,
   });
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -33,6 +34,12 @@ const SalesReport = () => {
     { name: "This Month", value: report.thisMonth },
     { name: "This Week", value: report.thisWeek },
     { name: "Today", value: report.today },
+  ];
+
+  const comparisonData = [
+    { name: "Month", Current: report.thisMonth, Previous: report.lastMonth },
+    { name: "Week", Current: report.thisWeek, Previous: report.lastWeek },
+    { name: "Today", Current: report.today, Previous: report.yesterday },
   ];
 
   useEffect(() => {
@@ -54,7 +61,7 @@ const SalesReport = () => {
       </h2>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
         <div className="bg-blue-100 p-4 rounded-lg shadow">
           <h3 className="text-gray-600">All Time</h3>
           <p className="text-2xl font-bold">৳{report.allTime}</p>
@@ -85,11 +92,10 @@ const SalesReport = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="value" fill="#8884d8" />
+              <Bar dataKey="value" fill="#604cf8" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
-
         {/* Pie Chart */}
         <div className="bg-white shadow rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4 text-center">Pie Chart</h3>
@@ -112,51 +118,95 @@ const SalesReport = () => {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
+
+          {/* Custom Legend for Pie */}
+          <div className="flex justify-center flex-wrap gap-4 mt-4 text-sm">
+            <div className="flex items-center gap-2">
+              <span
+                className="w-4 h-4 rounded-sm"
+                style={{ background: "#0088FE" }}
+              ></span>
+              <span className="text-gray-700 font-medium">All Time</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="w-4 h-4 rounded-sm"
+                style={{ background: "#00C49F" }}
+              ></span>
+              <span className="text-gray-700 font-medium">This Month</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="w-4 h-4 rounded-sm"
+                style={{ background: "#FFBB28" }}
+              ></span>
+              <span className="text-gray-700 font-medium">This Week</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="w-4 h-4 rounded-sm"
+                style={{ background: "#FF8042" }}
+              ></span>
+              <span className="text-gray-700 font-medium">Today</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Line Chart */}{" "}
+        <div className="bg-white shadow rounded-lg p-4">
+          {" "}
+          <h3 className="text-lg font-semibold mb-4 text-center">
+            Line Chart
+          </h3>{" "}
+          <ResponsiveContainer width="100%" height={300}>
+            {" "}
+            <LineChart data={chartData}>
+              {" "}
+              <CartesianGrid strokeDasharray="3 3" /> <XAxis dataKey="name" />{" "}
+              <YAxis /> <Tooltip /> <Legend />{" "}
+              <Line type="monotone" dataKey="value" stroke="#82ca9d" />{" "}
+            </LineChart>{" "}
+          </ResponsiveContainer>{" "}
         </div>
 
-        {/* Line Chart */}
+        {/* Comparison Chart */}
         <div className="bg-white shadow rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4 text-center">Line Chart</h3>
+          <h3 className="text-lg font-semibold mb-4 text-center">
+            Sales Comparison
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
+            <BarChart data={comparisonData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="value" stroke="#82ca9d" />
-            </LineChart>
+              <Bar dataKey="Current" fill="#0088FE" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="Previous" fill="#FF8042" radius={[6, 6, 0, 0]} />
+            </BarChart>
           </ResponsiveContainer>
-        </div>
 
-        {/* Radial Chart */}
-        <div className="bg-white shadow rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4 text-center">Radial Chart</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <RadialBarChart
-              cx="50%"
-              cy="50%"
-              innerRadius="10%"
-              outerRadius="80%"
-              barSize={15}
-              data={chartData}
-            >
-              <RadialBar
-                minAngle={15}
-                label={{ position: "insideStart", fill: "#fff" }}
-                background
-                clockWise
-                dataKey="value"
-              />
-              <Legend
-                iconSize={10}
-                layout="vertical"
-                verticalAlign="middle"
-                wrapperStyle={{ right: 0 }}
-              />
-              <Tooltip />
-            </RadialBarChart>
-          </ResponsiveContainer>
+          {/* Custom Legend for Comparison */}
+          <div className="flex justify-center gap-6 mt-4 text-sm">
+            <div className="flex items-center gap-2">
+              <span
+                className="w-4 h-4 rounded-sm"
+                style={{ background: "#0088FE" }}
+              ></span>
+              <span className="text-gray-700 font-medium">
+                Current (This Month/Week/Today)
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="w-4 h-4 rounded-sm"
+                style={{ background: "#FF8042" }}
+              ></span>
+              <span className="text-gray-700 font-medium">
+                Previous (Last Month/Week/Yesterday)
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

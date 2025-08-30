@@ -23,7 +23,8 @@ const AllExpense = () => {
     category: "",
     name: "",
     price: "",
-    date: "",
+    note: "",
+    date: "",    
   });
 
   //  Search
@@ -35,16 +36,24 @@ const AllExpense = () => {
 
   //  Filter expenses by category or name
   const filteredExpenses = expenses.filter((exp) =>
-    `${exp.category} ${exp.name}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${exp.category} ${exp.name}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   //  Calculate total cost of filtered expenses
-  const totalCost = filteredExpenses.reduce((sum, exp) => sum + Number(exp.price || 0), 0);
+  const totalCost = filteredExpenses.reduce(
+    (sum, exp) => sum + Number(exp.price || 0),
+    0
+  );
 
   // Page slicing
   const indexOfLastExpense = currentPage * expensesPerPage;
   const indexOfFirstExpense = indexOfLastExpense - expensesPerPage;
-  const currentExpenses = filteredExpenses.slice(indexOfFirstExpense, indexOfLastExpense);
+  const currentExpenses = filteredExpenses.slice(
+    indexOfFirstExpense,
+    indexOfLastExpense
+  );
 
   const totalPages = Math.ceil(filteredExpenses.length / expensesPerPage);
 
@@ -60,6 +69,7 @@ const AllExpense = () => {
       category: exp.category,
       name: exp.name,
       price: exp.price,
+      note: exp.note,
       date: exp.date?.split("T")[0] || "",
     });
     setIsModalOpen(true);
@@ -73,10 +83,10 @@ const AllExpense = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(
-        `http://localhost:5000/expenses/${selectedExpense._id}`,
-        { ...formData, price: Number(formData.price) }
-      );
+      await axios.put(`http://localhost:5000/expenses/${selectedExpense._id}`, {
+        ...formData,
+        price: Number(formData.price),
+      });
       Swal.fire("Updated!", "Expense has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -123,7 +133,7 @@ const AllExpense = () => {
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(1); 
+              setCurrentPage(1);
             }}
           />
         </div>
@@ -150,18 +160,27 @@ const AllExpense = () => {
               <th className="px-6 py-3">Category</th>
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Price</th>
+              <th className="px-6 py-3">Note</th>
               <th className="px-6 py-3">Date</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {currentExpenses.map((exp, index) => (
-              <tr key={exp._id} className="transition duration-200 hover:bg-gray-50">
+              <tr
+                key={exp._id}
+                className="transition duration-200 hover:bg-gray-50"
+              >
                 <td className="px-6 py-4">{indexOfFirstExpense + index + 1}</td>
-                <td className="px-6 py-4 font-semibold text-gray-800">{exp.category}</td>
+                <td className="px-6 py-4 font-semibold text-gray-800">
+                  {exp.category}
+                </td>
                 <td className="px-6 py-4">{exp.name}</td>
                 <td className="px-6 py-4">${exp.price}</td>
-                <td className="px-6 py-4">{new Date(exp.date).toLocaleDateString()}</td>
+                <td className="px-6 py-4">{exp.note}</td>
+                <td className="px-6 py-4">
+                  {new Date(exp.date).toLocaleDateString()}
+                </td>
                 <td className="flex gap-4 px-6 py-4">
                   <button onClick={() => openEditModal(exp)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
@@ -183,7 +202,7 @@ const AllExpense = () => {
         </table>
       </div>
 
-      {/* 🔹 Pagination */}
+      {/* Pagination */}
       <div className="mt-6 flex justify-center items-center gap-4">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
@@ -214,7 +233,7 @@ const AllExpense = () => {
         </button>
       </div>
 
-      {/* 🔹 Edit Modal */}
+      {/*  Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
@@ -254,6 +273,17 @@ const AllExpense = () => {
                   type="number"
                   name="price"
                   value={formData.price}
+                  onChange={handleModalChange}
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Note</label>
+                <input
+                  type="text"
+                  name="note"
+                  value={formData.note}
                   onChange={handleModalChange}
                   className="w-full p-2 border rounded"
                   required

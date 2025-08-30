@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { GiCash } from "react-icons/gi";
+import { TbCashRegister } from "react-icons/tb";
 import {
   FaChartBar,
   FaChartLine,
@@ -208,7 +210,15 @@ const Dashboard = () => {
                     to="/dashboard/allExpenseCategories"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <FaMoneyBillWave /> <span>Expense Categories</span>
+                    <GiCash /> <span>Expense Categories</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/ExpenseReport"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <TbCashRegister /> <span>Expense Report</span>
                   </NavLink>
                 </li>
       

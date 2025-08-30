@@ -10,6 +10,7 @@ const AddExpense = () => {
     category: "",
     name: "",
     price: "",
+    note: "",
     date: "",
   });
 
@@ -102,6 +103,19 @@ const AddExpense = () => {
             required
             className="w-full border p-2 rounded"
           />
+        </div>
+
+        {/* Note */}
+        <div>
+          <label className="block font-medium mb-1">Note (optional)</label>
+          <textarea
+            name="note"
+            value={formData.note}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+            rows="3"
+            placeholder="Write a short note..."
+          ></textarea>
         </div>
 
         {/* Date */}

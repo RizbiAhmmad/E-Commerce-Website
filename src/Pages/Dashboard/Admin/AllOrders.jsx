@@ -124,6 +124,7 @@ const AllOrders = () => {
           className="border border-gray-300 rounded px-3 py-2 text-sm shadow-sm"
         >
           <option value="all">All Status</option>
+          <option value="initiated">Initiated</option>
           <option value="pending">Pending</option>
           <option value="processing">Processing</option>
           <option value="shipped">Shipped</option>
@@ -208,7 +209,7 @@ const AllOrders = () => {
                       }
                       className="border border-gray-300 rounded px-2 py-1 text-xs focus:ring focus:ring-red-200"
                     >
-                      <option value="pending">Pending</option>
+                      <option value="pending">Pending</option>                     
                       <option value="processing">Processing</option>
                       <option value="shipped">Shipped</option>
                       <option value="delivered">Delivered</option>
