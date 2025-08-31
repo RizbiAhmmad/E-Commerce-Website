@@ -14,7 +14,6 @@ import {
   FaThList,
   FaTrademark,
   FaUsers,
-  
 } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { MdInventory, MdOutlineDashboardCustomize } from "react-icons/md";
@@ -76,6 +75,11 @@ const Dashboard = () => {
           } bg-gray-100 text-black transition-all duration-300 flex flex-col justify-between`}
         >
           <ul onClick={toggleSidebar} className="p-8">
+            {/* <ul onClick={toggleSidebar} 
+  className={`p-8 transition-colors duration-300 ${
+    isSidebarOpen ? "text-black" : "text-white"
+  }`}> */}
+
             {/* Admin Menu */}
             {userRole === "admin" && (
               <>
@@ -148,7 +152,7 @@ const Dashboard = () => {
                     <BiSolidCoupon /> <span>Coupons</span>
                   </NavLink>
                 </li>
-                
+
                 <li>
                   <NavLink
                     to="/dashboard/allReviews"
@@ -178,7 +182,7 @@ const Dashboard = () => {
                     to="/dashboard/sales"
                     className="flex items-center py-2 space-x-3"
                   >
-                     <FaChartBar /> <span>Sales Report</span>
+                    <FaChartBar /> <span>Sales Report</span>
                   </NavLink>
                 </li>
                 <li>
@@ -196,7 +200,7 @@ const Dashboard = () => {
                   >
                     <IoIosCash /> <span>POS Orders</span>
                   </NavLink>
-                </li>         
+                </li>
                 <li>
                   <NavLink
                     to="/dashboard/allExpense"
@@ -221,7 +225,15 @@ const Dashboard = () => {
                     <TbCashRegister /> <span>Expense Report</span>
                   </NavLink>
                 </li>
-      
+                {/* <li>
+                  <NavLink
+                    to="/dashboard/CustomerSegment"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <TbCashRegister /> <span>Customer Segment</span>
+                  </NavLink>
+                </li> */}
+
                 <li>
                   <NavLink
                     to="/dashboard/profile"
@@ -230,7 +242,6 @@ const Dashboard = () => {
                     <CgProfile /> <span>Profile</span>
                   </NavLink>
                 </li>
-                
               </>
             )}
             {/* User Menu */}
@@ -249,7 +260,7 @@ const Dashboard = () => {
                     <FaReceipt /> <span>My Orders</span>
                   </NavLink>
                 </li>
-               
+
                 <li>
                   <NavLink
                     to="/dashboard/profile"
@@ -258,7 +269,6 @@ const Dashboard = () => {
                     <CgProfile /> <span>Profile</span>
                   </NavLink>
                 </li>
-                
               </>
             )}
           </ul>
@@ -271,9 +281,7 @@ const Dashboard = () => {
               <h1 className="text-xl font-semibold">
                 Hey, {user.displayName || "User"}! Welcome to your Dashboard.
               </h1>
-              
             </div>
-            
           )}
           <Outlet />
         </div>
