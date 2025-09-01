@@ -33,7 +33,7 @@ const AllCustomersWithSegments = () => {
       case "regular":
         return "bg-blue-100 text-blue-800 border border-blue-300";
       case "one-time":
-        return "bg-gray-100 text-gray-800 border border-gray-300";
+        return "bg-gray-100 text-gray-800 border border-cyan-300";
       default:
         return "bg-gray-100 text-gray-800 border border-gray-300";
     }

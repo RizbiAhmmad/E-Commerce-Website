@@ -12,7 +12,6 @@ import {
   FaRulerCombined,
   FaStar,
   FaThList,
-  FaTrademark,
   FaUsers,
 } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
@@ -25,6 +24,8 @@ import Loading from "@/Shared/Loading";
 import { BiSolidCoupon } from "react-icons/bi";
 import { BsCashCoin } from "react-icons/bs";
 import { IoIosCash } from "react-icons/io";
+import { FaUsersViewfinder } from "react-icons/fa6";
+import { SiBrandfolder } from "react-icons/si";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -125,7 +126,7 @@ const Dashboard = () => {
                     to="/dashboard/allBrands"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <FaTrademark /> <span>Brands</span>
+                    <SiBrandfolder /> <span>Brands</span>
                   </NavLink>
                 </li>
                 <li>
@@ -225,14 +226,14 @@ const Dashboard = () => {
                     <TbCashRegister /> <span>Expense Report</span>
                   </NavLink>
                 </li>
-                {/* <li>
+                <li>
                   <NavLink
                     to="/dashboard/CustomerSegment"
                     className="flex items-center py-2 space-x-3"
                   >
-                    <TbCashRegister /> <span>Customer Segment</span>
+                    <FaUsersViewfinder /> <span>Customer Segment</span>
                   </NavLink>
-                </li> */}
+                </li>
 
                 <li>
                   <NavLink

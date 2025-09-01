@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
@@ -9,10 +10,17 @@ import {
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function ExpenseReport() {
-  const { data: report = {}, isLoading } = useQuery({
-    queryKey: ["expenseReport"],
+  const [dateFilter, setDateFilter] = useState({
+    startDate: "",
+    endDate: "",
+  });
+
+  const { data: report = {}, isLoading, refetch } = useQuery({
+    queryKey: ["expenseReport", dateFilter],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/expenses/report");
+      const res = await axios.get("http://localhost:5000/expenses/report", {
+        params: dateFilter.startDate && dateFilter.endDate ? dateFilter : {},
+      });
       return res.data;
     },
   });
@@ -26,29 +34,39 @@ export default function ExpenseReport() {
     { name: "Total", value: report.total },
   ];
 
-  // Comparison Data (This vs Previous)
   const comparisonData = [
-    {
-      name: "Month",
-      ThisMonth: report.thisMonth,
-      PreviousMonth: report.previousMonth,
-    },
-    {
-      name: "Week",
-      ThisWeek: report.thisWeek,
-      PreviousWeek: report.previousWeek,
-    },
-    {
-      name: "Today vs Yesterday",
-      Today: report.today,
-      Yesterday: report.yesterday,
-    },
+    { name: "Month", ThisMonth: report.thisMonth, PreviousMonth: report.previousMonth },
+    { name: "Week", ThisWeek: report.thisWeek, PreviousWeek: report.previousWeek },
+    { name: "Today vs Yesterday", Today: report.today, Yesterday: report.yesterday },
   ];
 
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h2 className="text-3xl font-bold text-center mb-6">Expense Report</h2>
 
+      {/* Date Filter */}
+      <div className="flex items-center gap-4 mb-6 justify-center">
+        <input
+          type="date"
+          value={dateFilter.startDate}
+          onChange={(e) => setDateFilter({ ...dateFilter, startDate: e.target.value })}
+          className="border px-3 py-2 rounded"
+        />
+        <input
+          type="date"
+          value={dateFilter.endDate}
+          onChange={(e) => setDateFilter({ ...dateFilter, endDate: e.target.value })}
+          className="border px-3 py-2 rounded"
+        />
+        <button
+          onClick={() => refetch()}
+          className="bg-cyan-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Apply Filter
+        </button>
+      </div>
+
+      {/* ✅ Rest of your existing code remains SAME */}
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-blue-100 shadow p-4 rounded-lg text-center">
@@ -67,8 +85,6 @@ export default function ExpenseReport() {
           <p className="text-gray-500">Today</p>
           <h3 className="text-xl font-bold text-cyan-600">${report.today}</h3>
         </div>
-        
-        
       </div>
 
       {/* Charts */}
