@@ -47,6 +47,8 @@ import AddDamageProduct from "@/Pages/Dashboard/Admin/AddDamageProduct";
 import AllDamageProducts from "@/Pages/Dashboard/Admin/AllDamageProducts";
 import AddReturnProduct from "@/Pages/Dashboard/Admin/AddReturnProduct";
 import AllReturnProducts from "@/Pages/Dashboard/Admin/AllReturnProducts";
+import AddSlider from "@/Pages/Dashboard/Admin/AddSlider";
+import AllSliders from "@/Pages/Dashboard/Admin/AllSliders";
 
   export const router = createBrowserRouter([
     {
@@ -222,6 +224,14 @@ import AllReturnProducts from "@/Pages/Dashboard/Admin/AllReturnProducts";
       {
         path: "allReturnProducts",
         element: <AllReturnProducts />
+      },
+      {
+        path: "addSlider",
+        element: <AddSlider />
+      },
+      {
+        path: "allSliders",
+        element: <AllSliders />
       },
       {
         path: "ExpenseReport",
