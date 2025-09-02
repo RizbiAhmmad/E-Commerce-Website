@@ -43,6 +43,8 @@ import AddExpense from "@/Pages/Dashboard/Admin/AddExpense";
 import AllExpense from "@/Pages/Dashboard/Admin/AllExpense";
 import ExpenseReport from "@/Pages/Dashboard/Admin/ExpenseReport";
 import AllCustomersWithSegments from "@/Pages/Dashboard/Admin/AllCustomersWithSegments";
+import AddDamageProduct from "@/Pages/Dashboard/Admin/AddDamageProduct";
+import AllDamageProducts from "@/Pages/Dashboard/Admin/AllDamageProducts";
 
   export const router = createBrowserRouter([
     {
@@ -202,6 +204,14 @@ import AllCustomersWithSegments from "@/Pages/Dashboard/Admin/AllCustomersWithSe
       {
         path: "allExpense",
         element: <AllExpense />
+      },
+      {
+        path: "addDamageProduct",
+        element: <AddDamageProduct />
+      },
+      {
+        path: "allDamageProducts",
+        element: <AllDamageProducts />
       },
       {
         path: "ExpenseReport",

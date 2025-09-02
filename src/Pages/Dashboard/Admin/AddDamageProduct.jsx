@@ -9,8 +9,6 @@ const AddDamageProduct = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
-    referenceNo: "",
-    price: "",
     note: "",
   });
   const [imageFile, setImageFile] = useState(null);
@@ -51,6 +49,8 @@ const AddDamageProduct = () => {
         ...formData,
         image: imageUrl,
         email: user?.email,
+        price: Number(formData.price),
+        referenceNo: Number(formData.referenceNo),
       };
 
       const res = await axios.post(
@@ -72,7 +72,10 @@ const AddDamageProduct = () => {
         Swal.fire("Error", "Server error. Product not added.", "error");
       }
     } catch (err) {
-      console.error("❌ Add Damage Product Error:", err.response?.data || err.message);
+      console.error(
+        "❌ Add Damage Product Error:",
+        err.response?.data || err.message
+      );
       Swal.fire("Error", "Something went wrong", "error");
     } finally {
       setLoading(false);
@@ -81,7 +84,9 @@ const AddDamageProduct = () => {
 
   return (
     <div className="max-w-xl p-6 mx-auto mt-6 bg-white rounded-lg shadow-md">
-      <h2 className="mb-6 text-2xl font-bold text-center">Add Damaged Product</h2>
+      <h2 className="mb-6 text-2xl font-bold text-center">
+        Add Damaged Product
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block mb-1 font-semibold">Product Name</label>
@@ -99,7 +104,7 @@ const AddDamageProduct = () => {
         <div>
           <label className="block mb-1 font-semibold">Reference No</label>
           <input
-            type="text"
+            type="number"
             name="referenceNo"
             required
             value={formData.referenceNo}

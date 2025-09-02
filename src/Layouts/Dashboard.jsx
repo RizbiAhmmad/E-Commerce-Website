@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { GiCash } from "react-icons/gi";
 import { TbCashRegister } from "react-icons/tb";
+import { RiFileDamageFill } from "react-icons/ri";
 import {
   FaChartBar,
   FaChartLine,
@@ -232,6 +233,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <FaUsersViewfinder /> <span>Customer Segment</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allDamageProducts"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <RiFileDamageFill /> <span>Damage Products</span>
                   </NavLink>
                 </li>
 
