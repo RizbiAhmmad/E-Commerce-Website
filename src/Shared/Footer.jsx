@@ -48,9 +48,7 @@ export default function Footer() {
             <li><Link to="/" className="hover:text-orange-500">Contact</Link></li>
           </ul>
         </div>
-
-        {/* Services */}
-
+        
         {/* Contact Info */}
         <div>
           <h3 className="text-lg font-semibold mb-4 text-white">Contact</h3>

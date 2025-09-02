@@ -103,7 +103,7 @@ const ProductCard = () => {
             <SingleProduct
               product={product}
               brandName={getBrandName(product.brandId)}
-              averageRating={getAverageRating(product._id)} // pass avg rating here
+              averageRating={getAverageRating(product._id)}
             />
           </motion.div>
         ))}
@@ -192,6 +192,18 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           src={product.images?.[0] || "https://via.placeholder.com/300"}
           className="w-full h-48 object-cover rounded-md"
         />
+
+        {/* h-800,w-1200 */}
+        {/* <div className="relative overflow-hidden rounded-md w-full aspect-[4/3] sm:aspect-[3/2] md:aspect-[1/1]">
+  <motion.img
+    src={product.images?.[0] || "https://via.placeholder.com/800"}
+    alt={product.name}
+    className="w-full h-full object-cover rounded-md"
+    whileHover={{ scale: 1.05 }}
+    transition={{ duration: 0.3 }}
+  />
+</div> */}
+
 
         {hasDiscount && (
           <motion.div
