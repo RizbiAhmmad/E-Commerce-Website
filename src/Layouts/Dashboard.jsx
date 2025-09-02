@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GiCash } from "react-icons/gi";
-import { TbCashRegister } from "react-icons/tb";
+import { TbCashRegister, TbTruckReturn } from "react-icons/tb";
 import { RiFileDamageFill } from "react-icons/ri";
 import {
   FaChartBar,
@@ -241,6 +241,14 @@ const Dashboard = () => {
                     className="flex items-center py-2 space-x-3"
                   >
                     <RiFileDamageFill /> <span>Damage Products</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allReturnProducts"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <TbTruckReturn /> <span>Return Products</span>
                   </NavLink>
                 </li>
 

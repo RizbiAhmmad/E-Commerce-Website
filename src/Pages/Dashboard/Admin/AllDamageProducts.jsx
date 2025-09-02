@@ -25,6 +25,25 @@ const AllDamageProducts = () => {
     image: "",
   });
 
+  //  Search + Pagination states
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  //  Filter products by search term
+  const filteredProducts = damageProducts.filter(
+    (product) =>
+      product.name.toLowerCase().includes(search.toLowerCase()) ||
+      (product.note && product.note.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  //  Pagination logic
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const openEditModal = (product) => {
     setSelectedProduct(product);
     setFormData({
@@ -84,8 +103,19 @@ const AllDamageProducts = () => {
         All Damaged Products
       </h2>
 
-      {/* Add Product Button */}
-      <div className="flex justify-end mb-4">
+      {/* Top Controls: Search + Add */}
+      <div className="flex flex-col items-center justify-between gap-4 mb-4 md:flex-row">
+        <input
+          type="text"
+          placeholder="Search by name or note..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1); 
+          }}
+          className="w-full p-2 border rounded md:w-1/3"
+        />
+
         <button
           onClick={() => navigate("/dashboard/addDamageProduct")}
           className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
@@ -109,9 +139,11 @@ const AllDamageProducts = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {damageProducts.map((product, index) => (
+            {paginatedProducts.map((product, index) => (
               <tr key={product._id} className="transition duration-200 hover:bg-gray-50">
-                <td className="px-6 py-4">{index + 1}</td>
+                <td className="px-6 py-4">
+                  {(currentPage - 1) * itemsPerPage + index + 1}
+                </td>
                 <td className="px-6 py-4">
                   <img
                     src={product.image}
@@ -133,7 +165,7 @@ const AllDamageProducts = () => {
                 </td>
               </tr>
             ))}
-            {damageProducts.length === 0 && (
+            {paginatedProducts.length === 0 && (
               <tr>
                 <td colSpan="7" className="py-6 text-center text-gray-500">
                   No damaged products found.
@@ -143,6 +175,41 @@ const AllDamageProducts = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-4">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 text-sm rounded ${
+                currentPage === i + 1
+                  ? "bg-cyan-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {isModalOpen && (
