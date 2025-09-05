@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FaFacebookF,
@@ -7,68 +7,128 @@ import {
   FaPhone,
   FaMapMarkerAlt,
 } from "react-icons/fa";
-import logo from "../assets/SostayKini.jpg";
+import { motion } from "framer-motion";
 
 export default function Footer() {
+  const [footerInfo, setFooterInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+  const fetchFooterInfo = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/footer");
+      const data = await res.json();
+      if (data.length > 0) {
+        setFooterInfo(data[0]);
+      }
+    } catch (err) {
+      console.error("Error fetching footer info:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchFooterInfo();
+}, []);
+
+
+  if (loading) return <p className="text-center text-gray-400">Loading footer...</p>;
+  if (!footerInfo || Object.keys(footerInfo).length === 0)
+    return <p className="text-center text-gray-400">No footer data found.</p>;
 
   return (
-    <footer className="bg-gray-900 text-white pt-16 pb-8 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
-        {/* Logo and Brand Info */}
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <img src={logo} alt="BangladeshiIT Logo" className="h-10 w-auto" />
-            <h1 className="text-2xl font-bold flex items-center">
-              Sostay Kini
-            </h1>
+    <footer className="bg-gradient-to-r from-cyan-700 via-blue-900 to-purple-800 text-white py-16 px-6 md:px-12 relative overflow-hidden">
+      {/* Decorative shapes */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-purple-500 opacity-20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500 opacity-20 rounded-full translate-x-1/3 translate-y-1/3"></div>
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
+        {/* Logo & About */}
+        <motion.div
+          className="space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="flex items-center gap-3">
+            <img src={footerInfo.logo} alt={footerInfo.name || "Logo"} className="h-12 w-auto rounded-lg shadow-lg" />
+            <h1 className="text-3xl font-bold">{footerInfo.name}</h1>
           </div>
-          <p className="text-gray-400">
-            Your one-stop solution for all e-commerce needs. We provide top-notch services to help your business thrive online.
-          </p>
-          <div className="flex gap-4 mt-4">
-            <a href="" aria-label="Facebook">
-              <FaFacebookF className="hover:text-orange-500" />
-            </a>
-            <a href="" aria-label="LinkedIn">
-              <FaLinkedinIn className="hover:text-orange-500" />
-            </a>
-            <a href="" aria-label="Email">
-              <FaEnvelope className="hover:text-orange-500" />
-            </a>
+          <p className="text-gray-200">{footerInfo.description}</p>
+          <div className="flex gap-4 mt-2">
+            {footerInfo.facebook && (
+              <a
+                href={footerInfo.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
+              >
+                <FaFacebookF />
+              </a>
+            )}
+            {footerInfo.linkedin && (
+              <a
+                href={footerInfo.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
+              >
+                <FaLinkedinIn />
+              </a>
+            )}
+            {footerInfo.email && (
+              <a href={`mailto:${footerInfo.email}`} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition">
+                <FaEnvelope />
+              </a>
+            )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Quick Links */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4 text-white">Quick Links</h3>
-          <ul className="space-y-2 text-gray-400">
-            <li><Link to="/" className="hover:text-orange-500">Home</Link></li>
-            <li><Link to="/" className="hover:text-orange-500">About Us</Link></li>
-            <li><Link to="/" className="hover:text-orange-500">Blogs</Link></li>
-            <li><Link to="/" className="hover:text-orange-500">Contact</Link></li>
+        <motion.div
+          className="space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h3 className="text-xl font-semibold mb-2">Quick Links</h3>
+          <ul className="space-y-2">
+            <li><Link to="/" className="hover:text-orange-400 transition">Home</Link></li>
+            <li><Link to="/" className="hover:text-orange-400 transition">About Us</Link></li>
+            <li><Link to="/" className="hover:text-orange-400 transition">Blogs</Link></li>
+            <li><Link to="/" className="hover:text-orange-400 transition">Contact</Link></li>
           </ul>
-        </div>
-        
-        {/* Contact Info */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4 text-white">Contact</h3>
-          <ul className="space-y-3 text-gray-400 text-sm">
-            <li className="flex items-center gap-2">
-              <FaPhone /> +8801621741799
-            </li>
-            <li className="flex items-center gap-2">
-              <FaEnvelope /> info@bangladeshiit.com
-            </li>
-            <li className="flex items-center gap-2">
-              <FaMapMarkerAlt />
-              House#35, Road#15, Sector#14, Uttara, Dhaka-1230, Bangladesh
-            </li>
+        </motion.div>
+
+        {/* Contact */}
+        <motion.div
+          className="space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          <h3 className="text-xl font-semibold mb-2">Contact</h3>
+          <ul className="space-y-3">
+            {footerInfo.phone && (
+              <li className="flex items-center gap-2 hover:text-orange-400 transition">
+                <FaPhone /> {footerInfo.phone}
+              </li>
+            )}
+            {footerInfo.email && (
+              <li className="flex items-center gap-2 hover:text-orange-400 transition">
+                <FaEnvelope /> {footerInfo.email}
+              </li>
+            )}
+            {footerInfo.address && (
+              <li className="flex items-center gap-2 hover:text-orange-400 transition">
+                <FaMapMarkerAlt /> {footerInfo.address}
+              </li>
+            )}
           </ul>
-        </div>
+        </motion.div>
       </div>
 
-      <div className="border-t border-gray-700 mt-12 pt-6 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} SostayKini. All rights reserved.
+      <div className="border-t border-white/30 mt-12 pt-6 text-center text-sm text-gray-300 relative z-10">
+        © {new Date().getFullYear()} {footerInfo.name}. All rights reserved.
       </div>
     </footer>
   );

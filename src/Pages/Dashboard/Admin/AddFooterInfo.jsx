@@ -1,11 +1,9 @@
-import React, { useState, useContext } from "react";
-import { AuthContext } from "../../../provider/AuthProvider";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 const AddFooterInfo = () => {
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -54,11 +52,10 @@ const AddFooterInfo = () => {
       const footerData = {
         ...formData,
         logo: logoUrl,
-        email: user?.email,
       };
 
       const res = await axios.post(
-        "http://localhost:5000/footerInfo",
+        "http://localhost:5000/footer",
         JSON.stringify(footerData),
         {
           headers: { "Content-Type": "application/json" },
@@ -77,7 +74,7 @@ const AddFooterInfo = () => {
           linkedin: "",
         });
         setLogoFile(null);
-        navigate("/dashboard/allFooterInfo");
+        navigate("/dashboard/FooterInfo");
       } else {
         Swal.fire("Error", "Server error. Footer info not added.", "error");
       }

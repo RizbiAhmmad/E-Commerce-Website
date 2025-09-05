@@ -259,6 +259,14 @@ const Dashboard = () => {
                     <TbTruckReturn /> <span>Sliders</span>
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/FooterInfo"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <TbTruckReturn /> <span>Footer Info</span>
+                  </NavLink>
+                </li>
 
                 <li>
                   <NavLink
