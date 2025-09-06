@@ -9,7 +9,7 @@ import ExplorePopularCategory from './ExplorePopularCategory';
 
 const Home = () => {
     return (
-        <div>
+        <div className="dark:bg-black dark:text-white">
             <Banner />
             <ExplorePopularCategory />
             <ProductCard />

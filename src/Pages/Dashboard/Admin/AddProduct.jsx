@@ -229,7 +229,7 @@ const AddProduct = () => {
           <option value="popular">Popular Product</option>
           <option value="new">New Arrival</option>
           <option value="flash">Flash Sale</option>
-          <option value="top">Top Rated</option>
+          <option value="top">Top Selling</option>
         </select>
 
         <textarea

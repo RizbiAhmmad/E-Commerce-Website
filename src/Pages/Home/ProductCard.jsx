@@ -9,7 +9,6 @@ import Loading from "@/Shared/Loading";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-// Assuming you have an AuthContext for user info, otherwise adjust accordingly
 import { AuthContext } from "@/provider/AuthProvider";
 
 const fetchProducts = async () => {
@@ -72,7 +71,7 @@ const ProductCard = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl dark:bg-black dark:text-white mx-auto">
       <motion.h1
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -92,7 +91,7 @@ const ProductCard = () => {
               duration: 0.4,
               delay: index * 0.1,
               type: "spring",
-              stiffness: 120,
+              stiffness: 100,
             }}
             whileHover={{
               scale: 1.03,
@@ -183,7 +182,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
   };
 
   return (
-    <div className="border border-gray-300 dark:border-slate-700 rounded-xl p-2">
+    <div className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg">
       <div className="relative overflow-hidden rounded-md">
         <motion.img
           whileHover={{ scale: 1.05 }}
@@ -281,12 +280,12 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
                   <span className="text-red-500 line-through mr-2">
                     {formatPrice(oldPriceNum)}
                   </span>
-                  <span className="font-bold text-black">
+                  <span className="font-bold text-black dark:text-white">
                     {formatPrice(newPriceNum)}
                   </span>
                 </>
               ) : (
-                <span className="font-bold text-black">
+                <span className="font-bold dark:text-white text-black">
                   {formatPrice(newPriceNum)}
                 </span>
               )}

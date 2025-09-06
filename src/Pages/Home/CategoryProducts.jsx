@@ -8,13 +8,16 @@ import Swal from "sweetalert2";
 import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 
-
 const CategoryProducts = () => {
   const { id } = useParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000]);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
 
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -51,7 +54,23 @@ const CategoryProducts = () => {
     (p) => p.newPrice >= priceRange[0] && p.newPrice <= priceRange[1]
   );
 
-  // SingleProduct component from your ProductCard design
+  // Pagination logic
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  // SingleProduct component
   const SingleProduct = ({ product }) => {
     const [isFavorite, setIsFavorite] = useState(false);
 
@@ -147,7 +166,7 @@ const CategoryProducts = () => {
                     <span className="text-red-500 line-through mr-2">
                       {formatPrice(oldPriceNum)}
                     </span>
-                    <br/>
+                    <br />
                     <span className="font-bold text-black">
                       {formatPrice(newPriceNum)}
                     </span>
@@ -162,10 +181,11 @@ const CategoryProducts = () => {
             <div className="flex items-center gap-[8px]">
               <button
                 onClick={handleAddToCart}
-                className="py-2 px-4 border border-[#0FABCA] text-white rounded-md flex items-center gap-[0.5rem] hover:bg-[#0FABCA] hover:text-white transition-all duration-200"
+                className="group py-2 px-4 border border-[#0FABCA] text-white rounded-md flex items-center gap-[0.5rem] hover:bg-[#0FABCA] hover:text-white transition-all duration-200"
               >
                 <IoCartOutline className="text-[1.3rem] text-[#0FABCA] group-hover:text-white" />
               </button>
+
               <button
                 onClick={() => navigate(`/product/${product._id}`)}
                 className="py-2 px-2 border border-[#0FABCA] text-[#0FABCA] rounded-md hover:text-white hover:bg-[#0FABCA] transition-all duration-200"
@@ -183,6 +203,7 @@ const CategoryProducts = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 grid grid-cols-1 lg:grid-cols-4 gap-8">
       {/* Sidebar Filters */}
       <aside className="lg:col-span-1 space-y-6">
+        {/* Sort */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Sort By</h3>
           <div className="space-y-2">
@@ -212,6 +233,8 @@ const CategoryProducts = () => {
             </label>
           </div>
         </div>
+
+        {/* Price Range */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Price</h3>
           <div className="flex items-center gap-2">
@@ -246,18 +269,51 @@ const CategoryProducts = () => {
         {filteredProducts.length === 0 ? (
           <p className="text-center text-gray-600">No products found.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProducts.map((product) => (
-              <motion.div
-                key={product._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentProducts.map((product) => (
+                <motion.div
+                  key={product._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <SingleProduct product={product} />
+                </motion.div>
+              ))}
+            </div>
+
+            {/* 🔹 Pagination */}
+            <div className="mt-8 flex justify-center items-center gap-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-lg font-semibold text-white ${
+                  currentPage === 1
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-cyan-500 hover:bg-cyan-600"
+                }`}
               >
-                <SingleProduct product={product} />
-              </motion.div>
-            ))}
-          </div>
+                Previous
+              </button>
+
+              <span className="px-4 py-2 rounded-lg bg-gray-100">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-lg font-semibold text-white ${
+                  currentPage === totalPages
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-cyan-500 hover:bg-cyan-600"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
       </main>
     </div>

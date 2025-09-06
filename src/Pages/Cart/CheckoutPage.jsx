@@ -154,7 +154,7 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-8 py-24 grid md:grid-cols-3 gap-8">
+    <div className="max-w-7xl dark:bg-black dark:text-white mx-auto px-8 py-24 grid md:grid-cols-3 gap-8">
       {/* Left */}
       <div className="md:col-span-2 space-y-6">
         {/* Customer Information */}
@@ -234,8 +234,8 @@ const CheckoutPage = () => {
 
         {/* Payment */}
 
-        <div className="border rounded-2xl p-6 shadow-md bg-white">
-          <h2 className="font-semibold text-xl mb-5 text-gray-800">
+        <div className="border rounded-2xl p-6 shadow-md dark:bg-black dark:text-white bg-white">
+          <h2 className="font-semibold text-xl mb-5 text-black dark:text-white">
             Select Payment Method
           </h2>
 

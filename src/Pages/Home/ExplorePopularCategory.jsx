@@ -14,7 +14,6 @@ const ExplorePopularCategory = () => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get("http://localhost:5000/categories");
-        // ✅ Only active categories
         setCategories(res.data.filter((cat) => cat.status === "active"));
       } catch (err) {
         console.error("❌ Error fetching categories:", err);
@@ -31,7 +30,7 @@ const ExplorePopularCategory = () => {
   }
 
   return (
-    <div className="mt-8 text-center">
+    <div className="py-4 text-center dark:bg-black dark:text-white">
       <motion.h1
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -41,7 +40,7 @@ const ExplorePopularCategory = () => {
         Explore Popular Categories
       </motion.h1>
 
-      <p className="text-gray-600 mb-4">
+      <p className="text-gray-500 mb-4">
         Find your preferred item in the highlighted product selection.
       </p>
 
@@ -53,7 +52,7 @@ const ExplorePopularCategory = () => {
             onClick={() => navigate(`/category/${cat._id}`)}
             className="text-center cursor-pointer"
           >
-            <div className="w-28 h-28 mx-auto rounded-xl overflow-hidden border shadow">
+            <div className="w-28 h-28 mx-auto rounded-xl overflow-hidden border shadow-xl">
               <img
                 src={cat.image}
                 alt={cat.name}

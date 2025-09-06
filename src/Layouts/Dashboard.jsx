@@ -6,6 +6,7 @@ import {
   FaChartBar,
   FaChartLine,
   FaHome,
+  FaInfoCircle,
   FaListAlt,
   FaMoneyBillWave,
   FaPalette,
@@ -25,7 +26,7 @@ import Loading from "@/Shared/Loading";
 import { BiSolidCoupon } from "react-icons/bi";
 import { BsCashCoin } from "react-icons/bs";
 import { IoIosCash } from "react-icons/io";
-import { FaUsersViewfinder } from "react-icons/fa6";
+import { FaSliders, FaUsersViewfinder } from "react-icons/fa6";
 import { SiBrandfolder } from "react-icons/si";
 
 const Dashboard = () => {
@@ -74,14 +75,9 @@ const Dashboard = () => {
         <div
           className={`${
             isSidebarOpen ? "w-64" : "w-0 md:w-64"
-          } bg-gray-100 text-black transition-all duration-300 flex flex-col justify-between`}
+          } bg-gray-100 text-black dark:bg-black dark:text-white transition-all duration-300 flex flex-col justify-between`}
         >
-          <ul onClick={toggleSidebar} className="p-8">
-            {/* <ul onClick={toggleSidebar} 
-  className={`p-8 transition-colors duration-300 ${
-    isSidebarOpen ? "text-black" : "text-white"
-  }`}> */}
-
+          <ul onClick={toggleSidebar} className="p-6 space-y-2 text-md">
             {/* Admin Menu */}
             {userRole === "admin" && (
               <>
@@ -90,18 +86,28 @@ const Dashboard = () => {
                     <FaHome /> <span>Home</span>
                   </NavLink>
                 </li>
+
+                {/* Users */}
+                <li className=" pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                  USERS
+                </li>
                 <li>
                   <NavLink
                     to="/dashboard/users"
-                    className="flex items-center py-2 space-x-3"
+                    className="px-2 flex items-center py-2 space-x-3"
                   >
                     <FaUsers /> <span>Users</span>
                   </NavLink>
                 </li>
+
+                {/* Product & Stock */}
+                <li className=" pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                  PRODUCT & STOCK
+                </li>
                 <li>
                   <NavLink
                     to="/dashboard/allProducts"
-                    className="flex items-center py-2 space-x-3"
+                    className="px-2 flex items-center py-2 space-x-3"
                   >
                     <MdInventory /> <span>Products</span>
                   </NavLink>
@@ -109,7 +115,7 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     to="/dashboard/allCategories"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex px-2 items-center py-2 space-x-3"
                   >
                     <FaListAlt /> <span>Categories</span>
                   </NavLink>
@@ -117,7 +123,7 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     to="/dashboard/allSubCategories"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex px-2 items-center py-2 space-x-3"
                   >
                     <FaThList /> <span>SubCategories</span>
                   </NavLink>
@@ -125,7 +131,7 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     to="/dashboard/allBrands"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
                     <SiBrandfolder /> <span>Brands</span>
                   </NavLink>
@@ -133,7 +139,7 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     to="/dashboard/allSizes"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
                     <FaRulerCombined /> <span>Sizes</span>
                   </NavLink>
@@ -141,56 +147,28 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     to="/dashboard/allColors"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
                     <FaPalette /> <span>Colors</span>
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    to="/dashboard/allCoupons"
-                    className="flex items-center py-2 space-x-3"
-                  >
-                    <BiSolidCoupon /> <span>Coupons</span>
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink
-                    to="/dashboard/allReviews"
-                    className="flex items-center py-2 space-x-3"
-                  >
-                    <FaStar /> <span>Reviews</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/dashboard/allOrders"
-                    className="flex items-center py-2 space-x-3"
-                  >
-                    <FaReceipt /> <span>Orders</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
                     to="/dashboard/stock"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
                     <FaChartLine /> <span>Stock Report</span>
                   </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/dashboard/sales"
-                    className="flex items-center py-2 space-x-3"
-                  >
-                    <FaChartBar /> <span>Sales Report</span>
-                  </NavLink>
+                </li>  
+
+                {/* POS & Orders */}
+                <li className=" pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                  POS & ORDERS
                 </li>
                 <li>
                   <NavLink
                     to="/dashboard/pos"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex px-2 items-center py-2 space-x-3"
                   >
                     <BsCashCoin /> <span>POS</span>
                   </NavLink>
@@ -198,47 +176,23 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     to="/dashboard/posOrders"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex px-2 items-center py-2 space-x-3"
                   >
                     <IoIosCash /> <span>POS Orders</span>
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    to="/dashboard/allExpense"
-                    className="flex items-center py-2 space-x-3"
+                    to="/dashboard/allOrders"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
-                    <FaMoneyBillWave /> <span>Expense</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/dashboard/allExpenseCategories"
-                    className="flex items-center py-2 space-x-3"
-                  >
-                    <GiCash /> <span>Expense Categories</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/dashboard/ExpenseReport"
-                    className="flex items-center py-2 space-x-3"
-                  >
-                    <TbCashRegister /> <span>Expense Report</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/dashboard/CustomerSegment"
-                    className="flex items-center py-2 space-x-3"
-                  >
-                    <FaUsersViewfinder /> <span>Customer Segment</span>
+                    <FaReceipt /> <span>Online Orders</span>
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
                     to="/dashboard/allDamageProducts"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
                     <RiFileDamageFill /> <span>Damage Products</span>
                   </NavLink>
@@ -246,38 +200,124 @@ const Dashboard = () => {
                 <li>
                   <NavLink
                     to="/dashboard/allReturnProducts"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
-                    <TbTruckReturn /> <span>Return Products</span>
+                    <TbTruckReturn /> <span>Return Orders</span>
+                  </NavLink>
+                </li>
+
+                {/* Reports */}
+                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                  REPORTS
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/sales"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaChartBar /> <span>Sales Report</span>
+                  </NavLink>
+                </li>
+                              
+                <li>
+                  <NavLink
+                    to="/dashboard/ExpenseReport"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <TbCashRegister /> <span>Expense Report</span>
+                  </NavLink>
+                </li>
+                {/* Expense */}
+                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                  EXPENSE
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allExpense"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaMoneyBillWave /> <span>Expense</span>
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    to="/dashboard/allSliders"
-                    className="flex items-center py-2 space-x-3"
+                    to="/dashboard/allExpenseCategories"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
-                    <TbTruckReturn /> <span>Sliders</span>
+                    <GiCash /> <span>Expense Categories</span>
+                  </NavLink>
+                </li>
+
+                {/* Customers */}
+                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                  CUSTOMERS
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/CustomerSegment"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaUsersViewfinder /> <span>Customer Segment</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allReviews"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaStar /> <span>Reviews</span>
+                  </NavLink>
+                </li>
+
+                {/* Promo */}
+                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                  PROMO
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allCoupons"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <BiSolidCoupon /> <span>Coupons</span>
+                  </NavLink>
+                </li>
+
+                {/* Others */}
+                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                  OTHERS
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allSliders"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaSliders /> <span>Sliders</span>
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
                     to="/dashboard/FooterInfo"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
-                    <TbTruckReturn /> <span>Footer Info</span>
+                    <FaInfoCircle /> <span>Footer Info</span>
                   </NavLink>
                 </li>
 
+                {/* Profile */}
+                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                  ACCOUNT
+                </li>
                 <li>
                   <NavLink
                     to="/dashboard/profile"
-                    className="flex items-center py-2 space-x-3"
+                    className="flex items-center px-2 py-2 space-x-3"
                   >
                     <CgProfile /> <span>Profile</span>
                   </NavLink>
                 </li>
               </>
             )}
+
             {/* User Menu */}
             {userRole === "user" && (
               <>
@@ -294,7 +334,6 @@ const Dashboard = () => {
                     <FaReceipt /> <span>My Orders</span>
                   </NavLink>
                 </li>
-
                 <li>
                   <NavLink
                     to="/dashboard/profile"

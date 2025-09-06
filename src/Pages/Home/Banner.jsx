@@ -30,56 +30,55 @@ export default function Banner() {
   }, [slides]);
 
   const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+  const prevSlide = () =>
+    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
   const goToSlide = (index) => setCurrent(index);
 
   if (slides.length === 0) return null;
 
   return (
-    <div className="relative w-full overflow-hidden pt-[100px]">
-  <div className="max-w-7xl mx-auto h-[300px] md:h-[400px] overflow-hidden relative">
-    <AnimatePresence>
-      <motion.img
-        key={slides[current]._id}
-        src={slides[current].image}
-        alt="Slider"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 1 }}
-        className="w-full h-full object-cover rounded-lg"
-      />
-    </AnimatePresence>
+    <div className="relative dark:bg-black w-full overflow-hidden pt-[100px]">
+      <div className="max-w-7xl mx-auto h-[300px] md:h-[400px] overflow-hidden relative">
+        <AnimatePresence>
+          <motion.img
+            key={slides[current]._id}
+            src={slides[current].image}
+            alt="Slider"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            className="w-full h-full object-cover rounded-lg"
+          />
+        </AnimatePresence>
 
-    {/* Arrows */}
-    <button
-      onClick={prevSlide}
-      className="absolute left-2 sm:left-4 md:left-6 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 p-2 rounded-full z-20"
-    >
-      ◀
-    </button>
-    <button
-      onClick={nextSlide}
-      className="absolute right-2 sm:right-4 md:right-6 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 p-2 rounded-full z-20"
-    >
-      ▶
-    </button>
-
-    {/* Dots */}
-    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
-      {slides.map((_, index) => (
+        {/* Arrows */}
         <button
-          key={index}
-          onClick={() => goToSlide(index)}
-          className={`w-3 h-3 rounded-full ${
-            index === current ? "bg-white" : "bg-white/50"
-          }`}
-        ></button>
-      ))}
+          onClick={prevSlide}
+          className="absolute left-2 sm:left-4 md:left-6 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 p-2 rounded-full z-20"
+        >
+          ◀
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-2 sm:right-4 md:right-6 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 p-2 rounded-full z-20"
+        >
+          ▶
+        </button>
+
+        {/* Dots */}
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full ${
+                index === current ? "bg-white" : "bg-white/50"
+              }`}
+            ></button>
+          ))}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
-
   );
 }

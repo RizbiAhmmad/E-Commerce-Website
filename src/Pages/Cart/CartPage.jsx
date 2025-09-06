@@ -111,7 +111,7 @@ const CartPage = () => {
   if (!cartItems.length) return <p>Your cart is empty.</p>;
 
   return (
-    <div className="max-w-7xl mx-auto px-8 py-24 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="max-w-7xl dark:bg-black dark:text-white mx-auto px-8 py-24 grid grid-cols-1 md:grid-cols-3 gap-8">
       <div className="md:col-span-2 space-y-6">
         {cartItems.map((item) => {
           const product = productsMap[item.productId];
@@ -134,7 +134,7 @@ const CartPage = () => {
                 <p className="font-semibold text-lg">{product.name}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-sm text-gray-600">Color:</span>
-                  <span className="px-2 py-1 bg-gray-200 rounded text-sm">
+                  <span className="px-2 py-1 dark:bg-black dark:text-white bg-gray-200 rounded text-sm">
                     {item.selectedColor || product.colors?.[0]}
                   </span>
                 </div>
@@ -145,7 +145,7 @@ const CartPage = () => {
               <div className="flex items-center border rounded-md">
                 <button
                   onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200"
+                  className="px-3 py-1 dark:bg-black dark:text-white bg-gray-100 hover:bg-gray-200"
                 >
                   −
                 </button>
@@ -159,7 +159,7 @@ const CartPage = () => {
                 />
                 <button
                   onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200"
+                  className="px-3 py-1 dark:bg-black dark:text-white bg-gray-100 hover:bg-gray-200"
                 >
                   +
                 </button>

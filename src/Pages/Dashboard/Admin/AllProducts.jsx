@@ -494,7 +494,8 @@ const AllProducts = () => {
                 <option value="">Select Variant</option>
                 <option value="popular">Popular Product</option>
                 <option value="new">New Arrival</option>
-                <option value="top">Top Rated</option>
+                <option value="flash">Flash Sale</option>
+                <option value="top">Top Selling</option>
               </select>
 
               <textarea
@@ -726,7 +727,8 @@ const AllProducts = () => {
                 <option value="">Select Variant</option>
                 <option value="popular">Popular Product</option>
                 <option value="new">New Arrival</option>
-                <option value="top">Top Rated</option>
+                <option value="flash">Flash Sale</option>
+                <option value="top">Top Selling</option>
               </select>
 
               <textarea

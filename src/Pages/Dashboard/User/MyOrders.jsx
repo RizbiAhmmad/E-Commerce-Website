@@ -35,8 +35,8 @@ const MyOrders = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold mb-8 text-gray-800">My Orders</h2>
+    <div className="max-w-5xl dark:bg-black dark:text-white mx-auto px-4 py-12">
+      <h2 className="text-3xl font-bold mb-8 text-black dark:text-white">My Orders</h2>
 
       {orders.length === 0 ? (
         <p className="text-gray-500">No orders found.</p>

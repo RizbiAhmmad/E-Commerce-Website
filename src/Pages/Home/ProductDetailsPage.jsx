@@ -177,7 +177,7 @@ const ProductDetailsPage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 md:px-12 py-24">
+    <div className="mx-auto dark:bg-black dark:text-white max-w-7xl px-4 md:px-12 py-24">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         {/* Left - Image Gallery */}
         <div className="space-y-4">
@@ -262,7 +262,7 @@ const ProductDetailsPage = () => {
           <h1 className="text-3xl font-semibold">{product.name}</h1>
 
           {/* Specification */}
-          <div className="mt-2 p-4 bg-white ">
+          <div className="mt-2 p-4 dark:bg-black dark:text-white bg-white ">
             <h2 className="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">
               Specification
             </h2>
@@ -360,7 +360,7 @@ const ProductDetailsPage = () => {
 
           {/* Quantity + Wishlist */}
           <div className="flex gap-4 items-center pt-6">
-            <div className="flex items-center bg-gray-100 rounded-md">
+            <div className="flex items-center dark:bg-black dark:text-white bg-gray-100 rounded-md">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 className="px-4"
