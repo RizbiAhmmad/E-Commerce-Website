@@ -77,7 +77,7 @@ const Dashboard = () => {
             isSidebarOpen ? "w-64" : "w-0 md:w-64"
           } bg-gray-100 text-black dark:bg-black dark:text-white transition-all duration-300 flex flex-col justify-between`}
         >
-          <ul onClick={toggleSidebar} className="p-6 space-y-2 text-md">
+          <ul onClick={toggleSidebar} className="p-6 space-y-2 text-md h-[calc(100vh-4rem)] overflow-y-auto scroll-smooth">
             {/* Admin Menu */}
             {userRole === "admin" && (
               <>

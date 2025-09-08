@@ -6,7 +6,7 @@ const StockReport = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 5;
+  const productsPerPage = 10;
 
   useEffect(() => {
     fetchProducts();
