@@ -81,7 +81,7 @@ const NewArrival = () => {
         New Arrival Products
       </motion.h1>
 
-      <div className="grid p-4 gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid p-4 gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {activeProducts.slice(0, visibleCount).map((product, index) => (
           <motion.div
             key={product._id}
@@ -200,8 +200,8 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
     className="w-full h-full object-cover rounded-md"
     whileHover={{ scale: 1.05 }}
     transition={{ duration: 0.3 }}
-  />
-</div> */}
+  /> */}
+{/* </div> */}
 
 
         {hasDiscount && (
@@ -258,13 +258,13 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
                 );
               })}
             </div>
-            <span className="text-[0.8rem] dark:text-slate-400 text-gray-500">
+            {/* <span className="text-[0.8rem] dark:text-slate-400 text-gray-500">
               ({averageRating ? averageRating.toFixed(1) : "No ratings"})
-            </span>
+            </span> */}
           </div>
         </div>
 
-        <div className="flex items-end justify-between mt-5">
+        <div className="flex items-end justify-between my-2">
           <div>
             <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
               {!product.stock || Number(product.stock) === 0 ? (
@@ -292,7 +292,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-[10px]">
+          <div className="flex items-center gap-[5px]">
             <button
               onClick={handleAddToCart}
               className="py-2 px-4 border border-[#0FABCA] text-white rounded-md flex items-center group gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200"
@@ -302,10 +302,10 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
             <button
               onClick={() => {
-                console.log("navigate to product", product._id);
+                // console.log("navigate to product", product._id);
                 navigate(`/product/${product._id}`);
               }}
-              className="py-2 px-2 border border-[#0FABCA] text-[#0FABCA] hover:text-white rounded-md flex items-center gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200"
+              className="py-2 px-1 border border-[#0FABCA] text-[#0FABCA] hover:text-white rounded-md flex items-center gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200"
             >
               View Details
             </button>

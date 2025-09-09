@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -75,7 +75,7 @@ const AllSliders = () => {
           onClick={() => navigate("/dashboard/addSlider")}
           className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
-          Add Slider
+        <FaPlus />  Add Slider
         </button>
       </div>
 
@@ -105,9 +105,9 @@ const AllSliders = () => {
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                  <button onClick={() => openEditModal(slider)}>
+                  {/* <button onClick={() => openEditModal(slider)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
-                  </button>
+                  </button> */}
                   <button onClick={() => handleDelete(slider._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
                   </button>
