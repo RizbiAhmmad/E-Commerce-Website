@@ -7,6 +7,7 @@ import {
   FaUser,
   FaBars,
   FaTimes,
+  FaChevronDown,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
@@ -19,7 +20,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [searchResults, setSearchResults] = useState([]); 
+  const [searchResults, setSearchResults] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
 
@@ -50,22 +51,22 @@ const Navbar = () => {
     return () => window.removeEventListener("cartUpdated", onCartUpdated);
   }, [user]);
 
-  // 🔥 Live search products
+  //  Live search products
   useEffect(() => {
-  if (searchText.trim()) {
-    axios.get("http://localhost:5000/products")
-      .then((res) => {
-        const filtered = res.data.filter(p =>
-          p.name.toLowerCase().includes(searchText.toLowerCase())
-        );
-        setSearchResults(filtered);
-      })
-      .catch(() => setSearchResults([]));
-  } else {
-    setSearchResults([]);
-  }
-}, [searchText]);
-
+    if (searchText.trim()) {
+      axios
+        .get("http://localhost:5000/products")
+        .then((res) => {
+          const filtered = res.data.filter((p) =>
+            p.name.toLowerCase().includes(searchText.toLowerCase())
+          );
+          setSearchResults(filtered);
+        })
+        .catch(() => setSearchResults([]));
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchText]);
 
   const handleLogin = () => {
     navigate("/login");
@@ -76,6 +77,29 @@ const Navbar = () => {
     logOut().catch((error) => console.log(error));
   };
 
+  const [menuData, setMenuData] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/categories-with-subcategories")
+      .then((res) => setMenuData(res.data))
+      .catch(() => setMenuData([]));
+  }, []);
+  const [openCategory, setOpenCategory] = useState(null);
+
+  const [footerInfo, setFooterInfo] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/footer")
+      .then((res) => {
+        if (res.data.length > 0) {
+          setFooterInfo(res.data[0]); // first footer info use korbo
+        }
+      })
+      .catch(() => setFooterInfo(null));
+  }, []);
+
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
       <div className="max-w-7xl mx-auto flex justify-between items-center py-3">
@@ -85,36 +109,98 @@ const Navbar = () => {
           animate={{ opacity: 1, x: 0 }}
           className="text-2xl flex gap-2 font-bold text-cyan-500 dark:text-cyan-300"
         >
-          <img src={logo} alt="Logo" className="w-10 h-10 mr-2 rounded-full" />
-          <Link to="/">Sostay Kini</Link>
+          {footerInfo?.logo ? (
+            <img
+              src={footerInfo.logo}
+              alt="Logo"
+              className="w-10 h-10 mr-2 rounded-full"
+            />
+          ) : (
+            <img
+              src="/fallback-logo.png" // fallback static logo
+              alt="Logo"
+              className="w-10 h-10 mr-2 rounded-full"
+            />
+          )}
+          <Link to="/">{footerInfo?.name || "Sostay Kini"}</Link>
         </motion.div>
 
-        {/* Desktop Search */}
-        <div className="hidden md:flex items-center w-1/3 relative">
-          <FaSearch className="absolute left-3 text-gray-400 dark:text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full rounded-md bg-gray-100 dark:bg-gray-800 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none"
-          />
+        {/* Desktop Search + All Categories */}
+        <div className="hidden md:flex items-center w-1/3 relative gap-4">
+          {/* Categories Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setOpenCategory(openCategory ? null : "show")}
+              className="flex items-center gap-1 font-medium text-black dark:text-gray-200 hover:text-cyan-500"
+            >
+              Categories <FaChevronDown className="text-sm mt-0.5" />
+            </button>
 
-          {/* 🔥 Dropdown results */}
-          {searchResults.length > 0 && (
-            <div className="absolute top-12 left-0 w-full bg-white dark:bg-gray-800 border rounded-md shadow-md max-h-60 overflow-y-auto z-50">
-              {searchResults.map((product) => (
-                <Link
-                  key={product._id}
-                  to={`/product/${product._id}`}
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  onClick={() => setSearchText("")}
-                >
-                  {product.name}
-                </Link>
-              ))}
-            </div>
-          )}
+            {/* Main Category List */}
+            {openCategory && (
+              <div
+                className="absolute left-0 top-full mt-2 bg-white dark:bg-gray-900 border rounded-md shadow-md w-56 z-50"
+                onMouseLeave={() => setOpenCategory(null)}
+              >
+                {menuData.map((cat) => (
+                  <div key={cat._id} className="relative">
+                    <div
+                      onMouseEnter={() => setOpenCategory(cat._id)}
+                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex justify-between items-center"
+                    >
+                      {cat.name} <FaChevronDown className="text-xs" />
+                    </div>
+
+                    {/* Subcategory Mega Menu */}
+                    {openCategory === cat._id &&
+                      cat.subcategories.length > 0 && (
+                        <div className="absolute top-0 left-full bg-white dark:bg-gray-900 shadow-lg border rounded-md mt-0 p-4 grid grid-cols-1 gap-2 z-50 w-48">
+                          {cat.subcategories.map((sub) => (
+                            <div
+                              key={sub._id}
+                              className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded"
+                              onClick={() => {
+                                navigate(`/subcategory/${sub._id}`);
+                                setOpenCategory(null); // close menu after click
+                              }}
+                            >
+                              {sub.name}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Existing Search Input */}
+          <div className="flex items-center w-full relative">
+            <FaSearch className="absolute left-3 text-gray-400 dark:text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full rounded-md bg-white dark:bg-gray-800 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none"
+            />
+            {/* Search results (unchanged) */}
+            {searchResults.length > 0 && (
+              <div className="absolute top-12 left-0 w-full bg-white dark:bg-gray-800 border rounded-md shadow-md max-h-60 overflow-y-auto z-50">
+                {searchResults.map((product) => (
+                  <Link
+                    key={product._id}
+                    to={`/product/${product._id}`}
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => setSearchText("")}
+                  >
+                    {product.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Icons */}
@@ -183,7 +269,7 @@ const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-4 py-2"
+            className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-4 py-2"
           >
             <div className="flex flex-col relative w-full">
               <div className="flex items-center relative">
@@ -197,7 +283,7 @@ const Navbar = () => {
                 />
               </div>
 
-              {/* 🔥 Mobile results */}
+              {/*  Mobile results */}
               {searchResults.length > 0 && (
                 <div className="mt-2 bg-white dark:bg-gray-800 border rounded-md shadow-md max-h-60 overflow-y-auto z-50">
                   {searchResults.map((product) => (
@@ -229,19 +315,88 @@ const Navbar = () => {
             exit={{ height: 0 }}
             className="overflow-hidden md:hidden bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-t border-gray-200 dark:border-gray-700"
           >
-            <div className="flex flex-col px-4 py-4 space-y-3">
-              <Link to="/" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">Home</Link>
-              <Link to="/shop" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">Shop</Link>
-              <Link to="/about" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">About</Link>
-              <Link to="/contact" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">Contact</Link>
+            <div className="flex flex-col px-4 py-4 space-y-3 max-h-[70vh] overflow-y-auto">
+              <Link
+                to="/"
+                onClick={() => setIsOpen(false)}
+                className="hover:text-cyan-500"
+              >
+                Home
+              </Link>
+              <Link
+                to="/about"
+                onClick={() => setIsOpen(false)}
+                className="hover:text-cyan-500"
+              >
+                About
+              </Link>
+              <Link
+                to="/contact"
+                onClick={() => setIsOpen(false)}
+                className="hover:text-cyan-500"
+              >
+                Contact
+              </Link>
               {user && (
-                <Link to="/dashboard" onClick={() => setIsOpen(false)} className="hover:text-cyan-500">Dashboard</Link>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="hover:text-cyan-500"
+                >
+                  Dashboard
+                </Link>
+              )}
+
+              {/*  Mobile Categories */}
+              {menuData.length > 0 && (
+                <div className="flex flex-col space-y-1 mt-2">
+                  <div className="font-semibold text-gray-700 dark:text-gray-200">
+                    Categories
+                  </div>
+                  {menuData.map((cat) => (
+                    <div key={cat._id} className="flex flex-col">
+                      <button
+                        onClick={() =>
+                          setOpenCategory(
+                            openCategory === cat._id ? null : cat._id
+                          )
+                        }
+                        className="flex justify-between items-center px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+                      >
+                        {cat.name}
+                        {cat.subcategories.length > 0 && (
+                          <FaChevronDown className="text-xs" />
+                        )}
+                      </button>
+
+                      {/* Subcategories */}
+                      {openCategory === cat._id &&
+                        cat.subcategories.length > 0 && (
+                          <div className="flex flex-col ml-4 mt-1 space-y-1">
+                            {cat.subcategories.map((sub) => (
+                              <button
+                                key={sub._id}
+                                onClick={() => {
+                                  navigate(`/subcategory/${sub._id}`);
+                                  setIsOpen(false);
+                                  setOpenCategory(null);
+                                }}
+                                className="px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-sm text-gray-700 dark:text-gray-200 text-left"
+                              >
+                                {sub.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                    </div>
+                  ))}
+                </div>
               )}
 
               {!user && (
                 <button
                   onClick={handleLogin}
-                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-md flex items-center justify-center"
+                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-md flex items-center justify-center mt-3"
                 >
                   <FaUser className="mr-2" /> Login
                 </button>

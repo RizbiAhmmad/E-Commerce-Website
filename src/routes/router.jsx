@@ -1,4 +1,3 @@
-
 import Login from "@/Authentication/Login";
 import SignUp from "@/Authentication/SignUp";
 import Dashboard from "@/Layouts/Dashboard";
@@ -21,9 +20,7 @@ import AllUsers from "@/Pages/Dashboard/Admin/AllUsers";
 import Profile from "@/Pages/Dashboard/Admin/Profile";
 import Home from "@/Pages/Home/Home";
 import ProductDetailsPage from "@/Pages/Home/ProductDetailsPage";
-import {
-    createBrowserRouter,
-  } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import CheckoutPage from "../Pages/Cart/CheckoutPage";
 import AllOrders from "@/Pages/Dashboard/Admin/AllOrders";
 import MyOrders from "@/Pages/Dashboard/User/MyOrders";
@@ -51,17 +48,18 @@ import AddSlider from "@/Pages/Dashboard/Admin/AddSlider";
 import AllSliders from "@/Pages/Dashboard/Admin/AllSliders";
 import AllFooterInfo from "@/Pages/Dashboard/Admin/AllFooterInfo";
 import AddFooterInfo from "@/Pages/Dashboard/Admin/AddFooterInfo";
+import SubcategoryProducts from "@/Pages/Home/SubcategoryProducts";
 
-  export const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <MainLayout></MainLayout>,
-      children:[
-        {
-            path: "/",
-            element: <Home />,
-        },
-        {
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MainLayout></MainLayout>,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
         path: "login",
         element: <Login></Login>,
       },
@@ -83,43 +81,45 @@ import AddFooterInfo from "@/Pages/Dashboard/Admin/AddFooterInfo";
       },
       {
         path: "checkout",
-        element: <CheckoutPage />
+        element: <CheckoutPage />,
       },
       {
         path: "payment-success",
-        element: <PaymentSuccess />
+        element: <PaymentSuccess />,
       },
       {
         path: "payment-cancel",
-        element: <PaymentCancel />
+        element: <PaymentCancel />,
       },
+      {
+        path: "subcategory/:subId",
+        element: <SubcategoryProducts />,
+      },
+    ],
+  },
+  {
+    path: "dashboard",
+    element: <Dashboard></Dashboard>,
+    children: [
+      { index: true, element: <DashboardHome /> },
 
-        
-      ]
-    },
-    {
-       path: "dashboard",
-      element: <Dashboard></Dashboard>,
-      children:[
-        { index: true, element: <DashboardHome /> },
-
-         {
+      {
         path: "users",
         element: <AllUsers></AllUsers>,
       },
-       {
+      {
         path: "profile",
         element: <Profile></Profile>,
       },
-       {
+      {
         path: "addCategory",
         element: <AddCategory></AddCategory>,
       },
-       {
+      {
         path: "allCategories",
         element: <AllCategories></AllCategories>,
       },
-       {
+      {
         path: "addSubCategories",
         element: <AddSubcategory></AddSubcategory>,
       },
@@ -134,7 +134,7 @@ import AddFooterInfo from "@/Pages/Dashboard/Admin/AddFooterInfo";
       {
         path: "allBrands",
         element: <AllBrands></AllBrands>,
-      },     
+      },
       {
         path: "addSize",
         element: <AddSize></AddSize>,
@@ -169,88 +169,88 @@ import AddFooterInfo from "@/Pages/Dashboard/Admin/AddFooterInfo";
       },
       {
         path: "myOrders",
-        element: <MyOrders />
+        element: <MyOrders />,
       },
       {
         path: "stock",
-        element: <StockReport />
+        element: <StockReport />,
       },
       {
         path: "sales",
-        element: <SalesReport />
+        element: <SalesReport />,
       },
       {
         path: "addCoupon",
-        element: <AddCoupon />
+        element: <AddCoupon />,
       },
       {
         path: "allCoupons",
-        element: <AllCoupons />
+        element: <AllCoupons />,
       },
       {
         path: "pos",
-        element: <POSPage />
+        element: <POSPage />,
       },
       {
         path: "posOrders",
-        element: <AllPOSOrders />
+        element: <AllPOSOrders />,
       },
       {
         path: "addExpenseCategory",
-        element: <AddExpenseCategory />
+        element: <AddExpenseCategory />,
       },
       {
         path: "allExpenseCategories",
-        element: <AllExpenseCategory />
+        element: <AllExpenseCategory />,
       },
       {
         path: "addExpense",
-        element: <AddExpense />
+        element: <AddExpense />,
       },
       {
         path: "allExpense",
-        element: <AllExpense />
+        element: <AllExpense />,
       },
       {
         path: "addDamageProduct",
-        element: <AddDamageProduct />
+        element: <AddDamageProduct />,
       },
       {
         path: "allDamageProducts",
-        element: <AllDamageProducts />
+        element: <AllDamageProducts />,
       },
       {
         path: "addReturnProduct",
-        element: <AddReturnProduct />
+        element: <AddReturnProduct />,
       },
       {
         path: "allReturnProducts",
-        element: <AllReturnProducts />
+        element: <AllReturnProducts />,
       },
       {
         path: "addSlider",
-        element: <AddSlider />
+        element: <AddSlider />,
       },
       {
         path: "allSliders",
-        element: <AllSliders />
+        element: <AllSliders />,
       },
       {
         path: "addFooterInfo",
-        element: <AddFooterInfo />
+        element: <AddFooterInfo />,
       },
       {
         path: "FooterInfo",
-        element: <AllFooterInfo />
+        element: <AllFooterInfo />,
       },
       {
         path: "ExpenseReport",
-        element: <ExpenseReport />
+        element: <ExpenseReport />,
       },
       {
         path: "CustomerSegment",
-        element: <AllCustomersWithSegments />
+        element: <AllCustomersWithSegments />,
       },
-      ]
-    }
-  ]);
+    ],
+  },
+]);

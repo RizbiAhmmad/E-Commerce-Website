@@ -231,14 +231,14 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
       </div>
 
       <div className="mt-2 p-1">
-        <h3 className="text-[1.1rem] dark:text-[#abc2d3] font-medium line-clamp-1">
+        <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
           {product.name}
         </h3>
 
         <div className="flex items-center justify-between mt-1">
           <p className="text-gray-400 text-[0.9rem]">
             Brand:{" "}
-            <span className="text-black dark:text-[#abc2d3]">{brandName}</span>
+            <span className="text-black dark:text-gray-100">{brandName}</span>
           </p>
 
           <div className="flex items-center gap-[10px]">

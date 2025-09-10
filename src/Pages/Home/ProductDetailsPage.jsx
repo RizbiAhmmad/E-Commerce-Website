@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaStar } from "react-icons/fa6";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -29,6 +29,7 @@ const ProductDetailsPage = () => {
   const [reviews, setReviews] = useState([]);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Fetch product data
@@ -142,7 +143,7 @@ const ProductDetailsPage = () => {
         icon: "error",
         title: "You must be logged in to add to cart",
       });
-      navigate("/login");
+      navigate("/login", { state: { from: location } });
       return;
     }
 

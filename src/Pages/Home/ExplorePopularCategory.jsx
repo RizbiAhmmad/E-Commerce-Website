@@ -35,12 +35,12 @@ const ExplorePopularCategory = () => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 120, damping: 12 }}
-        className="text-4xl font-extrabold text-transparent bg-clip-text bg-cyan-500 text-center my-8 select-none drop-shadow-lg"
+        className="text-3xl font-extrabold text-transparent bg-clip-text bg-cyan-500 text-center my-6 select-none drop-shadow-lg"
       >
         Explore Popular Categories
       </motion.h1>
 
-      <p className="text-gray-500 mb-4">
+      <p className="text-gray-500 dark:text-gray-100 mb-4">
         Find your preferred item in the highlighted product selection.
       </p>
 
