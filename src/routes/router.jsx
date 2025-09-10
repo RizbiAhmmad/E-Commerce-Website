@@ -49,6 +49,7 @@ import AllSliders from "@/Pages/Dashboard/Admin/AllSliders";
 import AllFooterInfo from "@/Pages/Dashboard/Admin/AllFooterInfo";
 import AddFooterInfo from "@/Pages/Dashboard/Admin/AddFooterInfo";
 import SubcategoryProducts from "@/Pages/Home/SubcategoryProducts";
+import About from "@/Pages/Home/About";
 
 export const router = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ export const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignUp></SignUp>,
+      },
+      {
+        path: "about",
+        element: <About />,
       },
       {
         path: "product/:id",
