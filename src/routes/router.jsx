@@ -50,6 +50,7 @@ import AllFooterInfo from "@/Pages/Dashboard/Admin/AllFooterInfo";
 import AddFooterInfo from "@/Pages/Dashboard/Admin/AddFooterInfo";
 import SubcategoryProducts from "@/Pages/Home/SubcategoryProducts";
 import About from "@/Pages/Home/About";
+import Contact from "@/Pages/Home/Contact";
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +68,10 @@ export const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignUp></SignUp>,
+      },
+      {
+        path: "contact",
+        element: <Contact />,
       },
       {
         path: "about",

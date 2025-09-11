@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const About = () => {
   const navigate = useNavigate();
   return (
-    <div className="bg-gray-50 py-20 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+    <div className="bg-white py-20 dark:bg-black text-black dark:text-white">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-cyan-500 to-green-500 text-white py-10 px-6 text-center">
         <motion.h1

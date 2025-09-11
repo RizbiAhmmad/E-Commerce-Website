@@ -93,9 +93,8 @@ export default function Footer() {
           <h3 className="text-xl font-semibold mb-2">Quick Links</h3>
           <ul className="space-y-2">
             <li><Link to="/" className="hover:text-orange-400 transition">Home</Link></li>
-            <li><Link to="/" className="hover:text-orange-400 transition">About Us</Link></li>
-            <li><Link to="/" className="hover:text-orange-400 transition">Blogs</Link></li>
-            <li><Link to="/" className="hover:text-orange-400 transition">Contact</Link></li>
+            <li><Link to="/about" className="hover:text-orange-400 transition">About Us</Link></li>
+            <li><Link to="/contact" className="hover:text-orange-400 transition">Contact</Link></li>
           </ul>
         </motion.div>
 
