@@ -61,7 +61,7 @@ const AddOffer = () => {
           <div className="flex items-center gap-4">
             <label
               htmlFor="image"
-              className="px-4 py-2 text-white transition bg-green-500 rounded-lg shadow cursor-pointer hover:bg-green-600"
+              className="px-4 py-2 text-white transition bg-cyan-500 rounded-lg shadow cursor-pointer hover:bg-cyan-600"
             >
               Choose File
             </label>
@@ -94,7 +94,7 @@ const AddOffer = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+          className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
           {loading ? "Submitting..." : "Add Offer"}
         </button>
