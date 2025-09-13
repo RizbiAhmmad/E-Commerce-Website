@@ -7,9 +7,10 @@ import { AuthContext } from "@/provider/AuthProvider";
 import Swal from "sweetalert2";
 import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
+import { GrView } from "react-icons/gr";
 
 const SubcategoryProducts = () => {
-  const { subId } = useParams(); // subcategory ID from route
+  const { subId } = useParams(); // subcategory ID
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState("");
@@ -29,7 +30,6 @@ const SubcategoryProducts = () => {
           `http://localhost:5000/products?subcategoryId=${subId}`
         );
         setProducts(res.data);
-
         const prices = res.data.map((p) => p.newPrice);
         const maxPrice = Math.max(...prices, 10000);
         setPriceRange([0, maxPrice]);
@@ -44,6 +44,7 @@ const SubcategoryProducts = () => {
 
   if (loading) return <Loading />;
 
+  // Sorting
   const sortedProducts = [...products].sort((a, b) => {
     if (sort === "lowToHigh") return a.newPrice - b.newPrice;
     if (sort === "highToLow") return b.newPrice - a.newPrice;
@@ -51,6 +52,7 @@ const SubcategoryProducts = () => {
     return 0;
   });
 
+  // Price filter
   const filteredProducts = sortedProducts.filter(
     (p) => p.newPrice >= priceRange[0] && p.newPrice <= priceRange[1]
   );
@@ -79,10 +81,12 @@ const SubcategoryProducts = () => {
     const discountPercent = hasDiscount
       ? Math.round(((oldPriceNum - newPriceNum) / oldPriceNum) * 100)
       : 0;
+
     const formatPrice = (price) =>
       `৳ ${price.toLocaleString("en-US", { minimumFractionDigits: 0 })}`;
 
-    const handleAddToCart = async () => {
+    const handleAddToCart = async (e) => {
+      e.stopPropagation();
       if (!user) {
         Swal.fire({
           icon: "error",
@@ -115,15 +119,21 @@ const SubcategoryProducts = () => {
     };
 
     return (
-      <div className="border shadow-lg border-gray-300 dark:border-cyan-700 rounded-xl p-2">
+      <div
+        onClick={() => navigate(`/product/${product._id}`)}
+        className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300"
+      >
+        {/* Image */}
         <div className="relative overflow-hidden rounded-md">
           <motion.img
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
             alt={product.name}
             src={product.images?.[0] || "https://via.placeholder.com/300"}
-            className="w-full h-48 object-cover rounded-md"
+            className="w-full aspect-square object-cover rounded-md"
           />
+
+          {/* Discount Badge */}
           {hasDiscount && (
             <motion.div
               initial={{ rotateY: 90, opacity: 0 }}
@@ -134,56 +144,68 @@ const SubcategoryProducts = () => {
               {discountPercent}% OFF
             </motion.div>
           )}
-          <div className="p-2 rounded-full bg-gray-600 absolute top-2 right-2">
+
+          {/* Favorite */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="p-2 rounded-full bg-gray-100 absolute top-2 right-2"
+          >
             {isFavorite ? (
               <IoIosHeart
                 onClick={() => setIsFavorite(false)}
-                className="text-[#0FABCA] text-[1.2rem] cursor-pointer"
+                className="text-[#0FABCA] text-[1.4rem] cursor-pointer"
               />
             ) : (
               <IoMdHeartEmpty
                 onClick={() => setIsFavorite(true)}
-                className="text-white text-[1.2rem] cursor-pointer"
+                className="text-black text-[1.4rem] cursor-pointer"
               />
             )}
           </div>
         </div>
+
+        {/* Info */}
         <div className="mt-2 p-1">
           <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
             {product.name}
           </h3>
-          <div className="flex items-end justify-between mt-5">
-            <div>
-              <div className="mt-1">
-                {hasDiscount ? (
-                  <>
-                    <span className="text-red-500 line-through mr-2">
-                      {formatPrice(oldPriceNum)}
-                    </span>
-                    <br />
-                    <span className="font-bold dark:text-white text-black">
-                      {formatPrice(newPriceNum)}
-                    </span>
-                  </>
-                ) : (
-                  <span className="font-bold dark:text-white text-black">
+
+          <div className="flex items-end justify-between my-2">
+            {/* Price */}
+            <div className="mt-1 min-h-[40px] flex items-center gap-2">
+              {hasDiscount ? (
+                <>
+                  <span className="text-red-500 line-through">
+                    {formatPrice(oldPriceNum)}
+                  </span>
+                  <span className="font-bold text-black dark:text-white">
                     {formatPrice(newPriceNum)}
                   </span>
-                )}
-              </div>
+                </>
+              ) : (
+                <span className="font-bold dark:text-white text-black">
+                  {formatPrice(newPriceNum)}
+                </span>
+              )}
             </div>
-            <div className="flex items-center gap-[8px]">
+
+            {/* Action Buttons */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-2 md:gap-4"
+            >
               <button
                 onClick={handleAddToCart}
-                className="group py-2 px-4 border border-[#0FABCA] text-white rounded-md flex items-center gap-[0.5rem] hover:bg-[#0FABCA] hover:text-white transition-all duration-200"
+                className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
               >
-                <IoCartOutline className="text-[1.3rem] text-[#0FABCA] group-hover:text-white" />
+                <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
               </button>
+
               <button
                 onClick={() => navigate(`/product/${product._id}`)}
-                className="py-2 px-2 border border-[#0FABCA] text-[#0FABCA] rounded-md hover:text-white hover:bg-[#0FABCA] transition-all duration-200"
+                className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
               >
-                View Details
+                <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
               </button>
             </div>
           </div>
@@ -267,7 +289,7 @@ const SubcategoryProducts = () => {
             <p className="text-center text-gray-600">No products found.</p>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 {currentProducts.map((product) => (
                   <motion.div
                     key={product._id}

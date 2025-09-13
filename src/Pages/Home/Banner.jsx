@@ -28,14 +28,13 @@ export default function Banner() {
     }, 7000);
     return () => clearInterval(interval);
   }, [slides]);
-  
-  useEffect(() => {
-  slides.forEach(slide => {
-    const img = new Image();
-    img.src = slide.image;
-  });
-}, [slides]);
 
+  useEffect(() => {
+    slides.forEach((slide) => {
+      const img = new Image();
+      img.src = slide.image;
+    });
+  }, [slides]);
 
   const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
   const prevSlide = () =>
@@ -48,18 +47,17 @@ export default function Banner() {
     <div className="relative dark:bg-black w-full overflow-hidden pt-[100px]">
       <div className="max-w-7xl mx-auto overflow-hidden relative">
         <AnimatePresence mode="wait">
-  <motion.img
-    key={slides[current]._id}
-    src={slides[current].image}
-    alt="Slider"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    transition={{ duration: 1 }}
-    className="w-full h-auto object-contain rounded-xl"
-  />
-</AnimatePresence>
-
+          <motion.img
+            key={slides[current]._id}
+            src={slides[current].image}
+            alt="Slider"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            className="w-full h-auto object-contain rounded-xl"
+          />
+        </AnimatePresence>
 
         {/* Arrows */}
         <button

@@ -8,8 +8,9 @@ import { motion } from "framer-motion";
 import Loading from "@/Shared/Loading";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
+import { Typewriter } from "react-simple-typewriter";
 import { AuthContext } from "@/provider/AuthProvider";
+import { GrView } from "react-icons/gr";
 
 const fetchProducts = async () => {
   const { data } = await axios.get("http://localhost:5000/products");
@@ -21,7 +22,6 @@ const fetchBrands = async () => {
   return data;
 };
 
-// New: fetch reviews separately
 const fetchReviews = async () => {
   const { data } = await axios.get("http://localhost:5000/reviews");
   return data;
@@ -43,16 +43,16 @@ const NewArrival = () => {
     queryFn: fetchBrands,
   });
 
-  // New query to get reviews
   const { data: reviews } = useQuery({
     queryKey: ["reviews"],
     queryFn: fetchReviews,
   });
 
-  const [visibleCount, setVisibleCount] = useState(20);
+  const [visibleCount, setVisibleCount] = useState(40);
 
   if (isLoading) return <Loading />;
-  if (isError) return <p className="text-center text-red-500">{error.message}</p>;
+  if (isError)
+    return <p className="text-center text-red-500">{error.message}</p>;
 
   const getBrandName = (brandId) => {
     return brands?.find((b) => b._id === brandId)?.name || "Unknown";
@@ -61,7 +61,6 @@ const NewArrival = () => {
   const activeProducts =
     products?.filter((product) => product.variant === "new" && product.status === "active") || [];
 
-  // Helper to calculate average rating for product
   const getAverageRating = (productId) => {
     if (!reviews) return 0;
     const productReviews = reviews.filter((r) => r.productId === productId);
@@ -76,9 +75,17 @@ const NewArrival = () => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 120, damping: 12 }}
-        className="text-4xl font-extrabold text-transparent bg-clip-text bg-cyan-500 text-center my-8 select-none drop-shadow-lg"
+        className="text-3xl font-extrabold text-transparent bg-clip-text bg-cyan-500 text-center my-8 select-none drop-shadow-lg"
       >
-        New Arrival Products
+        <Typewriter
+          words={["New Arrival Products"]}
+          loop={0}
+          cursor
+          cursorStyle="|"
+          typeSpeed={70}
+          deleteSpeed={50}
+          delaySpeed={2000}
+        />
       </motion.h1>
 
       <div className="grid p-4 gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -108,7 +115,6 @@ const NewArrival = () => {
         ))}
       </div>
 
-      {/* Load More Button */}
       {visibleCount < activeProducts.length && (
         <div className="text-center my-6">
           <button
@@ -124,10 +130,8 @@ const NewArrival = () => {
 };
 
 const SingleProduct = ({ product, brandName, averageRating }) => {
-  
   const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
-
   const { user } = useContext(AuthContext);
 
   const oldPriceNum = Number(product.oldPrice);
@@ -143,8 +147,8 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
   const formatPrice = (price) =>
     `৳ ${price.toLocaleString("en-US", { minimumFractionDigits: 0 })}`;
 
-  // Add to Cart handler
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
     if (!user) {
       Swal.fire({
         icon: "error",
@@ -170,7 +174,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           timer: 1500,
           showConfirmButton: false,
         });
-        window.dispatchEvent(new Event("cartUpdated")); // Notify cart update globally
+        window.dispatchEvent(new Event("cartUpdated"));
       }
     } catch (error) {
       console.error(error);
@@ -182,26 +186,18 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
   };
 
   return (
-    <div className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg">
+    <div
+      onClick={() => navigate(`/product/${product._id}`)}
+      className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300"
+    >
       <div className="relative overflow-hidden rounded-md">
         <motion.img
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.3 }}
-          alt={product.name}
-          src={product.images?.[0] || "https://via.placeholder.com/300"}
-          className="w-full h-48 object-cover rounded-md"
-        />
-
-        {/* h-800,w-1200 */}
-        {/* <div className="relative overflow-hidden rounded-md w-full aspect-[4/3] sm:aspect-[3/2] md:aspect-[1/1]">
-  <motion.img
-    src={product.images?.[0] || "https://via.placeholder.com/800"}
-    alt={product.name}
-    className="w-full h-full object-cover rounded-md"
-    whileHover={{ scale: 1.05 }}
-    transition={{ duration: 0.3 }}
-  /> */}
-{/* </div> */}
+  whileHover={{ scale: 1.05 }}
+  transition={{ duration: 0.3 }}
+  alt={product.name}
+  src={product.images?.[0] || "https://via.placeholder.com/300"}
+  className="w-full aspect-square object-cover rounded-md"
+/>
 
 
         {hasDiscount && (
@@ -215,52 +211,52 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           </motion.div>
         )}
 
-        <div className="p-2 rounded-full bg-gray-600 absolute top-2 right-2">
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="p-2 rounded-full bg-gray-100 absolute top-2 right-2"
+        >
           {isFavorite ? (
             <IoIosHeart
               onClick={() => setIsFavorite(false)}
-              className="text-[#0FABCA] text-[1.2rem] cursor-pointer"
+              className="text-[#0FABCA] text-[1.4rem] cursor-pointer"
             />
           ) : (
             <IoMdHeartEmpty
               onClick={() => setIsFavorite(true)}
-              className="text-white text-[1.2rem] cursor-pointer"
+              className="text-black text-[1.4rem] cursor-pointer"
             />
           )}
         </div>
       </div>
 
       <div className="mt-2 p-1">
-        <h3 className="text-[1.1rem] dark:text-[#abc2d3] font-medium line-clamp-1">
+        <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
           {product.name}
         </h3>
 
         <div className="flex items-center justify-between mt-1">
           <p className="text-gray-400 text-[0.9rem]">
             Brand:{" "}
-            <span className="text-black dark:text-[#abc2d3]">{brandName}</span>
+            <span className="text-black dark:text-gray-100">{brandName}</span>
           </p>
 
-          <div className="flex items-center gap-[10px]">
+          <div className="flex items-center gap-[8px]">
             <div className="flex items-center space-x-1">
               {[...Array(5)].map((_, index) => {
                 const starNumber = index + 1;
                 return (
                   <FaStar
                     key={starNumber}
-                    className={`cursor-pointer ${
+                    className={`${
                       starNumber <= Math.round(averageRating)
                         ? "text-yellow-400"
                         : "text-gray-300"
                     }`}
-                    size={15}
+                    size={14}
                   />
                 );
               })}
             </div>
-            {/* <span className="text-[0.8rem] dark:text-slate-400 text-gray-500">
-              ({averageRating ? averageRating.toFixed(1) : "No ratings"})
-            </span> */}
           </div>
         </div>
 
@@ -274,10 +270,10 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
               )}
             </span>
 
-            <div className="mt-1">
+            <div className="mt-1 min-h-[40px] flex items-center gap-2">
               {hasDiscount ? (
                 <>
-                  <span className="text-red-500 line-through mr-2">
+                  <span className="text-red-500 line-through">
                     {formatPrice(oldPriceNum)}
                   </span>
                   <span className="font-bold text-black dark:text-white">
@@ -292,22 +288,22 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-[5px]">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-2 md:gap-4"
+          >
             <button
               onClick={handleAddToCart}
-              className="py-2 px-4 border border-[#0FABCA] text-white rounded-md flex items-center group gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200"
+              className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
             >
-              <IoCartOutline className="text-[1.3rem] group-hover:text-white text-[#0FABCA]" />
+              <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
             </button>
 
             <button
-              onClick={() => {
-                // console.log("navigate to product", product._id);
-                navigate(`/product/${product._id}`);
-              }}
-              className="py-2 px-1 border border-[#0FABCA] text-[#0FABCA] hover:text-white rounded-md flex items-center gap-[0.5rem] text-[0.9rem] hover:bg-[#0FABCA] transition-all duration-200"
+              onClick={() => navigate(`/product/${product._id}`)}
+              className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
             >
-              View Details
+              <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
             </button>
           </div>
         </div>

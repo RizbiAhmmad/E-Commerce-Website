@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import Loading from "@/Shared/Loading";
 import { useNavigate } from "react-router-dom";
+import { Typewriter } from "react-simple-typewriter";
 
 const ExplorePopularCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -37,7 +38,15 @@ const ExplorePopularCategory = () => {
         transition={{ type: "spring", stiffness: 120, damping: 12 }}
         className="text-3xl font-extrabold text-transparent bg-clip-text bg-cyan-500 text-center my-6 select-none drop-shadow-lg"
       >
-        Explore Popular Categories
+        <Typewriter
+          words={["Explore Popular Categories"]}
+          loop={0}
+          cursor
+          cursorStyle="|"
+          typeSpeed={70}
+          deleteSpeed={50}
+          delaySpeed={2000}
+        />
       </motion.h1>
 
       <p className="text-gray-500 dark:text-gray-100 mb-4">

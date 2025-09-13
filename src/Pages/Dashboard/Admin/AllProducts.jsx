@@ -344,7 +344,7 @@ const AllProducts = () => {
                   {brands.find((b) => b._id === p.brandId)?.name || "-"}
                 </td>
                 <td className="px-6 py-4 font-mono">
-                  {p.newPrice ? `$${p.newPrice}` : "0"}
+                  {p.newPrice ? `৳${p.newPrice}` : "0"}
                 </td>
                 <td className="px-6 py-4 font-mono">
                   {p.stock ? `${p.stock}` : "0"}

@@ -252,7 +252,7 @@ const AddProduct = () => {
 
         <div className="md:col-span-2">
           <label className="block mb-2 font-semibold">
-            Product Image (You can select Multiple)
+            Product Image (1200x1200) (You can select Multiple)
           </label>
 
           {/* Hidden file input */}

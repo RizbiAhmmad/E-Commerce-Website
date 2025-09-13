@@ -154,205 +154,209 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="max-w-7xl dark:bg-black dark:text-white mx-auto px-8 py-24 grid md:grid-cols-3 gap-8">
-      {/* Left */}
-      <div className="md:col-span-2 space-y-6">
-        {/* Customer Information */}
-        <div className="border rounded p-6">
-          <h2 className="font-semibold text-lg mb-4">Customer Information</h2>
-          <div className="grid md:grid-cols-2 gap-4">
+    <div className="min-h-screen dark:bg-black dark:text-white">
+      <div className="max-w-7xl mx-auto px-8 py-24 grid md:grid-cols-3 gap-8">
+        {/* Left */}
+        <div className="md:col-span-2 space-y-6">
+          {/* Customer Information */}
+          <div className="border rounded p-6">
+            <h2 className="font-semibold text-lg mb-4">Customer Information</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              <input
+                type="text"
+                placeholder="Full Name *"
+                className="border p-2 rounded"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+              />
+              <input
+                type="number"
+                placeholder="Phone Number *"
+                className="border p-2 rounded"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email Address"
+                className="border p-2 rounded md:col-span-2"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <textarea
+                placeholder="Delivery Address *"
+                className="border p-2 rounded md:col-span-2"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+              ></textarea>
+            </div>
+          </div>
+
+          {/* Shipping */}
+          <div className="border rounded p-6">
+            <h2 className="font-semibold text-lg mb-4">Shipping Information</h2>
+            <label className="flex justify-between items-center border p-3 rounded mb-3 cursor-pointer">
+              <div>
+                <input
+                  type="radio"
+                  name="shipping"
+                  value="inside"
+                  checked={shipping === "inside"}
+                  onChange={() => setShipping("inside")}
+                />{" "}
+                Inside Dhaka
+                <div className="text-sm text-gray-500">
+                  Delivery within 1-2 business days
+                </div>
+              </div>
+              <span>৳60</span>
+            </label>
+            <label className="flex justify-between items-center border p-3 rounded cursor-pointer">
+              <div>
+                <input
+                  type="radio"
+                  name="shipping"
+                  value="outside"
+                  checked={shipping === "outside"}
+                  onChange={() => setShipping("outside")}
+                />{" "}
+                Outside Dhaka
+                <div className="text-sm text-gray-500">
+                  Delivery within 3-5 business days
+                </div>
+              </div>
+              <span>৳120</span>
+            </label>
+          </div>
+
+          {/* Payment */}
+
+          <div className="border rounded-2xl p-6 shadow-md dark:bg-black dark:text-white bg-white">
+            <h2 className="font-semibold text-xl mb-5 text-black dark:text-white">
+              Select Payment Method
+            </h2>
+
+            <div className="grid gap-4">
+              {/* Cash on Delivery */}
+              <label
+                className={`flex items-center gap-4 border p-4 rounded-xl cursor-pointer transition-all duration-200 ${
+                  payment === "cash on delivery"
+                    ? "border-green-500 bg-green-50 ring-2 ring-green-400"
+                    : "hover:border-green-400 hover:bg-green-50"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  value="cash on delivery"
+                  checked={payment === "cash on delivery"}
+                  onChange={() => setPayment("cash on delivery")}
+                  className="hidden"
+                />
+                <FaMoneyBillWave
+                  className={`text-2xl ${
+                    payment === "cash on delivery"
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }`}
+                />
+                <span className="font-medium text-gray-700">
+                  Cash on Delivery
+                </span>
+              </label>
+
+              {/* Online Payment */}
+              <label
+                className={`flex items-center gap-4 border p-4 rounded-xl cursor-pointer transition-all duration-200 ${
+                  payment === "online"
+                    ? "border-cyan-500 bg-cyan-50 ring-2 ring-cyan-400"
+                    : "hover:border-cyan-400 hover:bg-cyan-50"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  value="online"
+                  checked={payment === "online"}
+                  onChange={() => setPayment("online")}
+                  className="hidden"
+                />
+                <FaCreditCard
+                  className={`text-2xl ${
+                    payment === "online" ? "text-cyan-600" : "text-gray-400"
+                  }`}
+                />
+                <span className="font-medium text-gray-700">
+                  Online Payment
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Order Summary */}
+        <div className="border rounded p-6 h-fit">
+          <h2 className="font-semibold text-xl mb-6">Order Summary</h2>
+          {cartItems.map((item) => {
+            const product = productsMap[item.productId];
+            return (
+              <div key={item._id} className="flex justify-between mb-3">
+                <span>
+                  {product?.name} × {item.quantity}
+                </span>
+                <span>৳{(product?.newPrice || 0) * item.quantity}</span>
+              </div>
+            );
+          })}
+          <hr className="my-4" />
+          <div className="flex justify-between mb-2">
+            <span>Subtotal</span>
+            <span>৳{subtotal}</span>
+          </div>
+          <div className="flex justify-between mb-2">
+            <span>Shipping</span>
+            <span>৳{shippingCost}</span>
+          </div>
+          {discount > 0 && (
+            <div className="flex justify-between mb-2 text-green-600">
+              <span>Discount ({appliedCoupon?.code})</span>
+              <span>-৳{discount}</span>
+            </div>
+          )}
+          <div className="flex justify-between font-bold text-lg">
+            <span>Total</span>
+            <span>৳{total}</span>
+          </div>
+
+          {/* Coupon Input */}
+          <div className="mt-4 flex gap-2">
             <input
               type="text"
-              placeholder="Full Name *"
-              className="border p-2 rounded"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
+              placeholder="Enter coupon code"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              className="flex-1 border p-2 rounded"
             />
-            <input
-              type="number"
-              placeholder="Phone Number *"
-              className="border p-2 rounded"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-            <input
-              type="email"
-              placeholder="Email Address"
-              className="border p-2 rounded md:col-span-2"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <textarea
-              placeholder="Delivery Address *"
-              className="border p-2 rounded md:col-span-2"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              required
-            ></textarea>
-          </div>
-        </div>
-
-        {/* Shipping */}
-        <div className="border rounded p-6">
-          <h2 className="font-semibold text-lg mb-4">Shipping Information</h2>
-          <label className="flex justify-between items-center border p-3 rounded mb-3 cursor-pointer">
-            <div>
-              <input
-                type="radio"
-                name="shipping"
-                value="inside"
-                checked={shipping === "inside"}
-                onChange={() => setShipping("inside")}
-              />{" "}
-              Inside Dhaka
-              <div className="text-sm text-gray-500">
-                Delivery within 1-2 business days
-              </div>
-            </div>
-            <span>৳60</span>
-          </label>
-          <label className="flex justify-between items-center border p-3 rounded cursor-pointer">
-            <div>
-              <input
-                type="radio"
-                name="shipping"
-                value="outside"
-                checked={shipping === "outside"}
-                onChange={() => setShipping("outside")}
-              />{" "}
-              Outside Dhaka
-              <div className="text-sm text-gray-500">
-                Delivery within 3-5 business days
-              </div>
-            </div>
-            <span>৳120</span>
-          </label>
-        </div>
-
-        {/* Payment */}
-
-        <div className="border rounded-2xl p-6 shadow-md dark:bg-black dark:text-white bg-white">
-          <h2 className="font-semibold text-xl mb-5 text-black dark:text-white">
-            Select Payment Method
-          </h2>
-
-          <div className="grid gap-4">
-            {/* Cash on Delivery */}
-            <label
-              className={`flex items-center gap-4 border p-4 rounded-xl cursor-pointer transition-all duration-200 ${
-                payment === "cash on delivery"
-                  ? "border-green-500 bg-green-50 ring-2 ring-green-400"
-                  : "hover:border-green-400 hover:bg-green-50"
-              }`}
+            <button
+              type="button"
+              onClick={handleApplyCoupon}
+              className="px-4 bg-green-500 text-white rounded hover:bg-green-600"
             >
-              <input
-                type="radio"
-                name="payment"
-                value="cash on delivery"
-                checked={payment === "cash on delivery"}
-                onChange={() => setPayment("cash on delivery")}
-                className="hidden"
-              />
-              <FaMoneyBillWave
-                className={`text-2xl ${
-                  payment === "cash on delivery"
-                    ? "text-green-600"
-                    : "text-gray-400"
-                }`}
-              />
-              <span className="font-medium text-gray-700">
-                Cash on Delivery
-              </span>
-            </label>
-
-            {/* Online Payment */}
-            <label
-              className={`flex items-center gap-4 border p-4 rounded-xl cursor-pointer transition-all duration-200 ${
-                payment === "online"
-                  ? "border-cyan-500 bg-cyan-50 ring-2 ring-cyan-400"
-                  : "hover:border-cyan-400 hover:bg-cyan-50"
-              }`}
-            >
-              <input
-                type="radio"
-                name="payment"
-                value="online"
-                checked={payment === "online"}
-                onChange={() => setPayment("online")}
-                className="hidden"
-              />
-              <FaCreditCard
-                className={`text-2xl ${
-                  payment === "online" ? "text-cyan-600" : "text-gray-400"
-                }`}
-              />
-              <span className="font-medium text-gray-700">Online Payment</span>
-            </label>
+              Apply
+            </button>
           </div>
-        </div>
-      </div>
 
-      {/* Right: Order Summary */}
-      <div className="border rounded p-6 h-fit">
-        <h2 className="font-semibold text-xl mb-6">Order Summary</h2>
-        {cartItems.map((item) => {
-          const product = productsMap[item.productId];
-          return (
-            <div key={item._id} className="flex justify-between mb-3">
-              <span>
-                {product?.name} × {item.quantity}
-              </span>
-              <span>৳{(product?.newPrice || 0) * item.quantity}</span>
-            </div>
-          );
-        })}
-        <hr className="my-4" />
-        <div className="flex justify-between mb-2">
-          <span>Subtotal</span>
-          <span>৳{subtotal}</span>
-        </div>
-        <div className="flex justify-between mb-2">
-          <span>Shipping</span>
-          <span>৳{shippingCost}</span>
-        </div>
-        {discount > 0 && (
-          <div className="flex justify-between mb-2 text-green-600">
-            <span>Discount ({appliedCoupon?.code})</span>
-            <span>-৳{discount}</span>
-          </div>
-        )}
-        <div className="flex justify-between font-bold text-lg">
-          <span>Total</span>
-          <span>৳{total}</span>
-        </div>
-
-        {/* Coupon Input */}
-        <div className="mt-4 flex gap-2">
-          <input
-            type="text"
-            placeholder="Enter coupon code"
-            value={couponCode}
-            onChange={(e) => setCouponCode(e.target.value)}
-            className="flex-1 border p-2 rounded"
-          />
           <button
-            type="button"
-            onClick={handleApplyCoupon}
-            className="px-4 bg-green-500 text-white rounded hover:bg-green-600"
+            onClick={handlePlaceOrder}
+            className="mt-6 w-full bg-cyan-500 text-white py-3 rounded hover:bg-cyan-600 transition"
           >
-            Apply
+            Place Order
           </button>
         </div>
-
-        <button
-          onClick={handlePlaceOrder}
-          className="mt-6 w-full bg-cyan-500 text-white py-3 rounded hover:bg-cyan-600 transition"
-        >
-          Place Order
-        </button>
       </div>
     </div>
   );

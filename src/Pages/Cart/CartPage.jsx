@@ -111,7 +111,8 @@ const CartPage = () => {
   if (!cartItems.length) return <p>Your cart is empty.</p>;
 
   return (
-    <div className="max-w-7xl dark:bg-black dark:text-white mx-auto px-8 py-24 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="min-h-screen dark:bg-black dark:text-white">
+    <div className="max-w-7xl mx-auto px-8 py-24 grid grid-cols-1 md:grid-cols-3 gap-8">
       <div className="md:col-span-2 space-y-6">
         {cartItems.map((item) => {
           const product = productsMap[item.productId];
@@ -216,6 +217,7 @@ const CartPage = () => {
           Checkout
         </button>
       </div>
+    </div>
     </div>
   );
 };

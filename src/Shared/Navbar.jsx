@@ -11,9 +11,9 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
-import logo from "../assets/SostayKini.jpg";
 import { AuthContext } from "@/provider/AuthProvider";
 import axios from "axios";
+import { IoIosArrowForward } from "react-icons/io";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -107,19 +107,19 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-2xl flex gap-2 font-bold text-cyan-500 dark:text-cyan-300"
+          className="text-2xl items-center flex gap-2 font-bold text-cyan-500 dark:text-cyan-300"
         >
           {footerInfo?.logo ? (
             <img
               src={footerInfo.logo}
               alt="Logo"
-              className="w-10 h-10 mr-2 rounded-full"
+              className="w-12 h-12 mr-2 rounded-full"
             />
           ) : (
             <img
               src="/fallback-logo.png" // fallback static logo
               alt="Logo"
-              className="w-10 h-10 mr-2 rounded-full"
+              className="w-12 h-12 mr-2 rounded-full"
             />
           )}
           <Link to="/">{footerInfo?.name || "Sostay Kini"}</Link>
@@ -131,7 +131,7 @@ const Navbar = () => {
           <div className="relative">
             <button
               onClick={() => setOpenCategory(openCategory ? null : "show")}
-              className="flex items-center gap-1 font-medium text-black dark:text-gray-200 hover:text-cyan-500"
+              className="flex items-center text-xl gap-1 text-black dark:text-gray-200 hover:text-cyan-500"
             >
               Categories <FaChevronDown className="text-sm mt-0.5" />
             </button>
@@ -148,7 +148,7 @@ const Navbar = () => {
                       onMouseEnter={() => setOpenCategory(cat._id)}
                       className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex justify-between items-center"
                     >
-                      {cat.name} <FaChevronDown className="text-xs" />
+                      {cat.name} <IoIosArrowForward className="text-xs" />
                     </div>
 
                     {/* Subcategory Mega Menu */}
