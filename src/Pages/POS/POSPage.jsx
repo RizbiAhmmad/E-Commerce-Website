@@ -108,47 +108,30 @@ const POSPage = () => {
   // }, []);
 
   useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
+  const style = document.createElement("style");
+  style.innerHTML = `
     @media print {
-      /* Hide everything else */
       body * {
         visibility: hidden !important;
-        margin: 0 !important;
-        padding: 0 !important;
       }
-
-      /* Show only the receipt */
       #printable-receipt, #printable-receipt * {
         visibility: visible !important;
       }
-
-      /* Reset receipt position and width for printing */
       #printable-receipt {
-        position: static !important;
+        position: absolute !important;
         top: 0 !important;
         left: 0 !important;
         width: 80mm !important;
         max-width: 80mm !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         padding: 5px !important;
-        border: none !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        font-size: 11px !important;
-        line-height: 1.2 !important;
         page-break-inside: avoid !important;
-      }
-
-      /* Hide modal overlay */
-      .fixed, .z-50, .z-[60] {
-        display: none !important;
       }
     }
   `;
-    document.head.appendChild(style);
-    return () => document.head.removeChild(style);
-  }, []);
+  document.head.appendChild(style);
+  return () => document.head.removeChild(style);
+}, []);
 
   // Add to cart
   const addToCart = (product, qty = 1, color = "", size = "", productImage) => {
@@ -886,19 +869,46 @@ const POSPage = () => {
 
             <hr className="border-t-2 border-dashed border-gray-400 my-3" />
             <div className="text-sm">
-              <div className="flex justify-between">
-                <span>Payment Type:</span>
-                <span className="capitalize">{receiptData.payment.method}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Cash:</span>
-                <span>৳{fmt(receiptData.payment.amount)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Change :</span>
-                <span>৳{fmt(receiptData.payment.change)}</span>
-              </div>
-            </div>
+  <div className="flex justify-between">
+    <span>Payment Type:</span>
+    <span className="capitalize">{receiptData.payment.method}</span>
+  </div>
+
+  {receiptData.payment.method === "cash" && (
+    <>
+      <div className="flex justify-between">
+        <span>Cash:</span>
+        <span>৳{fmt(receiptData.payment.amount)}</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Change :</span>
+        <span>৳{fmt(receiptData.payment.change)}</span>
+      </div>
+    </>
+  )}
+
+  {receiptData.payment.method === "card" && (
+    <div className="flex justify-between">
+      <span>Card Last 4 digits:</span>
+      <span>{receiptData.payment.amount}</span>
+    </div>
+  )}
+
+  {receiptData.payment.method === "mfs" && (
+    <div className="flex justify-between">
+      <span>Mobile Number:</span>
+      <span>{receiptData.payment.amount}</span>
+    </div>
+  )}
+
+  {receiptData.payment.method === "other" && (
+    <div className="flex justify-between">
+      <span>Reference:</span>
+      <span>{receiptData.payment.amount}</span>
+    </div>
+  )}
+</div>
+
 
             <div className="text-center mt-6 text-sm">
               <div>Thank You</div>

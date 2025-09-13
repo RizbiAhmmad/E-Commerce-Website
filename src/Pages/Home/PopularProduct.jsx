@@ -59,7 +59,9 @@ const PopularProduct = () => {
   };
 
   const activeProducts =
-    products?.filter((product) => product.variant === "popular" && product.status === "active") || [];
+    products?.filter(
+      (product) => product.variant === "popular" && product.status === "active"
+    ) || [];
 
   const getAverageRating = (productId) => {
     if (!reviews) return 0;
@@ -188,17 +190,16 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
   return (
     <div
       onClick={() => navigate(`/product/${product._id}`)}
-      className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300"
+      className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer dark:hover:bg-cyan-600 hover:bg-cyan-100 hover:shadow-xl transition-all duration-300"
     >
       <div className="relative overflow-hidden rounded-md">
         <motion.img
-  whileHover={{ scale: 1.05 }}
-  transition={{ duration: 0.3 }}
-  alt={product.name}
-  src={product.images?.[0] || "https://via.placeholder.com/300"}
-  className="w-full aspect-square object-cover rounded-md"
-/>
-
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
+          alt={product.name}
+          src={product.images?.[0] || "https://via.placeholder.com/300"}
+          className="w-full aspect-square object-cover rounded-md"
+        />
 
         {hasDiscount && (
           <motion.div

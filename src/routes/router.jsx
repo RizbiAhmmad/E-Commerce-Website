@@ -51,6 +51,7 @@ import AddFooterInfo from "@/Pages/Dashboard/Admin/AddFooterInfo";
 import SubcategoryProducts from "@/Pages/Home/SubcategoryProducts";
 import About from "@/Pages/Home/About";
 import Contact from "@/Pages/Home/Contact";
+import AddOffer from "@/Pages/Dashboard/Admin/AddOffer";
 
 export const router = createBrowserRouter([
   {
@@ -245,6 +246,14 @@ export const router = createBrowserRouter([
         path: "allSliders",
         element: <AllSliders />,
       },
+      {
+        path: "addOffer",
+        element: <AddOffer />,
+      },
+      // {
+      //   path: "allOffers",
+      //   element: <AllOffers />,
+      // },
       {
         path: "addFooterInfo",
         element: <AddFooterInfo />,
