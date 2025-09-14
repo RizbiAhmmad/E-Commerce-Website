@@ -59,7 +59,9 @@ const NewArrival = () => {
   };
 
   const activeProducts =
-    products?.filter((product) => product.variant === "new" && product.status === "active") || [];
+    products?.filter(
+      (product) => product.variant === "new" && product.status === "active"
+    ) || [];
 
   const getAverageRating = (productId) => {
     if (!reviews) return 0;
@@ -192,13 +194,12 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
     >
       <div className="relative overflow-hidden rounded-md">
         <motion.img
-  whileHover={{ scale: 1.05 }}
-  transition={{ duration: 0.3 }}
-  alt={product.name}
-  src={product.images?.[0] || "https://via.placeholder.com/300"}
-  className="w-full aspect-square object-cover rounded-md"
-/>
-
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
+          alt={product.name}
+          src={product.images?.[0] || "https://via.placeholder.com/300"}
+          className="w-full aspect-square object-cover rounded-md"
+        />
 
         {hasDiscount && (
           <motion.div

@@ -105,9 +105,9 @@ const AllSliders = () => {
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                  {/* <button onClick={() => openEditModal(slider)}>
+                  <button onClick={() => openEditModal(slider)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
-                  </button> */}
+                  </button>
                   <button onClick={() => handleDelete(slider._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
                   </button>

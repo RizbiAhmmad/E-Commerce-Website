@@ -5,6 +5,7 @@ import { RiFileDamageFill } from "react-icons/ri";
 import {
   FaChartBar,
   FaChartLine,
+  FaGift,
   FaHome,
   FaInfoCircle,
   FaListAlt,
@@ -292,6 +293,14 @@ const Dashboard = () => {
                     className="flex items-center px-2 py-2 space-x-3"
                   >
                     <FaSliders /> <span>Sliders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allOffers"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaGift /> <span>Offers</span>
                   </NavLink>
                 </li>
                 <li>

@@ -52,6 +52,7 @@ import SubcategoryProducts from "@/Pages/Home/SubcategoryProducts";
 import About from "@/Pages/Home/About";
 import Contact from "@/Pages/Home/Contact";
 import AddOffer from "@/Pages/Dashboard/Admin/AddOffer";
+import AllOffers from "@/Pages/Dashboard/Admin/AllOffers";
 
 export const router = createBrowserRouter([
   {
@@ -250,10 +251,10 @@ export const router = createBrowserRouter([
         path: "addOffer",
         element: <AddOffer />,
       },
-      // {
-      //   path: "allOffers",
-      //   element: <AllOffers />,
-      // },
+      {
+        path: "allOffers",
+        element: <AllOffers />,
+      },
       {
         path: "addFooterInfo",
         element: <AddFooterInfo />,

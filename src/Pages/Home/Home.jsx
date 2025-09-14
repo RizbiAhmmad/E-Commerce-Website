@@ -6,6 +6,7 @@ import NewArrival from './NewArrival';
 import TopRatedProduct from './TopRatedProduct';
 import FlashSale from './FlashSale';
 import ExplorePopularCategory from './ExplorePopularCategory';
+import OfferPage from './OfferPage';
 
 const Home = () => {
     return (
@@ -14,8 +15,9 @@ const Home = () => {
             <ExplorePopularCategory />
             <ProductCard />
             <NewArrival />
-            <FlashSale />
             <PopularProduct />
+            <OfferPage />
+            <FlashSale />           
             <TopRatedProduct />
         </div>
     );

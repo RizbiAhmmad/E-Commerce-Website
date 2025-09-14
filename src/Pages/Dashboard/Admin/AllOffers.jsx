@@ -79,7 +79,7 @@ const AllOffers = () => {
       <div className="flex justify-end mb-4">
         <button
           onClick={() => navigate("/dashboard/addOffer")}
-          className="flex items-center gap-2 px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+          className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
           <FaPlus /> Add Offer
         </button>
@@ -112,7 +112,7 @@ const AllOffers = () => {
                 </td>
                 <td className="flex gap-4 px-6 py-4">
                   <button onClick={() => openEditModal(offer)}>
-                    <FaEdit className="text-2xl text-green-500 hover:text-green-600" />
+                    <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(offer._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
@@ -168,7 +168,7 @@ const AllOffers = () => {
               </div>
               <button
                 type="submit"
-                className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+                className="px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
               >
                 Update Offer
               </button>

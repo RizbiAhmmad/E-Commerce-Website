@@ -122,7 +122,7 @@ const AddSlider = () => {
           disabled={loading}
           className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
-          {loading ? "Submitting..." : "Add Banner"}
+          {loading ? "Submitting..." : "Add Slider"}
         </button>
       </form>
     </div>
