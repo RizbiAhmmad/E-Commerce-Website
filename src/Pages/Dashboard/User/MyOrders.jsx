@@ -16,7 +16,6 @@ const MyOrders = () => {
     }
   }, [user]);
 
-  // Status badge colors
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "pending":
@@ -50,9 +49,7 @@ const MyOrders = () => {
               {/* Header */}
               <div className="bg-gradient-to-r from-cyan-500 to-blue-400 text-white px-6 py-4 flex justify-between items-center">
                 <div>
-                  <h3 className="font-semibold text-lg">
-                    Order #{order._id}
-                  </h3>
+                  <h3 className="font-semibold text-lg">Order #{order._id}</h3>
                   <p className="text-sm opacity-90">
                     {order.createdAt
                       ? new Date(order.createdAt).toLocaleString()
@@ -82,12 +79,9 @@ const MyOrders = () => {
                       className="w-20 h-20 object-cover rounded-lg shadow-sm"
                     />
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800">
-                        {item.productName}
-                      </h4>
+                      <h4 className="font-semibold text-gray-800">{item.productName}</h4>
                       <p className="text-sm text-gray-500">
-                        Color: <span className="capitalize">{item.color}</span> |{" "}
-                        Size: {item.size}
+                        Color: <span className="capitalize">{item.color}</span> | Size: {item.size}
                       </p>
                       <p className="text-sm text-gray-700 font-medium">
                         Qty: {item.quantity} × ৳{item.price}
@@ -100,13 +94,42 @@ const MyOrders = () => {
                 ))}
               </div>
 
+              {/* Courier Info */}
+              <div className="px-6 py-4 border-t">
+                {order.courier ? (
+                  <div className="space-y-1">
+                    <p className="text-sm">
+                      Courier: <span className="capitalize font-medium">{order.courier}</span>
+                    </p>
+                    {order.courierTrackingId && (
+                      <p className="text-sm text-blue-600 hover:underline cursor-pointer">
+                        Tracking ID: {order.courierTrackingId}
+                      </p>
+                    )}
+                    {order.courierStatus && (
+                      <p className="text-sm">
+                        Status:{" "}
+                        <span
+                          className={
+                            order.courierStatus === "delivered"
+                              ? "text-green-600 font-medium"
+                              : "text-purple-600 font-medium"
+                          }
+                        >
+                          {order.courierStatus}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">Courier info: </p>
+                )}
+              </div>
+
               {/* Footer / Total */}
               <div className="bg-gray-50 px-6 py-4 flex justify-between items-center border-t">
                 <p className="text-sm text-gray-600">
-                  Payment:{" "}
-                  <span className="font-semibold">
-                    {(order.payment || "Not Specified").toUpperCase()}
-                  </span>
+                  Payment: <span className="font-semibold">{(order.payment || "Not Specified").toUpperCase()}</span>
                 </p>
                 <p className="font-bold text-gray-900 text-lg">
                   Total (With delivery charges) : ৳{order.total}

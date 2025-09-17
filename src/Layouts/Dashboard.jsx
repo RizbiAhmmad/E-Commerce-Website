@@ -18,7 +18,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { MdInventory, MdOutlineDashboardCustomize } from "react-icons/md";
+import { MdInventory, MdLocalShipping, MdOutlineDashboardCustomize } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { NavLink, Outlet } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
@@ -301,6 +301,14 @@ const Dashboard = () => {
                     className="flex items-center px-2 py-2 space-x-3"
                   >
                     <FaGift /> <span>Offers</span>
+                  </NavLink>
+                </li>               
+                <li>
+                  <NavLink
+                    to="/dashboard/CourierSettings"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <MdLocalShipping /> <span>Courier Settings</span>
                   </NavLink>
                 </li>
                 <li>

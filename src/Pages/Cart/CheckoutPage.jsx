@@ -95,7 +95,7 @@ const CheckoutPage = () => {
         productImage: product?.images?.[0] || "https://via.placeholder.com/80",
         price: product?.newPrice || 0,
         color: item.selectedColor || product?.colors?.[0] || "-",
-        size: item.selectedSize || "-",
+        size: item.selectedSize || product?.sizes?.[0] || "-",
         quantity: item.quantity,
       };
     });

@@ -53,6 +53,7 @@ import About from "@/Pages/Home/About";
 import Contact from "@/Pages/Home/Contact";
 import AddOffer from "@/Pages/Dashboard/Admin/AddOffer";
 import AllOffers from "@/Pages/Dashboard/Admin/AllOffers";
+import CourierSettings from "@/Pages/Courier/CourierSettings";
 
 export const router = createBrowserRouter([
   {
@@ -270,6 +271,10 @@ export const router = createBrowserRouter([
       {
         path: "CustomerSegment",
         element: <AllCustomersWithSegments />,
+      },
+      {
+        path: "CourierSettings",
+        element: <CourierSettings />,
       },
     ],
   },

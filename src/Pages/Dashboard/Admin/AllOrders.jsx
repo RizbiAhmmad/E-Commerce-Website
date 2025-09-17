@@ -5,10 +5,12 @@ import axios from "axios";
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
+  const [couriers, setCouriers] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 10;
 
+  // Fetch orders
   const fetchOrders = async () => {
     try {
       const res = await axios.get("http://localhost:5000/orders");
@@ -19,10 +21,23 @@ const AllOrders = () => {
     }
   };
 
+  // Fetch active couriers
+  const fetchCouriers = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/courier/settings");
+      setCouriers(res.data);
+    } catch (error) {
+      console.error(error);
+      setCouriers([]);
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
+    fetchCouriers();
   }, []);
 
+  // Delete order
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -44,6 +59,7 @@ const AllOrders = () => {
     });
   };
 
+  // Update order status
   const handleStatusChange = async (id, newStatus) => {
     try {
       const res = await axios.patch(
@@ -52,7 +68,6 @@ const AllOrders = () => {
           status: newStatus,
         }
       );
-
       if (res.data.success) {
         Swal.fire("Updated!", "Order status updated.", "success");
         fetchOrders();
@@ -64,6 +79,30 @@ const AllOrders = () => {
     }
   };
 
+  // Assign courier
+  const handleCourierAssign = async (orderId, courierName) => {
+    if (!courierName) return; // prevent empty selection
+
+    try {
+      const res = await axios.patch(
+        `http://localhost:5000/orders/${orderId}/courier`,
+        {
+          courierName,
+        }
+      );
+      if (res.data.success) {
+        Swal.fire("Updated!", "Courier assigned successfully.", "success");
+        fetchOrders();
+      } else {
+        Swal.fire("Error!", res.data.message, "error");
+      }
+    } catch (error) {
+      Swal.fire("Error!", "Failed to assign courier", "error");
+      console.error(error);
+    }
+  };
+
+  // Status badge classes
   const getStatusClasses = (status) => {
     switch (status?.toLowerCase()) {
       case "pending":
@@ -76,32 +115,32 @@ const AllOrders = () => {
         return "bg-green-100 text-green-800 border border-green-300";
       case "cancelled":
         return "bg-red-100 text-red-800 border border-red-300";
+      case "placed":
+        return "bg-cyan-100 text-cyan-800 border border-cyan-300";
+      case "failed":
+        return "bg-red-200 text-red-800 border border-red-400";
       default:
         return "bg-gray-100 text-gray-800 border border-gray-300";
     }
   };
 
-  // Apply status filter
+  // Filter orders
   const filteredOrders =
     statusFilter === "all"
       ? orders
       : orders.filter((order) => order.status?.toLowerCase() === statusFilter);
 
-  // page wise orders show
+  // Pagination logic
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = filteredOrders.slice(
     indexOfFirstOrder,
     indexOfLastOrder
   );
-
-  // total pages
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
   return (
@@ -147,6 +186,7 @@ const AllOrders = () => {
               <th className="px-6 py-3">Total</th>
               <th className="px-6 py-3">Date & Time</th>
               <th className="px-6 py-3">Status</th>
+              <th className="px-6 py-3">Courier</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
@@ -197,10 +237,12 @@ const AllOrders = () => {
                   <div className="flex items-center gap-2">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusClasses(
-                        order.status
+                        order.status || order.courierStatus
                       )}`}
                     >
-                      {order.status?.toUpperCase() || "PENDING"}
+                      {order.status?.toUpperCase() ||
+                        order.courierStatus?.toUpperCase() ||
+                        "PENDING"}
                     </span>
                     <select
                       value={order.status || "pending"}
@@ -209,13 +251,31 @@ const AllOrders = () => {
                       }
                       className="border border-gray-300 rounded px-2 py-1 text-xs focus:ring focus:ring-red-200"
                     >
-                      <option value="pending">Pending</option>                     
+                      <option value="pending">Pending</option>
                       <option value="processing">Processing</option>
                       <option value="shipped">Shipped</option>
                       <option value="delivered">Delivered</option>
                       <option value="cancelled">Cancelled</option>
                     </select>
                   </div>
+                </td>
+
+                <td className="px-6 py-4">
+                  <select
+                    value={order.courier || ""}
+                    onChange={(e) => {
+                      if (e.target.value)
+                        handleCourierAssign(order._id, e.target.value);
+                    }}
+                    className="border border-gray-300 rounded px-2 py-1 text-xs"
+                  >
+                    <option value="">Assign Courier</option>
+                    {couriers.map((c) => (
+                      <option key={c._id} value={c.courierName}>
+                        {c.courierName} ({c.status})
+                      </option>
+                    ))}
+                  </select>
                 </td>
 
                 <td className="flex gap-4 px-6 py-6">
@@ -228,7 +288,7 @@ const AllOrders = () => {
 
             {filteredOrders.length === 0 && (
               <tr>
-                <td colSpan="9" className="py-6 text-center text-gray-500">
+                <td colSpan="11" className="py-6 text-center text-gray-500">
                   No orders found.
                 </td>
               </tr>
@@ -236,6 +296,7 @@ const AllOrders = () => {
           </tbody>
         </table>
       </div>
+
       <div className="mt-6 flex justify-center items-center gap-4">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
