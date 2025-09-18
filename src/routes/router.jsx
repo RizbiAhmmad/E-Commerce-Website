@@ -54,6 +54,7 @@ import Contact from "@/Pages/Home/Contact";
 import AddOffer from "@/Pages/Dashboard/Admin/AddOffer";
 import AllOffers from "@/Pages/Dashboard/Admin/AllOffers";
 import CourierSettings from "@/Pages/Courier/CourierSettings";
+import Favourite from "@/Pages/Dashboard/User/Favourite";
 
 export const router = createBrowserRouter([
   {
@@ -91,6 +92,10 @@ export const router = createBrowserRouter([
       {
         path: "cart",
         element: <CartPage />,
+      },
+      {
+        path: "favourites",
+        element: <Favourite />,
       },
       {
         path: "checkout",

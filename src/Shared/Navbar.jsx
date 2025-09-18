@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
 import { AuthContext } from "@/provider/AuthProvider";
 import axios from "axios";
-import { IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowForward, IoMdHeartEmpty } from "react-icons/io";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -23,6 +23,25 @@ const Navbar = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
+
+  const [whisperCount, setWhisperCount] = useState(0);
+
+// Fetch whisper count
+const fetchWhisperCount = () => {
+  if (!user?.email) {
+    setWhisperCount(0);
+    return;
+  }
+  axios
+    .get(`http://localhost:5000/whisper?email=${user.email}`)
+    .then((res) => {
+      setWhisperCount(res.data.length); // কতগুলো favourite আছে
+    })
+    .catch(() => {
+      setWhisperCount(0);
+    });
+};
+
 
   // Fetch cart count
   const fetchCartCount = () => {
@@ -44,12 +63,22 @@ const Navbar = () => {
       });
   };
 
-  useEffect(() => {
-    fetchCartCount();
-    const onCartUpdated = () => fetchCartCount();
-    window.addEventListener("cartUpdated", onCartUpdated);
-    return () => window.removeEventListener("cartUpdated", onCartUpdated);
-  }, [user]);
+ useEffect(() => {
+  fetchCartCount();
+  fetchWhisperCount();
+
+  const onCartUpdated = () => fetchCartCount();
+  const onWhisperUpdated = () => fetchWhisperCount();
+
+  window.addEventListener("cartUpdated", onCartUpdated);
+  window.addEventListener("whisperUpdated", onWhisperUpdated);
+
+  return () => {
+    window.removeEventListener("cartUpdated", onCartUpdated);
+    window.removeEventListener("whisperUpdated", onWhisperUpdated);
+  };
+}, [user]);
+
 
   //  Live search products
   useEffect(() => {
@@ -224,6 +253,14 @@ const Navbar = () => {
               </span>
             )}
           </Link>
+          <Link to="/favourites" className="hover:text-cyan-500 relative">
+  <IoMdHeartEmpty />
+  {whisperCount > 0 && (
+    <span className="absolute -top-2 -right-2 bg-pink-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">
+      {whisperCount}
+    </span>
+  )}
+</Link>
 
           {/* Dashboard (Desktop) */}
           {user && (

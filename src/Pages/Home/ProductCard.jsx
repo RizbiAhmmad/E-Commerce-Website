@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { FaStar } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
 import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
@@ -131,6 +131,7 @@ const ProductCard = () => {
 
 const SingleProduct = ({ product, brandName, averageRating }) => {
   const [isFavorite, setIsFavorite] = useState(false);
+
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
@@ -185,6 +186,64 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
     }
   };
 
+  const handleAddToWhisper = async (e) => {
+    e.stopPropagation();
+    if (!user) {
+      Swal.fire({
+        icon: "error",
+        title: "Please login to save favourite",
+      });
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const whisperData = {
+        name: user.displayName || "Anonymous",
+        email: user.email,
+        productId: product._id,
+        productName: product.name,
+        productImage: product.images?.[0],
+        brandName: brandName,
+        price: product.newPrice,
+      };
+
+      const res = await axios.post(
+        "http://localhost:5000/whisper",
+        whisperData
+      );
+      if (res.data.insertedId) {
+        setIsFavorite(true);
+        Swal.fire({
+          icon: "success",
+          title: "Added to Favourite successfully",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        window.dispatchEvent(new Event("whisperUpdated"));
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed to add to Favourite",
+      });
+    }
+  };
+
+   useEffect(() => {
+    if (user) {
+      axios
+        .get(`http://localhost:5000/whisper?email=${user.email}`)
+        .then((res) => {
+          const favExists = res.data.some(
+            (fav) => fav.productId === product._id
+          );
+          setIsFavorite(favExists);
+        });
+    }
+  }, [user, product._id]);
+
   return (
     <div
       onClick={() => navigate(`/product/${product._id}`)}
@@ -216,12 +275,12 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         >
           {isFavorite ? (
             <IoIosHeart
-              onClick={() => setIsFavorite(false)}
+              onClick={handleAddToWhisper}
               className="text-[#0FABCA] text-[1.4rem] cursor-pointer"
             />
           ) : (
             <IoMdHeartEmpty
-              onClick={() => setIsFavorite(true)}
+              onClick={handleAddToWhisper}
               className="text-black text-[1.4rem] cursor-pointer"
             />
           )}
