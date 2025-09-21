@@ -48,7 +48,7 @@ const ProductCard = () => {
     queryFn: fetchReviews,
   });
 
-  const [visibleCount, setVisibleCount] = useState(40);
+  const [visibleCount, setVisibleCount] = useState(20);
 
   if (isLoading) return <Loading />;
   if (isError)
@@ -117,12 +117,18 @@ const ProductCard = () => {
 
       {visibleCount < activeProducts.length && (
         <div className="text-center my-6">
-          <button
+          <motion.button
             onClick={() => setVisibleCount((prev) => prev + 20)}
-            className="px-6 py-2 bg-[#0FABCA] text-white rounded-md hover:bg-[#0c99b3] transition-colors"
+            whileHover={{
+              scale: 1.1,
+              boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.3)",
+            }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            className="px-8 py-3 bg-gradient-to-b from-cyan-500 to-blue-500 text-white font-semibold rounded-lg shadow-md hover:from-cyan-600 hover:to-blue-600 transition-all duration-300"
           >
             Load More
-          </button>
+          </motion.button>
         </div>
       )}
     </div>
@@ -231,7 +237,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
     }
   };
 
-   useEffect(() => {
+  useEffect(() => {
     if (user) {
       axios
         .get(`http://localhost:5000/whisper?email=${user.email}`)

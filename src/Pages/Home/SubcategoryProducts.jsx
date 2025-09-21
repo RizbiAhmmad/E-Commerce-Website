@@ -24,23 +24,25 @@ const SubcategoryProducts = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:5000/products?subcategoryId=${subId}`
-        );
-        setProducts(res.data);
-        const prices = res.data.map((p) => p.newPrice);
-        const maxPrice = Math.max(...prices, 10000);
-        setPriceRange([0, maxPrice]);
-      } catch (err) {
-        console.error("❌ Error fetching products:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, [subId]);
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/products?subcategoryId=${subId}`
+      );
+      const activeProducts = res.data.filter((p) => p.status === "active");
+      setProducts(activeProducts);
+
+      const prices = activeProducts.map((p) => p.newPrice);
+      const maxPrice = Math.max(...prices, 10000);
+      setPriceRange([0, maxPrice]);
+    } catch (err) {
+      console.error("❌ Error fetching products:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchProducts();
+}, [subId]);
 
   if (loading) return <Loading />;
 
@@ -146,7 +148,7 @@ const SubcategoryProducts = () => {
           )}
 
           {/* Favorite */}
-          <div
+          {/* <div
             onClick={(e) => e.stopPropagation()}
             className="p-2 rounded-full bg-gray-100 absolute top-2 right-2"
           >
@@ -161,7 +163,7 @@ const SubcategoryProducts = () => {
                 className="text-black text-[1.4rem] cursor-pointer"
               />
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* Info */}

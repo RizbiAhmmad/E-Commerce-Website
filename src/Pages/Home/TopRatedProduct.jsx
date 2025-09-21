@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { FaStar } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
 import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
@@ -48,7 +48,7 @@ const TopRatedProduct = () => {
     queryFn: fetchReviews,
   });
 
-  const [visibleCount, setVisibleCount] = useState(40);
+  const [visibleCount, setVisibleCount] = useState(20);
 
   if (isLoading) return <Loading />;
   if (isError)
@@ -119,12 +119,18 @@ const TopRatedProduct = () => {
 
       {visibleCount < activeProducts.length && (
         <div className="text-center my-6">
-          <button
+          <motion.button
             onClick={() => setVisibleCount((prev) => prev + 20)}
-            className="px-6 py-2 bg-[#0FABCA] text-white rounded-md hover:bg-[#0c99b3] transition-colors"
+            whileHover={{
+              scale: 1.1,
+              boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.3)",
+            }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            className="px-8 py-3 bg-gradient-to-b from-cyan-500 to-blue-500 text-white font-semibold rounded-lg shadow-md hover:from-cyan-600 hover:to-blue-600 transition-all duration-300"
           >
             Load More
-          </button>
+          </motion.button>
         </div>
       )}
     </div>
@@ -133,6 +139,7 @@ const TopRatedProduct = () => {
 
 const SingleProduct = ({ product, brandName, averageRating }) => {
   const [isFavorite, setIsFavorite] = useState(false);
+
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
@@ -187,6 +194,64 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
     }
   };
 
+  const handleAddToWhisper = async (e) => {
+    e.stopPropagation();
+    if (!user) {
+      Swal.fire({
+        icon: "error",
+        title: "Please login to save favourite",
+      });
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const whisperData = {
+        name: user.displayName || "Anonymous",
+        email: user.email,
+        productId: product._id,
+        productName: product.name,
+        productImage: product.images?.[0],
+        brandName: brandName,
+        price: product.newPrice,
+      };
+
+      const res = await axios.post(
+        "http://localhost:5000/whisper",
+        whisperData
+      );
+      if (res.data.insertedId) {
+        setIsFavorite(true);
+        Swal.fire({
+          icon: "success",
+          title: "Added to Favourite successfully",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        window.dispatchEvent(new Event("whisperUpdated"));
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Failed to add to Favourite",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      axios
+        .get(`http://localhost:5000/whisper?email=${user.email}`)
+        .then((res) => {
+          const favExists = res.data.some(
+            (fav) => fav.productId === product._id
+          );
+          setIsFavorite(favExists);
+        });
+    }
+  }, [user, product._id]);
+
   return (
     <div
       onClick={() => navigate(`/product/${product._id}`)}
@@ -218,12 +283,12 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         >
           {isFavorite ? (
             <IoIosHeart
-              onClick={() => setIsFavorite(false)}
+              onClick={handleAddToWhisper}
               className="text-[#0FABCA] text-[1.4rem] cursor-pointer"
             />
           ) : (
             <IoMdHeartEmpty
-              onClick={() => setIsFavorite(true)}
+              onClick={handleAddToWhisper}
               className="text-black text-[1.4rem] cursor-pointer"
             />
           )}

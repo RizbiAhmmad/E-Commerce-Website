@@ -65,13 +65,15 @@ const CategoryProducts = () => {
     return 0;
   });
 
-  // Filtering
-  const filteredProducts = sortedProducts.filter((p) => {
-    const inPrice = p.newPrice >= priceRange[0] && p.newPrice <= priceRange[1];
-    const inSub =
-      selectedSubs.length > 0 ? selectedSubs.includes(p.subcategoryId) : true;
-    return inPrice && inSub;
-  });
+  // Filtering (only active products)
+const filteredProducts = sortedProducts.filter((p) => {
+  const isActive = p.status === "active"; // ✅ check status
+  const inPrice = p.newPrice >= priceRange[0] && p.newPrice <= priceRange[1];
+  const inSub =
+    selectedSubs.length > 0 ? selectedSubs.includes(p.subcategoryId) : true;
+  return isActive && inPrice && inSub;
+});
+
 
   // Pagination logic
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -170,7 +172,7 @@ const CategoryProducts = () => {
           )}
 
           {/* Favorite */}
-          <div
+          {/* <div
             onClick={(e) => e.stopPropagation()}
             className="p-2 rounded-full bg-gray-100 absolute top-2 right-2"
           >
@@ -185,7 +187,7 @@ const CategoryProducts = () => {
                 className="text-black text-[1.4rem] cursor-pointer"
               />
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* Info */}

@@ -31,7 +31,7 @@ const AllReturnProducts = () => {
   // 🔎 Search & Pagination states
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
 
   // Filter products
   const filteredProducts = returnProducts.filter(

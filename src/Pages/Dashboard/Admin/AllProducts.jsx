@@ -22,7 +22,7 @@ const AllProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 10;
+  const productsPerPage = 20;
   const [searchTerm, setSearchTerm] = useState("");
 
   // Form states for Add and Edit

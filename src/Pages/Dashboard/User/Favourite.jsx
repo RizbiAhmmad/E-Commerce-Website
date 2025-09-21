@@ -7,6 +7,7 @@ import { FaTrashAlt, FaStar } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
 import { GrView } from "react-icons/gr";
 import { motion } from "framer-motion";
+import Loading from "@/Shared/Loading";
 
 const Favourite = () => {
   const { user } = useContext(AuthContext);
@@ -67,7 +68,7 @@ const Favourite = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-10 text-lg">Loading favourites...</div>;
+    return <Loading />;
   }
 
   return (

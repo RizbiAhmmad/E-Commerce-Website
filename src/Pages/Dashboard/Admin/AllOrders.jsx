@@ -8,7 +8,7 @@ const AllOrders = () => {
   const [couriers, setCouriers] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const ordersPerPage = 10;
+  const ordersPerPage = 20;
 
   // Fetch orders
   const fetchOrders = async () => {

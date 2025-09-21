@@ -6,7 +6,8 @@ const AllCustomersWithSegments = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const customersPerPage = 10;
+  const [segmentFilter, setSegmentFilter] = useState(""); // <-- filter state
+  const customersPerPage = 20;
 
   const fetchCustomers = async () => {
     try {
@@ -28,22 +29,29 @@ const AllCustomersWithSegments = () => {
     switch (segment?.toLowerCase()) {
       case "loyal":
         return "bg-green-100 text-green-800 border border-green-300";
-      case "high spender":
+      case "premium customers":
         return "bg-yellow-100 text-yellow-800 border border-yellow-300";
       case "regular":
         return "bg-blue-100 text-blue-800 border border-blue-300";
-      case "one-time":
+      case "new customer":
         return "bg-gray-100 text-gray-800 border border-cyan-300";
       default:
         return "bg-gray-100 text-gray-800 border border-gray-300";
     }
   };
 
-  // Search filter
-  const filteredCustomers = customers.filter((c) =>
-    (c.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (c._id || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Search + Segment filter
+  const filteredCustomers = customers.filter((c) => {
+    const matchSearch =
+      (c.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (c._id || "").toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchSegment =
+      segmentFilter === "" ||
+      (c.segment || "").toLowerCase() === segmentFilter.toLowerCase();
+
+    return matchSearch && matchSegment;
+  });
 
   // Pagination logic
   const indexOfLast = currentPage * customersPerPage;
@@ -71,8 +79,25 @@ const AllCustomersWithSegments = () => {
         Customer Segments
       </h2>
 
-      {/* Search Bar */}
-      <div className="mb-4 flex justify-end">
+      {/* Search + Filter Bar */}
+      <div className="mb-4 flex justify-between items-center gap-4">
+        {/* Segment Filter */}
+        <select
+          value={segmentFilter}
+          onChange={(e) => {
+            setSegmentFilter(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="border border-gray-300 rounded px-4 py-2 text-sm shadow-sm"
+        >
+          <option value="">All Segments</option>
+          <option value="Loyal">Loyal</option>
+          <option value="Premium Customers">Premium Customers</option>
+          <option value="Regular">Regular</option>
+          <option value="New Customer">New Customer</option>
+        </select>
+
+        {/* Search Bar */}
         <input
           type="text"
           placeholder="Search by name or email..."

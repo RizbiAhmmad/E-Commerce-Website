@@ -72,66 +72,45 @@ const POSPage = () => {
   //   }
   // }, [posCart]);
 
-  //   useEffect(() => {
-  //   const style = document.createElement("style");
-  //   style.innerHTML = `
-  //     @media print {
-  //       body * {
-  //         visibility: hidden !important;
-  //         margin: 0 !important;
-  //         padding: 0 !important;
-  //       }
-  //       #printable-receipt, #printable-receipt * {
-  //         visibility: visible !important;
-  //       }
-  //       #printable-receipt {
-  //         position: absolute !important;
-  //         top: 0 !important;
-  //         left: 0 !important;
-  //         width: 80mm !important; /* standard thermal receipt width */
-  //         max-width: 80mm !important;
-  //         margin: 0 !important;
-  //         padding: 0 !important;
-  //         border: none !important;
-  //         border-radius: 0 !important;
-  //         box-shadow: none !important;
-  //         font-size: 11px !important;
-  //         line-height: 1.2 !important;
-  //       }
-  //       .fixed, .z-50, .z-[60] {
-  //         display: none !important;
-  //       }
-  //     }
-  //   `;
-  //   document.head.appendChild(style);
-  //   return () => document.head.removeChild(style);
-  // }, []);
+    useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @media print {
+  body * {
+    visibility: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
 
-  useEffect(() => {
-  const style = document.createElement("style");
-  style.innerHTML = `
-    @media print {
-      body * {
-        visibility: hidden !important;
-      }
-      #printable-receipt, #printable-receipt * {
-        visibility: visible !important;
-      }
-      #printable-receipt {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 80mm !important;
-        max-width: 80mm !important;
-        margin: 0 !important;
-        padding: 5px !important;
-        page-break-inside: avoid !important;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-  return () => document.head.removeChild(style);
-}, []);
+  #printable-receipt, #printable-receipt * {
+    visibility: visible !important;
+  }
+
+  #printable-receipt {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+
+  .fixed, .z-50, .z-[60] {
+    display: none !important;
+  }
+}
+
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
 
   // Add to cart
   const addToCart = (product, qty = 1, color = "", size = "", productImage) => {
@@ -301,9 +280,13 @@ const POSPage = () => {
     setTimeout(() => setReceiptData(null), 500);
   };
 
-  const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    // Search + Status active filter
+  const filteredProducts = products.filter(
+    (p) =>
+      p.status === "active" &&
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
 
   const openModal = (product) => {
     setSelectedProduct(product);

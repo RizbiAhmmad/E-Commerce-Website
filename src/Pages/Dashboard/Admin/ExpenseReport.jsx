@@ -66,7 +66,6 @@ export default function ExpenseReport() {
         </button>
       </div>
 
-      {/* ✅ Rest of your existing code remains SAME */}
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-blue-100 shadow p-4 rounded-lg text-center">

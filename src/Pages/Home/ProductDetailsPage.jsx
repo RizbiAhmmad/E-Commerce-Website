@@ -2,11 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { FaStar } from "react-icons/fa6";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+// import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import Loading from "@/Shared/Loading";
 import { AuthContext } from "@/provider/AuthProvider";
 import Swal from "sweetalert2";
+import ImageZoom from "react-image-zooom";
 
 const ProductDetailsPage = () => {
   const { user } = useContext(AuthContext);
@@ -18,7 +19,7 @@ const ProductDetailsPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
-  const [isFavorite, setIsFavorite] = useState(false);
+  // const [isFavorite, setIsFavorite] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
 
   // Review form state
@@ -197,14 +198,16 @@ const ProductDetailsPage = () => {
                 )}
               </div>
               <div className="relative h-full">
-                <img
+                <ImageZoom
                   src={
                     product.images?.[currentImageIndex] ||
                     "https://via.placeholder.com/400"
                   }
                   alt={product.name}
+                  zoom="200"
                   className="w-full h-full object-cover rounded-md"
                 />
+
                 {product.images?.length > 1 && (
                   <>
                     <button
@@ -216,7 +219,6 @@ const ProductDetailsPage = () => {
                         )
                       }
                       className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white"
-                      aria-label="Previous image"
                     >
                       <BiChevronLeft className="w-6 h-6" />
                     </button>
@@ -227,7 +229,6 @@ const ProductDetailsPage = () => {
                         )
                       }
                       className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white"
-                      aria-label="Next image"
                     >
                       <BiChevronRight className="w-6 h-6" />
                     </button>
@@ -362,7 +363,7 @@ const ProductDetailsPage = () => {
 
             {/* Quantity + Wishlist */}
             <div className="flex gap-4 items-center pt-6">
-              <div className="flex items-center dark:bg-black dark:text-white bg-gray-100 rounded-md">
+              <div className="flex items-center dark:bg-black dark:text-white bg-gray-100 rounded-md p-2">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-4"
@@ -384,7 +385,7 @@ const ProductDetailsPage = () => {
                   +
                 </button>
               </div>
-              <button
+              {/* <button
                 onClick={() => setIsFavorite(!isFavorite)}
                 className="py-3 border rounded-md flex items-center justify-center gap-2 grow "
               >
@@ -394,16 +395,23 @@ const ProductDetailsPage = () => {
                   <FaRegHeart className="w-5 h-5" />
                 )}
                 Wishlist
+              </button> */}
+
+              <button
+                onClick={handleAddToCart}
+                className="w-full px-6 py-3 bg-[#0FABCA] text-white rounded-md hover:bg-[#0FABCA]/90"
+              >
+                Add to Cart
               </button>
             </div>
 
             {/* Add to Cart Button */}
-            <button
+            {/* <button
               onClick={handleAddToCart}
               className="w-full px-6 py-3 bg-[#0FABCA] text-white rounded-md hover:bg-[#0FABCA]/90"
             >
               Add to Cart
-            </button>
+            </button> */}
           </div>
         </div>
 

@@ -31,7 +31,7 @@ const ExplorePopularCategory = () => {
   }
 
   return (
-    <div className="py-4 text-center dark:bg-black dark:text-white">
+    <div className="py-4 max-w-7xl mx-auto text-center dark:bg-black dark:text-white">
       <motion.h1
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

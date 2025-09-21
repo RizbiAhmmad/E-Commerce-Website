@@ -32,7 +32,7 @@ const AllExpense = () => {
 
   //  Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const expensesPerPage = 5;
+  const expensesPerPage = 20;
 
   //  Filter expenses by category or name
   const filteredExpenses = expenses.filter((exp) =>
@@ -148,7 +148,7 @@ const AllExpense = () => {
 
       {/*  Total Cost */}
       <div className="mb-4 text-lg font-semibold text-gray-700">
-        Total Cost: <span className="text-cyan-500">${totalCost}</span>
+        Total Cost: <span className="text-cyan-500">৳ {totalCost}</span>
       </div>
 
       {/* Table */}
@@ -176,7 +176,7 @@ const AllExpense = () => {
                   {exp.category}
                 </td>
                 <td className="px-6 py-4">{exp.name}</td>
-                <td className="px-6 py-4">${exp.price}</td>
+                <td className="px-6 py-4">৳ {exp.price}</td>
                 <td className="px-6 py-4">{exp.note}</td>
                 <td className="px-6 py-4">
                   {new Date(exp.date).toLocaleDateString()}

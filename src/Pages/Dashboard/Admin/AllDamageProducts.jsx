@@ -28,7 +28,7 @@ const AllDamageProducts = () => {
   //  Search + Pagination states
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
 
   //  Filter products by search term
   const filteredProducts = damageProducts.filter(
