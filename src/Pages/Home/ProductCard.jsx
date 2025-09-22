@@ -13,17 +13,23 @@ import { AuthContext } from "@/provider/AuthProvider";
 import { GrView } from "react-icons/gr";
 
 const fetchProducts = async () => {
-  const { data } = await axios.get("http://localhost:5000/products");
+  const { data } = await axios.get(
+    "https://e-commerce-server-api.onrender.com/products"
+  );
   return data;
 };
 
 const fetchBrands = async () => {
-  const { data } = await axios.get("http://localhost:5000/brands");
+  const { data } = await axios.get(
+    "https://e-commerce-server-api.onrender.com/brands"
+  );
   return data;
 };
 
 const fetchReviews = async () => {
-  const { data } = await axios.get("http://localhost:5000/reviews");
+  const { data } = await axios.get(
+    "https://e-commerce-server-api.onrender.com/reviews"
+  );
   return data;
 };
 
@@ -173,7 +179,10 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         quantity: 1,
       };
 
-      const res = await axios.post("http://localhost:5000/cart", cartData);
+      const res = await axios.post(
+        "https://e-commerce-server-api.onrender.com/cart",
+        cartData
+      );
       if (res.data.insertedId) {
         Swal.fire({
           icon: "success",
@@ -215,7 +224,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/whisper",
+        "https://e-commerce-server-api.onrender.com/whisper",
         whisperData
       );
       if (res.data.insertedId) {
@@ -240,7 +249,9 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
   useEffect(() => {
     if (user) {
       axios
-        .get(`http://localhost:5000/whisper?email=${user.email}`)
+        .get(
+          `https://e-commerce-server-api.onrender.com/whisper?email=${user.email}`
+        )
         .then((res) => {
           const favExists = res.data.some(
             (fav) => fav.productId === product._id
@@ -253,7 +264,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
   return (
     <div
       onClick={() => navigate(`/product/${product._id}`)}
-      className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer dark:hover:bg-cyan-600 hover:bg-cyan-100 hover:shadow-xl transition-all duration-300"
+      className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer dark:hover:bg-cyan-600 hover:bg-cyan-100 hover:shadow-xl transition-all duration-300 overflow-hidden"
     >
       <div className="relative overflow-hidden rounded-md">
         <motion.img
@@ -293,38 +304,42 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         </div>
       </div>
 
-      <div className="mt-2 p-1">
-        <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
+      <div className="mt-2 p-1 min-w-0">
+        {/* <h3 className="text-[1.1rem] dark:text-white font-medium">
           {product.name}
-        </h3>
+        </h3> */}
+        <div className="min-h-[2.5rem] max-h-[5rem] overflow-auto">
+          <h3 className="text-[1.1rem] dark:text-white font-medium">
+            {product.name}
+          </h3>
+        </div>
 
-        <div className="flex items-center justify-between mt-1">
-          <p className="text-gray-400 text-[0.9rem]">
+        {/* Brand & Review responsive */}
+        <div className="mt-1 md:flex md:items-center md:justify-between">
+          <p className="text-gray-400 text-[0.9rem] truncate">
             Brand:{" "}
             <span className="text-black dark:text-gray-100">{brandName}</span>
           </p>
 
-          <div className="flex items-center gap-[8px]">
-            <div className="flex items-center space-x-1">
-              {[...Array(5)].map((_, index) => {
-                const starNumber = index + 1;
-                return (
-                  <FaStar
-                    key={starNumber}
-                    className={`${
-                      starNumber <= Math.round(averageRating)
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                    }`}
-                    size={14}
-                  />
-                );
-              })}
-            </div>
+          <div className="flex items-center gap-1 mt-1 md:mt-0">
+            {[...Array(5)].map((_, index) => {
+              const starNumber = index + 1;
+              return (
+                <FaStar
+                  key={starNumber}
+                  className={`${
+                    starNumber <= Math.round(averageRating)
+                      ? "text-yellow-400"
+                      : "text-gray-300"
+                  }`}
+                  size={14}
+                />
+              );
+            })}
           </div>
         </div>
 
-        <div className="flex items-end justify-between my-2">
+        <div className="flex items-end justify-between my-2 flex-wrap gap-2">
           <div>
             <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
               {!product.stock || Number(product.stock) === 0 ? (
@@ -334,7 +349,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
               )}
             </span>
 
-            <div className="mt-1 min-h-[40px] flex items-center gap-2">
+            <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
               {hasDiscount ? (
                 <>
                   <span className="text-red-500 line-through">
@@ -354,7 +369,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
           <div
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-2 md:gap-4"
+            className="flex items-center gap-2 md:gap-4 flex-shrink-0"
           >
             <button
               onClick={handleAddToCart}

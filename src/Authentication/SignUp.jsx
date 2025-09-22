@@ -32,7 +32,7 @@ const SignUp = () => {
               role: "user",
               createdAt: new Date(),
             };
-            fetch("http://localhost:5000/users", {
+            fetch("https://e-commerce-server-api.onrender.com/users", {
               method: "POST",
               headers: {
                 "content-type": "application/json",
@@ -75,7 +75,7 @@ const SignUp = () => {
     >
       <div className="w-full max-w-md p-6 shadow-xl bg-white/20 backdrop-blur-lg rounded-xl sm:p-8">
 
-        {/* ✅ Back Button in normal flow */}
+        {/*  Back Button in normal flow */}
         <div className="mb-4">
           <Link
             to="/"

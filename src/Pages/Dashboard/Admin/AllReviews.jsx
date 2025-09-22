@@ -8,7 +8,7 @@ const AllReviews = () => {
   const { data: reviews = [], refetch: refetchReviews } = useQuery({
     queryKey: ["reviews"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/reviews");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/reviews");
       return res.data;
     },
   });
@@ -17,7 +17,7 @@ const AllReviews = () => {
   const { data: products = [] } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/products");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/products");
       return res.data;
     },
   });
@@ -38,7 +38,7 @@ const AllReviews = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/reviews/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/reviews/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             Swal.fire("Deleted!", "Review has been deleted.", "success");
             refetchReviews();

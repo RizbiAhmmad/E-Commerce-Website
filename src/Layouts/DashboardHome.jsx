@@ -44,9 +44,9 @@ const DashboardHome = () => {
     const fetchStats = async () => {
       try {
         const [usersRes, productsRes, ordersRes] = await Promise.all([
-          axios.get("http://localhost:5000/users"),
-          axios.get("http://localhost:5000/products"),
-          axios.get("http://localhost:5000/orders"),
+          axios.get("https://e-commerce-server-api.onrender.com/users"),
+          axios.get("https://e-commerce-server-api.onrender.com/products"),
+          axios.get("https://e-commerce-server-api.onrender.com/orders"),
         ]);
 
         const orders = ordersRes.data;

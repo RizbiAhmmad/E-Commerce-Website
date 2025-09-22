@@ -9,7 +9,7 @@ const AllSliders = () => {
   const { data: sliders = [], refetch } = useQuery({
     queryKey: ["sliders"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/slider");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/slider");
       return res.data;
     },
   });
@@ -33,7 +33,7 @@ const AllSliders = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/slider/${selectedSlider._id}`, formData);
+      await axios.put(`https://e-commerce-server-api.onrender.com/slider/${selectedSlider._id}`, formData);
       Swal.fire("Updated!", "Slider has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -53,7 +53,7 @@ const AllSliders = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/slider/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/slider/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Slider removed.", "success");

@@ -10,7 +10,7 @@ const MyOrders = () => {
   useEffect(() => {
     if (user?.email) {
       axios
-        .get(`http://localhost:5000/orders?email=${user.email}`)
+        .get(`https://e-commerce-server-api.onrender.com/orders?email=${user.email}`)
         .then((res) => setOrders(res.data))
         .catch((err) => console.error(err));
     }

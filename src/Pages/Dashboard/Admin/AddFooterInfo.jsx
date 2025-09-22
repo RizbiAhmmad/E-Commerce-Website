@@ -55,7 +55,7 @@ const AddFooterInfo = () => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/footer",
+        "https://e-commerce-server-api.onrender.com/footer",
         JSON.stringify(footerData),
         {
           headers: { "Content-Type": "application/json" },

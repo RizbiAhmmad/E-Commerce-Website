@@ -46,7 +46,7 @@ const CheckoutPage = () => {
     }
     try {
       // IMPORTANT: discount against subtotal (products only), not shipping
-      const res = await axios.post("http://localhost:5000/apply-coupon", {
+      const res = await axios.post("https://e-commerce-server-api.onrender.com/apply-coupon", {
         code,
         totalAmount: subtotal,
       });
@@ -120,12 +120,12 @@ const CheckoutPage = () => {
 
     try {
       // Save order first
-      await axios.post("http://localhost:5000/orders", orderData);
+      await axios.post("https://e-commerce-server-api.onrender.com/orders", orderData);
 
       // Online payment flow
       if (payment === "online") {
         const { data } = await axios.post(
-          "http://localhost:5000/sslcommerz/init",
+          "https://e-commerce-server-api.onrender.com/sslcommerz/init",
           {
             orderId: orderData.tran_id,
             totalAmount: total,

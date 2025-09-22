@@ -51,7 +51,7 @@ const AddSlider = () => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/slider",
+        "https://e-commerce-server-api.onrender.com/slider",
         JSON.stringify(bannerData),
         {
           headers: {

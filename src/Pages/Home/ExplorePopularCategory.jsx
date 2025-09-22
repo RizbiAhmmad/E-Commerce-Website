@@ -14,7 +14,7 @@ const ExplorePopularCategory = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/categories");
+        const res = await axios.get("https://e-commerce-server-api.onrender.com/categories");
         setCategories(res.data.filter((cat) => cat.status === "active"));
       } catch (err) {
         console.error("❌ Error fetching categories:", err);
@@ -39,7 +39,7 @@ const ExplorePopularCategory = () => {
         className="text-3xl font-extrabold text-transparent bg-clip-text bg-cyan-500 text-center my-6 select-none drop-shadow-lg"
       >
         <Typewriter
-          words={["Explore Popular Categories"]}
+          words={["Explore Categories"]}
           loop={0}
           cursor
           cursorStyle="|"

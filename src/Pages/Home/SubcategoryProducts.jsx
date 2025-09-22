@@ -27,7 +27,7 @@ const SubcategoryProducts = () => {
   const fetchProducts = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/products?subcategoryId=${subId}`
+        `https://e-commerce-server-api.onrender.com/products?subcategoryId=${subId}`
       );
       const activeProducts = res.data.filter((p) => p.status === "active");
       setProducts(activeProducts);
@@ -104,7 +104,7 @@ const SubcategoryProducts = () => {
           productId: product._id,
           quantity: 1,
         };
-        const res = await axios.post("http://localhost:5000/cart", cartData);
+        const res = await axios.post("https://e-commerce-server-api.onrender.com/cart", cartData);
         if (res.data.insertedId) {
           Swal.fire({
             icon: "success",
@@ -168,49 +168,62 @@ const SubcategoryProducts = () => {
 
         {/* Info */}
         <div className="mt-2 p-1">
-          <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
+          {/* <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
+            {product.name}
+          </h3> */}
+          <div className="min-h-[2.5rem] max-h-[5rem] overflow-auto">
+          <h3 className="text-[1.1rem] dark:text-white font-medium">
             {product.name}
           </h3>
+        </div>
 
-          <div className="flex items-end justify-between my-2">
-            {/* Price */}
-            <div className="mt-1 min-h-[40px] flex items-center gap-2">
-              {hasDiscount ? (
-                <>
-                  <span className="text-red-500 line-through">
-                    {formatPrice(oldPriceNum)}
-                  </span>
-                  <span className="font-bold text-black dark:text-white">
-                    {formatPrice(newPriceNum)}
-                  </span>
-                </>
-              ) : (
-                <span className="font-bold dark:text-white text-black">
-                  {formatPrice(newPriceNum)}
-                </span>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-2 md:gap-4"
-            >
-              <button
-                onClick={handleAddToCart}
-                className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-              >
-                <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
-              </button>
-
-              <button
-                onClick={() => navigate(`/product/${product._id}`)}
-                className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-              >
-                <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
-              </button>
-            </div>
-          </div>
+          <div className="flex items-end justify-between my-2 flex-wrap gap-2">
+                    <div>
+                      <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
+                        {!product.stock || Number(product.stock) === 0 ? (
+                          <span className="text-red-500 font-semibold">Out of stock</span>
+                        ) : (
+                          <span className="text-green-500 font-semibold">In Stock</span>
+                        )}
+                      </span>
+          
+                      <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
+                        {hasDiscount ? (
+                          <>
+                            <span className="text-red-500 line-through">
+                              {formatPrice(oldPriceNum)}
+                            </span>
+                            <span className="font-bold text-black dark:text-white">
+                              {formatPrice(newPriceNum)}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="font-bold dark:text-white text-black">
+                            {formatPrice(newPriceNum)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+          
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-2 md:gap-4 flex-shrink-0"
+                    >
+                      <button
+                        onClick={handleAddToCart}
+                        className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                      >
+                        <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
+                      </button>
+          
+                      <button
+                        onClick={() => navigate(`/product/${product._id}`)}
+                        className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                      >
+                        <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
+                      </button>
+                    </div>
+                  </div>
         </div>
       </div>
     );

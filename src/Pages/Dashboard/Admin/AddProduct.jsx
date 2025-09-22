@@ -37,27 +37,27 @@ const AddProduct = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/categories")
+      .get("https://e-commerce-server-api.onrender.com/categories")
       .then((res) =>
         setCategories(res.data.filter((cat) => cat.status === "active"))
       );
 
     axios
-      .get("http://localhost:5000/subcategories")
+      .get("https://e-commerce-server-api.onrender.com/subcategories")
       .then((res) =>
         setSubcategories(res.data.filter((sub) => sub.status === "active"))
       );
 
     axios
-      .get("http://localhost:5000/brands")
+      .get("https://e-commerce-server-api.onrender.com/brands")
       .then((res) => setBrands(res.data.filter((b) => b.status === "active")));
 
     axios
-      .get("http://localhost:5000/sizes")
+      .get("https://e-commerce-server-api.onrender.com/sizes")
       .then((res) => setSizes(res.data.filter((s) => s.status === "active")));
 
     axios
-      .get("http://localhost:5000/colors")
+      .get("https://e-commerce-server-api.onrender.com/colors")
       .then((res) => setColors(res.data.filter((c) => c.status === "active")));
   }, []);
 
@@ -109,7 +109,7 @@ const AddProduct = () => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/products",
+        "https://e-commerce-server-api.onrender.com/products",
         productData,
         {
           headers: { "Content-Type": "application/json" },

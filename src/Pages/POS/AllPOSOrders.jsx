@@ -12,7 +12,7 @@ const AllPOSOrders = () => {
   // fetch POS orders
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/pos/orders");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/pos/orders");
       setOrders(res.data);
     } catch (error) {
       console.error(error);
@@ -36,7 +36,7 @@ const AllPOSOrders = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/pos/orders/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/pos/orders/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             fetchOrders();
             Swal.fire("Deleted!", "Order removed.", "success");

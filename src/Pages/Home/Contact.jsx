@@ -9,7 +9,7 @@ const Contact = () => {
   useEffect(() => {
     const fetchFooterInfo = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/footer");
+        const res = await axios.get("https://e-commerce-server-api.onrender.com/footer");
         // ধরে নিচ্ছি backend থেকে array আসবে, তাই প্রথম element নিচ্ছি
         setFooterInfo(res.data[0]);
       } catch (err) {

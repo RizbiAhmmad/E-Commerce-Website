@@ -10,7 +10,7 @@ const AllBrands = () => {
   const { data: brands = [], refetch } = useQuery({
     queryKey: ["brands"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/brands");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/brands");
       return res.data;
     },
   });
@@ -54,7 +54,7 @@ const AllBrands = () => {
         setUploading(false);
       }
 
-      await axios.put(`http://localhost:5000/brands/${selectedBrand._id}`, {
+      await axios.put(`https://e-commerce-server-api.onrender.com/brands/${selectedBrand._id}`, {
         name: formData.name,
         status: formData.status,
         logo: logoUrl,
@@ -82,7 +82,7 @@ const AllBrands = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const res = await axios.delete(`http://localhost:5000/brands/${id}`);
+        const res = await axios.delete(`https://e-commerce-server-api.onrender.com/brands/${id}`);
         if (res.data.deletedCount > 0) {
           refetch();
           Swal.fire("Deleted!", "Brand removed.", "success");

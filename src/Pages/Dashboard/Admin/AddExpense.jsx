@@ -18,7 +18,7 @@ const AddExpense = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/expense-categories");
+        const res = await axios.get("https://e-commerce-server-api.onrender.com/expense-categories");
         setCategories(res.data);
       } catch (error) {
         console.error("Failed to load categories", error);
@@ -39,7 +39,7 @@ const AddExpense = () => {
       price: Number(formData.price),
     };
 
-    const res = await axios.post("http://localhost:5000/expenses", payload);
+    const res = await axios.post("https://e-commerce-server-api.onrender.com/expenses", payload);
 
     if (res.data.insertedId) {
       Swal.fire("Success", "Expense added successfully!", "success");

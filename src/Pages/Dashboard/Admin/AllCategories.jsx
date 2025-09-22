@@ -9,7 +9,7 @@ const AllCategories = () => {
   const { data: categories = [], refetch } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/categories");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/categories");
       return res.data;
     },
   });
@@ -41,7 +41,7 @@ const AllCategories = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/categories/${selectedCategory._id}`, formData);
+      await axios.put(`https://e-commerce-server-api.onrender.com/categories/${selectedCategory._id}`, formData);
       Swal.fire("Updated!", "Category has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -61,7 +61,7 @@ const AllCategories = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/categories/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/categories/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Category removed.", "success");

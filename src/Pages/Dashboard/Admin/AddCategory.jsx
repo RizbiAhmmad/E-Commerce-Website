@@ -52,7 +52,7 @@ const AddCategory = () => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/categories",
+        "https://e-commerce-server-api.onrender.com/categories",
         JSON.stringify(categoryData),
         {
           headers: {

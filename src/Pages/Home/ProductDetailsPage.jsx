@@ -34,7 +34,7 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     // Fetch product data
-    axios.get(`http://localhost:5000/products/${id}`).then((res) => {
+    axios.get(`https://e-commerce-server-api.onrender.com/products/${id}`).then((res) => {
       setProduct(res.data);
       if (res.data.colors?.length > 0) {
         setSelectedColor(res.data.colors[0]);
@@ -46,7 +46,7 @@ const ProductDetailsPage = () => {
 
     // Fetch reviews separately by productId
     axios
-      .get(`http://localhost:5000/reviews?productId=${id}`)
+      .get(`https://e-commerce-server-api.onrender.com/reviews?productId=${id}`)
       .then((res) => setReviews(res.data))
       .catch((err) => {
         console.error("Error fetching reviews:", err);
@@ -56,7 +56,7 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/brands")
+      .get("https://e-commerce-server-api.onrender.com/brands")
       .then((res) => setBrands(res.data));
   }, []);
 
@@ -112,7 +112,7 @@ const ProductDetailsPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/reviews",
+        "https://e-commerce-server-api.onrender.com/reviews",
         reviewData
       );
       if (response.data.acknowledged) {
@@ -158,7 +158,7 @@ const ProductDetailsPage = () => {
     };
 
     try {
-      const res = await axios.post("http://localhost:5000/cart", cartData);
+      const res = await axios.post("https://e-commerce-server-api.onrender.com/cart", cartData);
       if (res.data.insertedId) {
         Swal.fire({
           icon: "success",

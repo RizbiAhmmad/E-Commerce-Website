@@ -45,7 +45,7 @@ const SalesReport = () => {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/sales-report");
+        const res = await axios.get("https://e-commerce-server-api.onrender.com/sales-report");
         setReport(res.data);
       } catch (err) {
         console.error(err);
@@ -187,26 +187,27 @@ const SalesReport = () => {
           </ResponsiveContainer>
 
           {/* Custom Legend for Comparison */}
-          <div className="flex justify-center gap-6 mt-4 text-sm">
-            <div className="flex items-center gap-2">
-              <span
-                className="w-4 h-4 rounded-sm"
-                style={{ background: "#0088FE" }}
-              ></span>
-              <span className="text-gray-700 font-medium">
-                Current (This Month/Week/Today)
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className="w-4 h-4 rounded-sm"
-                style={{ background: "#FF8042" }}
-              ></span>
-              <span className="text-gray-700 font-medium">
-                Previous (Last Month/Week/Yesterday)
-              </span>
-            </div>
-          </div>
+          <div className="flex flex-wrap justify-center gap-4 mt-4 text-sm">
+  <div className="flex items-center gap-2">
+    <span
+      className="w-4 h-4 rounded-sm"
+      style={{ background: "#0088FE" }}
+    ></span>
+    <span className="text-gray-700 font-medium">
+      Current (This Month/Week/Today)
+    </span>
+  </div>
+  <div className="flex items-center gap-2">
+    <span
+      className="w-4 h-4 rounded-sm"
+      style={{ background: "#FF8042" }}
+    ></span>
+    <span className="text-gray-700 font-medium">
+      Previous (Last Month/Week/Yesterday)
+    </span>
+  </div>
+</div>
+
         </div>
       </div>
     </div>

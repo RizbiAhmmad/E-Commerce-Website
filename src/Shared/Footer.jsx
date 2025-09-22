@@ -16,7 +16,7 @@ export default function Footer() {
   useEffect(() => {
   const fetchFooterInfo = async () => {
     try {
-      const res = await fetch("http://localhost:5000/footer");
+      const res = await fetch("https://e-commerce-server-api.onrender.com/footer");
       const data = await res.json();
       if (data.length > 0) {
         setFooterInfo(data[0]);

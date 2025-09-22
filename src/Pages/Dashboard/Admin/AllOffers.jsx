@@ -9,7 +9,7 @@ const AllOffers = () => {
   const { data: offers = [], refetch } = useQuery({
     queryKey: ["offers"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/offers");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/offers");
       return res.data;
     },
   });
@@ -39,7 +39,7 @@ const AllOffers = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/offers/${selectedOffer._id}`, formData);
+      await axios.put(`https://e-commerce-server-api.onrender.com/offers/${selectedOffer._id}`, formData);
       Swal.fire("Updated!", "Offer has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -59,7 +59,7 @@ const AllOffers = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/offers/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/offers/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Offer removed.", "success");

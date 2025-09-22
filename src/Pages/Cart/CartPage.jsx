@@ -17,7 +17,7 @@ const CartPage = () => {
 
     setLoading(true);
     axios
-      .get(`http://localhost:5000/cart?email=${user.email}`)
+      .get(`https://e-commerce-server-api.onrender.com/cart?email=${user.email}`)
       .then(async (res) => {
         const items = res.data;
         const productIds = items.map((item) => item.productId);
@@ -25,7 +25,7 @@ const CartPage = () => {
         const productDetails = await Promise.all(
           productIds.map((id) =>
             axios
-              .get(`http://localhost:5000/products/${id}`)
+              .get(`https://e-commerce-server-api.onrender.com/products/${id}`)
               .then((res) => res.data)
           )
         );
@@ -58,7 +58,7 @@ const CartPage = () => {
     const newSelected = !item.selected;
 
     axios
-      .patch(`http://localhost:5000/cart/${itemId}`, { selected: newSelected })
+      .patch(`https://e-commerce-server-api.onrender.com/cart/${itemId}`, { selected: newSelected })
       .then(() => {
         setCartItems((prev) =>
           prev.map((i) =>
@@ -73,7 +73,7 @@ const CartPage = () => {
     if (newQty < 1) return;
 
     axios
-      .patch(`http://localhost:5000/cart/${itemId}`, { quantity: newQty })
+      .patch(`https://e-commerce-server-api.onrender.com/cart/${itemId}`, { quantity: newQty })
       .then(() => {
         setCartItems((prev) =>
           prev.map((item) =>
@@ -88,7 +88,7 @@ const CartPage = () => {
 
   const deleteItem = (itemId) => {
     axios
-      .delete(`http://localhost:5000/cart/${itemId}`)
+      .delete(`https://e-commerce-server-api.onrender.com/cart/${itemId}`)
       .then(() => {
         setCartItems((prev) => prev.filter((item) => item._id !== itemId));
         window.dispatchEvent(new Event("cartUpdated"));

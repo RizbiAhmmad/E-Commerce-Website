@@ -44,12 +44,12 @@ const POSPage = () => {
   // Fetch products & coupons
   useEffect(() => {
     axios
-      .get("http://localhost:5000/products")
+      .get("https://e-commerce-server-api.onrender.com/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
 
     axios
-      .get("http://localhost:5000/coupons?status=active")
+      .get("https://e-commerce-server-api.onrender.com/coupons?status=active")
       .then((res) => setCoupons(res.data))
       .catch((err) => console.error(err));
 
@@ -59,7 +59,7 @@ const POSPage = () => {
   // Fetch POS cart
   const fetchPosCart = () => {
     axios
-      .get("http://localhost:5000/pos/cart")
+      .get("https://e-commerce-server-api.onrender.com/pos/cart")
       .then((res) => setPosCart(res.data))
       .catch((err) => console.error(err));
   };
@@ -115,7 +115,7 @@ const POSPage = () => {
   // Add to cart
   const addToCart = (product, qty = 1, color = "", size = "", productImage) => {
     axios
-      .post("http://localhost:5000/pos/cart", {
+      .post("https://e-commerce-server-api.onrender.com/pos/cart", {
         productId: product._id,
         productName: product.name,
         price: product.newPrice,
@@ -136,7 +136,7 @@ const POSPage = () => {
   const updateQuantity = (id, qty) => {
     if (qty < 1) return;
     axios
-      .patch(`http://localhost:5000/pos/cart/${id}`, { quantity: qty })
+      .patch(`https://e-commerce-server-api.onrender.com/pos/cart/${id}`, { quantity: qty })
       .then(() => fetchPosCart())
       .catch((err) => console.error(err));
   };
@@ -144,7 +144,7 @@ const POSPage = () => {
   // Delete item
   const deleteItem = (id) => {
     axios
-      .delete(`http://localhost:5000/pos/cart/${id}`)
+      .delete(`https://e-commerce-server-api.onrender.com/pos/cart/${id}`)
       .then(() => fetchPosCart())
       .catch((err) => console.error(err));
   };
@@ -231,7 +231,7 @@ const POSPage = () => {
     };
 
     try {
-      await axios.post("http://localhost:5000/pos/orders", orderData);
+      await axios.post("https://e-commerce-server-api.onrender.com/pos/orders", orderData);
       // keep a copy for the receipt before we reset
       return orderData;
     } catch (err) {
@@ -264,7 +264,7 @@ const POSPage = () => {
     searchInputRef.current?.focus();
 
     await axios
-      .get("http://localhost:5000/products")
+      .get("https://e-commerce-server-api.onrender.com/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
 

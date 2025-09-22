@@ -13,7 +13,7 @@ const AllOrders = () => {
   // Fetch orders
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/orders");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/orders");
       setOrders(res.data);
     } catch (error) {
       console.error(error);
@@ -24,7 +24,7 @@ const AllOrders = () => {
   // Fetch active couriers
   const fetchCouriers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/courier/settings");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/courier/settings");
       setCouriers(res.data);
     } catch (error) {
       console.error(error);
@@ -49,7 +49,7 @@ const AllOrders = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/orders/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/orders/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             fetchOrders();
             Swal.fire("Deleted!", "Order removed.", "success");
@@ -63,7 +63,7 @@ const AllOrders = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const res = await axios.patch(
-        `http://localhost:5000/orders/${id}/status`,
+        `https://e-commerce-server-api.onrender.com/orders/${id}/status`,
         {
           status: newStatus,
         }
@@ -85,7 +85,7 @@ const AllOrders = () => {
 
     try {
       const res = await axios.patch(
-        `http://localhost:5000/orders/${orderId}/courier`,
+        `https://e-commerce-server-api.onrender.com/orders/${orderId}/courier`,
         {
           courierName,
         }

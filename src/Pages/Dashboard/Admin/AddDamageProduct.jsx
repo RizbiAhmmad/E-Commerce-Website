@@ -54,7 +54,7 @@ const AddDamageProduct = () => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/damage-products",
+        "https://e-commerce-server-api.onrender.com/damage-products",
         JSON.stringify(damageProductData),
         {
           headers: {

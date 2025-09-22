@@ -46,7 +46,7 @@ const AddBrand = () => {
         createdAt: new Date().toISOString(),
       };
 
-      const res = await axios.post("http://localhost:5000/brands", payload, {
+      const res = await axios.post("https://e-commerce-server-api.onrender.com/brands", payload, {
         headers: { "Content-Type": "application/json" },
       });
 

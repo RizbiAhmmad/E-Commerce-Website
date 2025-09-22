@@ -12,7 +12,7 @@ const AllSubcategories = () => {
   const { data: subcategories = [], refetch } = useQuery({
     queryKey: ["subcategories"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/subcategories");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/subcategories");
       return res.data;
     },
   });
@@ -21,7 +21,7 @@ const AllSubcategories = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/categories");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/categories");
       return res.data;
     },
   });
@@ -52,7 +52,7 @@ const AllSubcategories = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/subcategories/${selectedSub._id}`, formData);
+      await axios.put(`https://e-commerce-server-api.onrender.com/subcategories/${selectedSub._id}`, formData);
       Swal.fire("Updated!", "Subcategory has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -72,7 +72,7 @@ const AllSubcategories = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/subcategories/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/subcategories/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Subcategory removed.", "success");

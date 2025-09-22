@@ -9,7 +9,7 @@ const AllColors = () => {
   const { data: colors = [], refetch } = useQuery({
     queryKey: ["colors"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/colors");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/colors");
       return res.data;
     },
   });
@@ -41,7 +41,7 @@ const AllColors = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/colors/${selectedColor._id}`, formData);
+      await axios.put(`https://e-commerce-server-api.onrender.com/colors/${selectedColor._id}`, formData);
       Swal.fire("Updated!", "Color has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -61,7 +61,7 @@ const AllColors = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/colors/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/colors/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Color removed.", "success");

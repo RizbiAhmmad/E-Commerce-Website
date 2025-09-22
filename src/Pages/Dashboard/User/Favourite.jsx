@@ -3,8 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { AuthContext } from "@/provider/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
-import { FaTrashAlt, FaStar } from "react-icons/fa";
-import { IoCartOutline } from "react-icons/io5";
+import { FaTrashAlt } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import { motion } from "framer-motion";
 import Loading from "@/Shared/Loading";
@@ -15,7 +14,6 @@ const Favourite = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch favourites
   const fetchFavourites = () => {
     if (!user?.email) {
       setFavourites([]);
@@ -24,7 +22,7 @@ const Favourite = () => {
     }
 
     axios
-      .get(`http://localhost:5000/whisper?email=${user.email}`)
+      .get(`https://e-commerce-server-api.onrender.com/whisper?email=${user.email}`)
       .then((res) => {
         setFavourites(res.data);
         setLoading(false);
@@ -39,7 +37,6 @@ const Favourite = () => {
     fetchFavourites();
   }, [user]);
 
-  // Delete favourite
   const handleDelete = (id) => {
     Swal.fire({
       title: "Remove from Favourites?",
@@ -52,7 +49,7 @@ const Favourite = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:5000/whisper/${id}`)
+          .delete(`https://e-commerce-server-api.onrender.com/whisper/${id}`)
           .then((res) => {
             if (res.data.deletedCount > 0) {
               Swal.fire("Removed!", "Item removed successfully.", "success");
@@ -67,12 +64,10 @@ const Favourite = () => {
     });
   };
 
-  if (loading) {
-    return <Loading />;
-  }
+  if (loading) return <Loading />;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
+    <div className="max-w-7xl mx-auto px-4 py-22">
       <h2 className="text-3xl font-extrabold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600">
         ❤️ My Favourites
       </h2>
@@ -85,7 +80,7 @@ const Favourite = () => {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {favourites.map((item, index) => (
             <motion.div
               key={item._id}
@@ -95,9 +90,9 @@ const Favourite = () => {
               whileHover={{
                 scale: 1.03,
                 y: -5,
-                boxShadow: "0px 8px 20px rgba(0,0,0,0.15)",
+                boxShadow: "0px 12px 24px rgba(0,0,0,0.15)",
               }}
-              className="border border-gray-300 dark:border-gray-700 rounded-xl p-2 shadow-lg bg-white dark:bg-gray-900 cursor-pointer hover:shadow-xl transition-all duration-300"
+              className="border border-gray-300 dark:border-gray-700 rounded-xl p-2 shadow-md bg-white dark:bg-gray-900 cursor-pointer hover:shadow-xl transition-all duration-300 flex flex-col"
             >
               {/* Image */}
               <div
@@ -114,33 +109,32 @@ const Favourite = () => {
               </div>
 
               {/* Content */}
-              <div className="mt-2 p-1 flex flex-col">
-                <h3 className="text-lg font-medium line-clamp-1">
+              <div className="mt-3 flex flex-col flex-1">
+                <h3 className="text-lg font-semibold line-clamp-1 text-gray-800 dark:text-gray-100">
                   {item.productName}
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   {item.brandName || "Unknown Brand"}
                 </p>
-                <p className="text-cyan-600 font-bold mt-1">
+                <p className="text-cyan-600 font-bold mt-2 text-base">
                   ৳ {item.price || "N/A"}
                 </p>
 
                 {/* Buttons */}
-                <div className="flex justify-between items-center mt-3">
-                     <button
+                <div className="mt-auto p-2 flex justify-between items-center gap-2 flex-wrap">
+                  <button
                     onClick={() => navigate(`/product/${item.productId}`)}
-                    className="flex items-center gap-1 px-3 py-1 border border-cyan-500 text-cyan-500 text-sm rounded-md hover:bg-cyan-500 hover:text-white transition"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-cyan-500 text-cyan-500 text-sm rounded-md hover:bg-cyan-500 hover:text-white transition"
                   >
                     <GrView /> View
                   </button>
+
                   <button
                     onClick={() => handleDelete(item._id)}
-                    className="flex items-center gap-1 px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition"
                   >
                     <FaTrashAlt /> Remove
                   </button>
-
-                 
                 </div>
               </div>
             </motion.div>

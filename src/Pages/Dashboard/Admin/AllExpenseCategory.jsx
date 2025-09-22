@@ -12,7 +12,7 @@ const AllExpenseCategory = () => {
   const { data: expenseCategories = [], refetch } = useQuery({
     queryKey: ["expenseCategories"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/expense-categories");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/expense-categories");
       return res.data;
     },
   });
@@ -42,7 +42,7 @@ const AllExpenseCategory = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `http://localhost:5000/expense-categories/${selectedCategory._id}`,
+        `https://e-commerce-server-api.onrender.com/expense-categories/${selectedCategory._id}`,
         formData
       );
       Swal.fire("Updated!", "Expense category has been updated.", "success");
@@ -64,7 +64,7 @@ const AllExpenseCategory = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/expense-categories/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/expense-categories/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Expense category removed.", "success");

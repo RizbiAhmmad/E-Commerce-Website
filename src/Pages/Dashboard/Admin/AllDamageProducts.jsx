@@ -9,7 +9,7 @@ const AllDamageProducts = () => {
   const { data: damageProducts = [], refetch } = useQuery({
     queryKey: ["damageProducts"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/damage-products");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/damage-products");
       return res.data;
     },
   });
@@ -65,7 +65,7 @@ const AllDamageProducts = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `http://localhost:5000/damage-products/${selectedProduct._id}`,
+        `https://e-commerce-server-api.onrender.com/damage-products/${selectedProduct._id}`,
         formData
       );
       Swal.fire("Updated!", "Damage product has been updated.", "success");
@@ -87,7 +87,7 @@ const AllDamageProducts = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/damage-products/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/damage-products/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Product removed.", "success");

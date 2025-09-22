@@ -9,7 +9,7 @@ const AllSizes = () => {
   const { data: sizes = [], refetch } = useQuery({
     queryKey: ["sizes"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/sizes");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/sizes");
       return res.data;
     },
   });
@@ -39,7 +39,7 @@ const AllSizes = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/sizes/${selectedSize._id}`, formData);
+      await axios.put(`https://e-commerce-server-api.onrender.com/sizes/${selectedSize._id}`, formData);
       Swal.fire("Updated!", "Size has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -59,7 +59,7 @@ const AllSizes = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/sizes/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/sizes/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Size removed.", "success");

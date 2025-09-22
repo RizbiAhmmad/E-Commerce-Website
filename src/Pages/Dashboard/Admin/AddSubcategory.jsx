@@ -13,7 +13,7 @@ const AddSubcategory = () => {
   });
 
   useEffect(() => {
-    axios.get("http://localhost:5000/categories").then((res) => {
+    axios.get("https://e-commerce-server-api.onrender.com/categories").then((res) => {
       setCategories(res.data);
     });
   }, []);
@@ -25,7 +25,7 @@ const AddSubcategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/subcategories", formData);
+      const res = await axios.post("https://e-commerce-server-api.onrender.com/subcategories", formData);
       if (res.data.insertedId) {
         Swal.fire("Success", "Subcategory added!", "success");
         setFormData({ name: "", categoryId: "", status: "active" });

@@ -22,7 +22,7 @@ const AllFooterInfo = () => {
 
   const fetchFooters = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/footer");
+    const res = await axios.get("https://e-commerce-server-api.onrender.com/footer");
     setFooters(res.data);
   } catch (err) {
     console.error("Error fetching footers:", err);
@@ -75,7 +75,7 @@ const AllFooterInfo = () => {
         logoUrl = cloudRes.data.secure_url;
       }
 
-      await axios.put(`http://localhost:5000/footer/${selectedFooter._id}`, {
+      await axios.put(`https://e-commerce-server-api.onrender.com/footer/${selectedFooter._id}`, {
         ...formData,
         logo: logoUrl,
       });
@@ -104,7 +104,7 @@ const AllFooterInfo = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axios.delete(`http://localhost:5000/footer/${id}`);
+          const res = await axios.delete(`https://e-commerce-server-api.onrender.com/footer/${id}`);
           if (res.data.deletedCount > 0) {
             Swal.fire("Deleted!", "Footer info removed.", "success");
             fetchFooters();

@@ -12,7 +12,7 @@ const AllExpense = () => {
   const { data: expenses = [], refetch } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/expenses");
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/expenses");
       return res.data;
     },
   });
@@ -83,7 +83,7 @@ const AllExpense = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/expenses/${selectedExpense._id}`, {
+      await axios.put(`https://e-commerce-server-api.onrender.com/expenses/${selectedExpense._id}`, {
         ...formData,
         price: Number(formData.price),
       });
@@ -106,7 +106,7 @@ const AllExpense = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:5000/expenses/${id}`).then((res) => {
+        axios.delete(`https://e-commerce-server-api.onrender.com/expenses/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Expense removed.", "success");

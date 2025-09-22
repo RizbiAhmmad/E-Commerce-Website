@@ -52,22 +52,22 @@ const AllProducts = () => {
   useEffect(() => {
     fetchProducts();
     axios
-      .get("http://localhost:5000/categories")
+      .get("https://e-commerce-server-api.onrender.com/categories")
       .then((res) => setCategories(res.data));
     axios
-      .get("http://localhost:5000/subcategories")
+      .get("https://e-commerce-server-api.onrender.com/subcategories")
       .then((res) => setSubcategories(res.data));
     axios
-      .get("http://localhost:5000/brands")
+      .get("https://e-commerce-server-api.onrender.com/brands")
       .then((res) => setBrands(res.data));
-    axios.get("http://localhost:5000/sizes").then((res) => setSizes(res.data));
+    axios.get("https://e-commerce-server-api.onrender.com/sizes").then((res) => setSizes(res.data));
     axios
-      .get("http://localhost:5000/colors")
+      .get("https://e-commerce-server-api.onrender.com/colors")
       .then((res) => setColors(res.data));
   }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://localhost:5000/products");
+    const res = await axios.get("https://e-commerce-server-api.onrender.com/products");
     setProducts(res.data);
   };
 
@@ -80,7 +80,7 @@ const AllProducts = () => {
       showCancelButton: true,
     });
     if (confirm.isConfirmed) {
-      await axios.delete(`http://localhost:5000/products/${id}`);
+      await axios.delete(`https://e-commerce-server-api.onrender.com/products/${id}`);
       Swal.fire("Deleted!", "Product deleted successfully", "success");
       fetchProducts();
     }
@@ -165,7 +165,7 @@ const AllProducts = () => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/products",
+        "https://e-commerce-server-api.onrender.com/products",
         productData,
         {
           headers: { "Content-Type": "application/json" },
@@ -206,7 +206,7 @@ const AllProducts = () => {
 
       // Step 4: Send update request
       await axios.put(
-        `http://localhost:5000/products/${editProduct._id}`,
+        `https://e-commerce-server-api.onrender.com/products/${editProduct._id}`,
         updatedData,
         {
           headers: { "Content-Type": "application/json" },
