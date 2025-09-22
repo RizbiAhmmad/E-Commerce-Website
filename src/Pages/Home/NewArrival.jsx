@@ -371,7 +371,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
           <div
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-2 md:gap-4 flex-shrink-0"
+            className="flex items-center gap-6 flex-shrink-0"
           >
             <button
               onClick={handleAddToCart}

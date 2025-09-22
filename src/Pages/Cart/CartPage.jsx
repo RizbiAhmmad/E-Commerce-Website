@@ -11,13 +11,15 @@ const CartPage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch cart items for logged-in user
+  // Fetch cart items
   useEffect(() => {
     if (!user?.email) return;
 
     setLoading(true);
     axios
-      .get(`https://e-commerce-server-api.onrender.com/cart?email=${user.email}`)
+      .get(
+        `https://e-commerce-server-api.onrender.com/cart?email=${user.email}`
+      )
       .then(async (res) => {
         const items = res.data;
         const productIds = items.map((item) => item.productId);
@@ -58,7 +60,9 @@ const CartPage = () => {
     const newSelected = !item.selected;
 
     axios
-      .patch(`https://e-commerce-server-api.onrender.com/cart/${itemId}`, { selected: newSelected })
+      .patch(`https://e-commerce-server-api.onrender.com/cart/${itemId}`, {
+        selected: newSelected,
+      })
       .then(() => {
         setCartItems((prev) =>
           prev.map((i) =>
@@ -73,7 +77,9 @@ const CartPage = () => {
     if (newQty < 1) return;
 
     axios
-      .patch(`https://e-commerce-server-api.onrender.com/cart/${itemId}`, { quantity: newQty })
+      .patch(`https://e-commerce-server-api.onrender.com/cart/${itemId}`, {
+        quantity: newQty,
+      })
       .then(() => {
         setCartItems((prev) =>
           prev.map((item) =>
@@ -109,13 +115,15 @@ const CartPage = () => {
     });
   };
 
-  if (loading) return <p>Loading cart...</p>;
-  if (!cartItems.length) return <p>Your cart is empty.</p>;
+  if (loading) return <p className="p-6 text-center">Loading cart...</p>;
+  if (!cartItems.length)
+    return <p className="p-6 text-center">Your cart is empty.</p>;
 
   return (
-    <div className="min-h-screen dark:bg-black dark:text-white">
-      <div className="max-w-7xl mx-auto px-8 py-24 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 space-y-6">
+    <div className="min-h-screen dark:bg-black dark:text-white px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Cart Items */}
+        <div className="lg:col-span-2 space-y-6">
           {cartItems.map((item) => {
             const product = productsMap[item.productId];
             if (!product) return null;
@@ -123,78 +131,92 @@ const CartPage = () => {
             return (
               <div
                 key={item._id}
-                className="flex gap-4 items-center border-b pb-4"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border rounded-lg p-4 shadow-sm"
               >
-                <input
-                  type="checkbox"
-                  checked={!!item.selected}
-                  onChange={() => toggleSelect(item._id)}
-                  className="w-5 h-5"
-                />
-                <img
-                  src={product.images?.[0] || "https://via.placeholder.com/80"}
-                  alt={product.name}
-                  className="w-20 h-20 object-cover rounded"
-                />
-                <div className="flex flex-col flex-grow">
-                  <p className="font-semibold text-lg">{product.name}</p>
-
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm text-gray-600">Color:</span>
-                    <span className="px-2 py-1 dark:bg-black dark:text-white bg-gray-200 rounded text-sm">
-                      {item.selectedColor || product.colors?.[0]}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm text-gray-600">Size:</span>
-                    <span className="px-2 py-1 dark:bg-black dark:text-white bg-gray-200 rounded text-sm">
-                      {item.selectedSize || product.sizes?.[0]}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="text-cyan-500 font-semibold text-lg whitespace-nowrap">
-                  BDT {product.newPrice.toLocaleString()}
-                </div>
-                <div className="flex items-center border rounded-md">
-                  <button
-                    onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                    className="px-3 py-1 dark:bg-black dark:text-white bg-gray-100 hover:bg-gray-200"
-                  >
-                    −
-                  </button>
+                {/* Left section */}
+                <div className="flex gap-4 items-center flex-1">
                   <input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) =>
-                      updateQuantity(
-                        item._id,
-                        Math.max(1, Number(e.target.value))
-                      )
-                    }
-                    className="w-12 text-center"
+                    type="checkbox"
+                    checked={!!item.selected}
+                    onChange={() => toggleSelect(item._id)}
+                    className="w-5 h-5"
                   />
-                  <button
-                    onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                    className="px-3 py-1 dark:bg-black dark:text-white bg-gray-100 hover:bg-gray-200"
-                  >
-                    +
-                  </button>
+                  <img
+                    src={
+                      product.images?.[0] || "https://via.placeholder.com/80"
+                    }
+                    alt={product.name}
+                    className="w-20 h-20 object-cover rounded"
+                  />
+                  <div className="flex flex-col flex-grow">
+                    <p className="font-semibold text-base sm:text-lg">
+                      {product.name}
+                    </p>
+                    <div className="flex flex-wrap gap-3 mt-2 text-sm">
+                      <span className="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded">
+                        Color: {item.selectedColor || product.colors?.[0]}
+                      </span>
+                      <span className="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded">
+                        Size: {item.selectedSize || product.sizes?.[0]}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <button
-                  onClick={() => deleteItem(item._id)}
-                  className="text-red-600 hover:text-red-800 ml-3"
-                  aria-label="Delete item"
-                >
-                  <FaTrashAlt size={20} />
-                </button>
+
+                {/* Right section */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-6 w-full">
+                  {/* Product price + Quantity + Delete on same line for mobile */}
+                  <div className="flex flex-row sm:flex-row items-center justify-between w-full sm:w-auto gap-2">
+                    <div className="text-cyan-500 font-semibold text-lg">
+                      BDT {product.newPrice.toLocaleString()}
+                    </div>
+
+                    <div className="flex items-center border rounded-md">
+                      <button
+                        onClick={() =>
+                          updateQuantity(item._id, item.quantity - 1)
+                        }
+                        className="px-3 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200"
+                      >
+                        −
+                      </button>
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          updateQuantity(
+                            item._id,
+                            Math.max(1, Number(e.target.value))
+                          )
+                        }
+                        className="w-12 text-center border-x bg-transparent"
+                      />
+                      <button
+                        onClick={() =>
+                          updateQuantity(item._id, item.quantity + 1)
+                        }
+                        className="px-3 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() => deleteItem(item._id)}
+                      className="text-red-600 hover:text-red-800 flex justify-center"
+                      aria-label="Delete item"
+                    >
+                      <FaTrashAlt size={20} />
+                    </button>
+                  </div>
+                </div>
               </div>
             );
           })}
         </div>
 
-        <div className="border rounded p-6 h-fit">
+        {/* Order Summary */}
+        <div className="border rounded-lg p-6 h-fit shadow-md">
           <h2 className="font-semibold text-xl mb-6">Order Summary</h2>
           {cartItems
             .filter((item) => item.selected)

@@ -151,7 +151,18 @@ const Navbar = () => {
         </motion.div>
 
         {/* Desktop Search + Categories */}
-        <div className="hidden md:flex items-center w-1/3 relative gap-4">
+        <div className="hidden md:flex items-center w-1/2 relative gap-4">
+          <div className="flex items-center gap-6 ">
+    <Link to="/" className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl ">
+      Home
+    </Link>
+    <Link to="/about" className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl ">
+      About
+    </Link>
+    <Link to="/contact" className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl ">
+      Contact
+    </Link>
+  </div>
           {/* Categories */}
           <div className="relative">
             <button
@@ -260,7 +271,7 @@ const Navbar = () => {
           {user && (
             <Link
               to="/dashboard"
-              className="hidden md:block hover:text-cyan-500"
+              className="hidden md:block text-black dark:text-gray-200 hover:text-cyan-500 text-xl "
             >
               Dashboard
             </Link>
