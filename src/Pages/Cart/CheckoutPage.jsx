@@ -144,7 +144,7 @@ const CheckoutPage = () => {
 
   return (
     <div className="min-h-screen dark:bg-black dark:text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-22 sm:py-16 md:py-24 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-24 sm:py-16 md:py-24 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         {/* Left */}
         <div className="md:col-span-2 space-y-6">
           {/* Customer Information */}

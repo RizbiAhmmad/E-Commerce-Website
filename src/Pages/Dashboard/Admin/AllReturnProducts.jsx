@@ -9,7 +9,9 @@ const AllReturnProducts = () => {
   const { data: returnProducts = [], refetch } = useQuery({
     queryKey: ["returnProducts"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/return-products");
+      const res = await axios.get(
+        "https://e-commerce-server-api.onrender.com/return-products"
+      );
       return res.data;
     },
   });
@@ -28,7 +30,7 @@ const AllReturnProducts = () => {
     image: "",
   });
 
-  // 🔎 Search & Pagination states
+  // Search & Pagination states
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -90,7 +92,9 @@ const AllReturnProducts = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://e-commerce-server-api.onrender.com/return-products/${id}`)
+          .delete(
+            `https://e-commerce-server-api.onrender.com/return-products/${id}`
+          )
           .then((res) => {
             if (res.data.deletedCount > 0) {
               refetch();
@@ -222,7 +226,7 @@ const AllReturnProducts = () => {
         </div>
       )}
 
-      {/* Edit Modal (unchanged) */}
+      {/* ✏️ Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
@@ -294,14 +298,53 @@ const AllReturnProducts = () => {
                 className="w-full p-2 border rounded"
                 required
               />
-              <input
-                type="text"
-                name="image"
-                value={formData.image}
-                onChange={handleModalChange}
-                placeholder="Image URL"
-                className="w-full p-2 border rounded"
-              />
+
+              {/* ⬇️ Cloudinary Image Upload */}
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const formDataImg = new FormData();
+                      formDataImg.append("file", file);
+                      formDataImg.append(
+                        "upload_preset",
+                        "your_unsigned_preset"
+                      ); // change this
+
+                      try {
+                        const res = await axios.post(
+                          "https://api.cloudinary.com/v1_1/<your_cloud_name>/image/upload", // change this
+                          formDataImg
+                        );
+                        setFormData((prev) => ({
+                          ...prev,
+                          image: res.data.secure_url,
+                        }));
+                        Swal.fire(
+                          "Uploaded!",
+                          "New image uploaded successfully.",
+                          "success"
+                        );
+                      } catch (err) {
+                        Swal.fire("Error", "Image upload failed", "error");
+                      }
+                    }
+                  }}
+                  className="w-full p-2 border rounded"
+                />
+
+                {formData.image && (
+                  <img
+                    src={formData.image}
+                    alt="Preview"
+                    className="mt-2 w-20 h-20 object-cover rounded border"
+                  />
+                )}
+              </div>
+
               <button
                 type="submit"
                 className="px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"

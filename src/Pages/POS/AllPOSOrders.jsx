@@ -7,7 +7,7 @@ const AllPOSOrders = () => {
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const ordersPerPage = 10;
+  const ordersPerPage = 20;
 
   // fetch POS orders
   const fetchOrders = async () => {
@@ -46,10 +46,16 @@ const AllPOSOrders = () => {
     });
   };
 
-  // filter orders by orderId
-  const filteredOrders = orders.filter((order) =>
-    order.orderId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // filter orders by multiple fields
+ const filteredOrders = orders.filter((order) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      order.orderId?.toLowerCase().includes(term) ||
+      order.customer?.name?.toLowerCase().includes(term) ||
+      order.customer?.phone?.toLowerCase().includes(term) ||
+      order.payment?.method?.toLowerCase().includes(term)
+    );
+  });
 
   // pagination logic
   const indexOfLastOrder = currentPage * ordersPerPage;
@@ -67,13 +73,13 @@ const AllPOSOrders = () => {
         All POS Orders
       </h2>
 
-      {/* Search */}
+      {/* Search Bar */}
       <div className="flex justify-end mb-4">
         <div className="relative w-64">
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by Order ID..."
+            placeholder="Search by Order ID, Customer, Phone, Payment..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);

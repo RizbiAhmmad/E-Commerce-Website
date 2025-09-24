@@ -8,6 +8,7 @@ const AllOrders = () => {
   const [couriers, setCouriers] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(""); // 🔹 Search state
   const ordersPerPage = 20;
 
   // Fetch orders
@@ -64,9 +65,7 @@ const AllOrders = () => {
     try {
       const res = await axios.patch(
         `https://e-commerce-server-api.onrender.com/orders/${id}/status`,
-        {
-          status: newStatus,
-        }
+        { status: newStatus }
       );
       if (res.data.success) {
         Swal.fire("Updated!", "Order status updated.", "success");
@@ -81,14 +80,12 @@ const AllOrders = () => {
 
   // Assign courier
   const handleCourierAssign = async (orderId, courierName) => {
-    if (!courierName) return; // prevent empty selection
+    if (!courierName) return;
 
     try {
       const res = await axios.patch(
         `https://e-commerce-server-api.onrender.com/orders/${orderId}/courier`,
-        {
-          courierName,
-        }
+        { courierName }
       );
       if (res.data.success) {
         Swal.fire("Updated!", "Courier assigned successfully.", "success");
@@ -124,19 +121,28 @@ const AllOrders = () => {
     }
   };
 
-  // Filter orders
+  // 🔹 Search + Filter Orders
+  const searchedOrders = orders.filter((order) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      order.fullName?.toLowerCase().includes(term) ||
+      order.email?.toLowerCase().includes(term) ||
+      order.phone?.toLowerCase().includes(term) ||
+      order.cartItems.some((item) =>
+        item.productName?.toLowerCase().includes(term)
+      )
+    );
+  });
+
   const filteredOrders =
     statusFilter === "all"
-      ? orders
-      : orders.filter((order) => order.status?.toLowerCase() === statusFilter);
+      ? searchedOrders
+      : searchedOrders.filter((order) => order.status?.toLowerCase() === statusFilter);
 
   // Pagination logic
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(
-    indexOfFirstOrder,
-    indexOfLastOrder
-  );
+  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const handlePageChange = (page) => {
@@ -149,27 +155,43 @@ const AllOrders = () => {
         All Orders
       </h2>
 
-      {/* Filter Dropdown */}
-      <div className="mb-4 flex justify-end">
-        <label
-          htmlFor="statusFilter"
-          className="mr-2 text-lg font-medium text-gray-700"
-        >
-          Filter by Status:
-        </label>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 text-sm shadow-sm"
-        >
-          <option value="all">All Status</option>
-          <option value="initiated">Initiated</option>
-          <option value="pending">Pending</option>
-          <option value="processing">Processing</option>
-          <option value="shipped">Shipped</option>
-          <option value="delivered">Delivered</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+      {/* 🔹 Search & Filter */}
+      <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        <input
+          type="text"
+          placeholder="Search by name, email, phone or product..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="border border-gray-300 rounded px-3 py-2 w-full md:w-1/3 shadow-sm"
+        />
+
+        <div className="flex items-center">
+          <label
+            htmlFor="statusFilter"
+            className="mr-2 text-lg font-medium text-gray-700"
+          >
+            Filter by Status:
+          </label>
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border border-gray-300 rounded px-3 py-2 text-sm shadow-sm"
+          >
+            <option value="all">All Status</option>
+            <option value="initiated">Initiated</option>
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
       </div>
 
       {/* Orders Table */}

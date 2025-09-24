@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
@@ -12,7 +12,9 @@ const AllSubcategories = () => {
   const { data: subcategories = [], refetch } = useQuery({
     queryKey: ["subcategories"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/subcategories");
+      const res = await axios.get(
+        "https://e-commerce-server-api.onrender.com/subcategories"
+      );
       return res.data;
     },
   });
@@ -21,7 +23,9 @@ const AllSubcategories = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/categories");
+      const res = await axios.get(
+        "https://e-commerce-server-api.onrender.com/categories"
+      );
       return res.data;
     },
   });
@@ -33,6 +37,15 @@ const AllSubcategories = () => {
     categoryId: "",
     status: "active",
   });
+
+  // 🔹 Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(subcategories.length / itemsPerPage);
+
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentItems = subcategories.slice(indexOfFirst, indexOfLast);
 
   const openEditModal = (sub) => {
     setSelectedSub(sub);
@@ -52,7 +65,10 @@ const AllSubcategories = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://e-commerce-server-api.onrender.com/subcategories/${selectedSub._id}`, formData);
+      await axios.put(
+        `https://e-commerce-server-api.onrender.com/subcategories/${selectedSub._id}`,
+        formData
+      );
       Swal.fire("Updated!", "Subcategory has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -72,12 +88,16 @@ const AllSubcategories = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/subcategories/${id}`).then((res) => {
-          if (res.data.deletedCount > 0) {
-            refetch();
-            Swal.fire("Deleted!", "Subcategory removed.", "success");
-          }
-        });
+        axios
+          .delete(
+            `https://e-commerce-server-api.onrender.com/subcategories/${id}`
+          )
+          .then((res) => {
+            if (res.data.deletedCount > 0) {
+              refetch();
+              Swal.fire("Deleted!", "Subcategory removed.", "success");
+            }
+          });
       }
     });
   };
@@ -117,16 +137,27 @@ const AllSubcategories = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {subcategories.map((sub, index) => (
-              <tr key={sub._id} className="transition duration-200 hover:bg-gray-50">
-                <td className="px-6 py-4">{index + 1}</td>
-                <td className="px-6 py-4 font-semibold text-gray-800">{sub.name}</td>
+            {currentItems.map((sub, index) => (
+              <tr
+                key={sub._id}
+                className="transition duration-200 hover:bg-gray-50"
+              >
+                <td className="px-6 py-4">
+                  {indexOfFirst + index + 1}
+                </td>
+                <td className="px-6 py-4 font-semibold text-gray-800">
+                  {sub.name}
+                </td>
                 <td className="px-6 py-4">{getCategoryName(sub.categoryId)}</td>
                 <td className="px-6 py-4">
                   {sub.status === "active" ? (
-                    <span className="px-2 py-1 text-xs text-green-800 bg-green-100 rounded">Active</span>
+                    <span className="px-2 py-1 text-xs text-green-800 bg-green-100 rounded">
+                      Active
+                    </span>
                   ) : (
-                    <span className="px-2 py-1 text-xs text-red-800 bg-red-100 rounded">Inactive</span>
+                    <span className="px-2 py-1 text-xs text-red-800 bg-red-100 rounded">
+                      Inactive
+                    </span>
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
@@ -150,11 +181,49 @@ const AllSubcategories = () => {
         </table>
       </div>
 
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 rounded ${
+                currentPage === i + 1
+                  ? "bg-cyan-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() =>
+              setCurrentPage((p) => Math.min(p + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
       {/* Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
-            <button onClick={() => setIsModalOpen(false)} className="absolute top-2 right-2 text-gray-500 text-xl">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-2 text-gray-500 text-xl"
+            >
               ✖
             </button>
             <h3 className="mb-4 text-xl font-semibold">Edit Subcategory</h3>

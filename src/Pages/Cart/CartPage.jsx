@@ -120,8 +120,8 @@ const CartPage = () => {
     return <p className="p-6 text-center">Your cart is empty.</p>;
 
   return (
-    <div className="min-h-screen dark:bg-black dark:text-white px-4 sm:px-6 lg:px-8 py-16">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="min-h-screen dark:bg-black dark:text-white px-4 sm:px-6 lg:px-8 py-24">
+      <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-6">
           {cartItems.map((item) => {
@@ -164,13 +164,14 @@ const CartPage = () => {
                 </div>
 
                 {/* Right section */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-6 w-full">
-                  {/* Product price + Quantity + Delete on same line for mobile */}
-                  <div className="flex flex-row sm:flex-row items-center justify-between w-full sm:w-auto gap-2">
-                    <div className="text-cyan-500 font-semibold text-lg">
-                      BDT {product.newPrice.toLocaleString()}
-                    </div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-6 w-full">
+                  {/* Price */}
+                  <div className="text-cyan-500 font-semibold text-lg text-left sm:text-right">
+                    BDT {product.newPrice.toLocaleString()}
+                  </div>
 
+                  {/* Quantity + Delete */}
+                  <div className="flex items-center gap-2">
                     <div className="flex items-center border rounded-md">
                       <button
                         onClick={() =>

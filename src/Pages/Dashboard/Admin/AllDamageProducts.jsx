@@ -24,20 +24,19 @@ const AllDamageProducts = () => {
     note: "",
     image: "",
   });
+  const [newImageFile, setNewImageFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
-  //  Search + Pagination states
+  // Search + Pagination
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  //  Filter products by search term
   const filteredProducts = damageProducts.filter(
     (product) =>
       product.name.toLowerCase().includes(search.toLowerCase()) ||
       (product.note && product.note.toLowerCase().includes(search.toLowerCase()))
   );
-
-  //  Pagination logic
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
@@ -53,6 +52,7 @@ const AllDamageProducts = () => {
       note: product.note,
       image: product.image,
     });
+    setNewImageFile(null);
     setIsModalOpen(true);
   };
 
@@ -61,18 +61,42 @@ const AllDamageProducts = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    setNewImageFile(e.target.files[0]);
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
+      let imageUrl = formData.image;
+
+      // if new image selected → upload to cloudinary
+      if (newImageFile) {
+        setUploading(true);
+        const fd = new FormData();
+        fd.append("file", newImageFile);
+        fd.append("upload_preset", "eCommerce"); // apnar Cloudinary preset
+        const uploadRes = await axios.post(
+          "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
+          fd
+        );
+        imageUrl = uploadRes.data.secure_url;
+        setUploading(false);
+      }
+
       await axios.put(
         `https://e-commerce-server-api.onrender.com/damage-products/${selectedProduct._id}`,
-        formData
+        { ...formData, image: imageUrl }
       );
+
       Swal.fire("Updated!", "Damage product has been updated.", "success");
       setIsModalOpen(false);
       refetch();
     } catch (err) {
+      console.error(err);
       Swal.fire("Error", "Failed to update product", "error");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -103,7 +127,7 @@ const AllDamageProducts = () => {
         All Damaged Products
       </h2>
 
-      {/* Top Controls: Search + Add */}
+      {/* Top Controls */}
       <div className="flex flex-col items-center justify-between gap-4 mb-4 md:flex-row">
         <input
           type="text"
@@ -111,7 +135,7 @@ const AllDamageProducts = () => {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setCurrentPage(1); 
+            setCurrentPage(1);
           }}
           className="w-full p-2 border rounded md:w-1/3"
         />
@@ -179,6 +203,7 @@ const AllDamageProducts = () => {
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-4">
+          {/* Prev / Next buttons */}
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => prev - 1)}
@@ -186,21 +211,17 @@ const AllDamageProducts = () => {
           >
             Prev
           </button>
-
           {[...Array(totalPages)].map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
               className={`px-3 py-1 text-sm rounded ${
-                currentPage === i + 1
-                  ? "bg-cyan-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
+                currentPage === i + 1 ? "bg-cyan-500 text-white" : "bg-gray-200 hover:bg-gray-300"
               }`}
             >
               {i + 1}
             </button>
           ))}
-
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((prev) => prev + 1)}
@@ -223,61 +244,75 @@ const AllDamageProducts = () => {
             </button>
             <h3 className="mb-4 text-xl font-semibold">Edit Damaged Product</h3>
             <form onSubmit={handleUpdate} className="space-y-4">
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleModalChange}
+                className="w-full p-2 border rounded"
+                required
+                placeholder="Product Name"
+              />
+              <input
+                type="text"
+                name="referenceNo"
+                value={formData.referenceNo}
+                onChange={handleModalChange}
+                className="w-full p-2 border rounded"
+                required
+                placeholder="Reference No"
+              />
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleModalChange}
+                className="w-full p-2 border rounded"
+                required
+                placeholder="Price"
+              />
+              <textarea
+                name="note"
+                value={formData.note}
+                onChange={handleModalChange}
+                className="w-full p-2 border rounded"
+                placeholder="Note"
+              />
+
               <div>
-                <label className="block text-sm font-medium">Product Name</label>
+                <label className="block text-sm font-medium">Product Image</label>
+                <div className="flex items-center gap-4">
+                  <label
+                    htmlFor="newImage"
+                    className="px-4 py-2 text-white bg-cyan-500 rounded cursor-pointer hover:bg-cyan-600"
+                  >
+                    Choose File
+                  </label>
+                  <span className="text-sm text-gray-600">
+                    {newImageFile ? newImageFile.name : "Keep current image"}
+                  </span>
+                </div>
                 <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                  required
+                  id="newImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
                 />
+                {formData.image && (
+                  <img
+                    src={formData.image}
+                    alt="current"
+                    className="w-16 h-16 mt-2 border rounded object-cover"
+                  />
+                )}
+                {uploading && <p className="text-sm text-gray-500 mt-1">Uploading...</p>}
               </div>
-              <div>
-                <label className="block text-sm font-medium">Reference No</label>
-                <input
-                  type="text"
-                  name="referenceNo"
-                  value={formData.referenceNo}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Price</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Note</label>
-                <textarea
-                  name="note"
-                  value={formData.note}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Image URL</label>
-                <input
-                  type="text"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
+
               <button
                 type="submit"
-                className="px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
+                disabled={uploading}
+                className="px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 disabled:opacity-60"
               >
                 Update Product
               </button>
