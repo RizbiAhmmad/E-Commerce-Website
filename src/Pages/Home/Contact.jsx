@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaLinkedin } from "react-icons/fa";
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaLinkedin, FaYoutube, FaTiktok } from "react-icons/fa";
 import axios from "axios";
 
 const Contact = () => {
@@ -99,6 +99,16 @@ const Contact = () => {
           {footerInfo.facebook && (
             <a href={footerInfo.facebook} target="_blank" rel="noreferrer" className="hover:text-cyan-500">
               <FaFacebook />
+            </a>
+          )}
+          {footerInfo.youtube && (
+            <a href={footerInfo.youtube} target="_blank" rel="noreferrer" className="hover:text-cyan-500">
+              <FaYoutube />
+            </a>
+          )}
+          {footerInfo.tiktok && (
+            <a href={footerInfo.tiktok} target="_blank" rel="noreferrer" className="hover:text-cyan-500">
+              <FaTiktok />
             </a>
           )}
           {footerInfo.linkedin && (

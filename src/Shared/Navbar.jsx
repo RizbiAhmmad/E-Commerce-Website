@@ -138,13 +138,13 @@ const Navbar = () => {
             <img
               src={footerInfo.logo}
               alt="Logo"
-              className="w-12 h-12 mr-2 rounded-full"
+              className="w-12 h-12 rounded-lg"
             />
           ) : (
             <img
               src="/fallback-logo.png"
               alt="Logo"
-              className="w-12 h-12 mr-2 rounded-full"
+              className="w-12 h-12 rounded-lg"
             />
           )}
           <Link to="/">{footerInfo?.name || ""}</Link>
@@ -152,17 +152,28 @@ const Navbar = () => {
 
         {/* Desktop Search + Categories */}
         <div className="hidden md:flex items-center w-1/2 relative gap-4">
-          <div className="flex items-center gap-6 ">
-    <Link to="/" className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl ">
-      Home
-    </Link>
-    <Link to="/about" className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl ">
-      About
-    </Link>
-    <Link to="/contact" className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl ">
-      Contact
-    </Link>
-  </div>
+          
+           <div className="flex items-center gap-4 ">
+            <Link
+              to="/"
+              className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl "
+            >
+              Home
+            </Link>
+            <Link
+              to="/about"
+              className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl "
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl "
+            >
+              Contact
+            </Link>
+          </div>
+
           {/* Categories */}
           <div className="relative">
             <button
@@ -233,6 +244,8 @@ const Navbar = () => {
               </div>
             )}
           </div>
+
+         
         </div>
 
         {/* Right Icons */}
@@ -347,121 +360,122 @@ const Navbar = () => {
       </AnimatePresence>
 
       {/* Mobile Menu */}
-<AnimatePresence>
-  {isOpen && (
-    <motion.div
-      initial={{ height: 0 }}
-      animate={{ height: "auto" }}
-      exit={{ height: 0 }}
-      className="overflow-hidden md:hidden bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-t border-gray-200 dark:border-gray-700"
-    >
-      <div className="flex flex-col px-4 py-4 space-y-3 max-h-[70vh] overflow-y-auto">
-        <Link
-          to="/"
-          onClick={() => setIsOpen(false)}
-          className="hover:text-cyan-500"
-        >
-          Home
-        </Link>
-        <Link
-          to="/about"
-          onClick={() => setIsOpen(false)}
-          className="hover:text-cyan-500"
-        >
-          About
-        </Link>
-        <Link
-          to="/contact"
-          onClick={() => setIsOpen(false)}
-          className="hover:text-cyan-500"
-        >
-          Contact
-        </Link>
-
-        {/* Dashboard link (only when logged in) */}
-        {user && (
-          <Link
-            to="/dashboard"
-            onClick={() => setIsOpen(false)}
-            className="hover:text-cyan-500"
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            className="overflow-hidden md:hidden bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-t border-gray-200 dark:border-gray-700"
           >
-            Dashboard
-          </Link>
-        )}
+            <div className="flex flex-col px-4 py-4 space-y-3 max-h-[70vh] overflow-y-auto">
+              <Link
+                to="/"
+                onClick={() => setIsOpen(false)}
+                className="hover:text-cyan-500"
+              >
+                Home
+              </Link>
+              <Link
+                to="/about"
+                onClick={() => setIsOpen(false)}
+                className="hover:text-cyan-500"
+              >
+                About
+              </Link>
+              <Link
+                to="/contact"
+                onClick={() => setIsOpen(false)}
+                className="hover:text-cyan-500"
+              >
+                Contact
+              </Link>
 
-        {/* Categories */}
-        {menuData.length > 0 && (
-          <div className="flex flex-col space-y-1 mt-2">
-            <div className="font-semibold text-gray-700 dark:text-gray-200">
-              Categories
-            </div>
-            {menuData.map((cat) => (
-              <div key={cat._id} className="flex flex-col">
-                <button
-                  onClick={() =>
-                    setOpenCategory(openCategory === cat._id ? null : cat._id)
-                  }
-                  className="flex justify-between items-center px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+              {/* Dashboard link (only when logged in) */}
+              {user && (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="hover:text-cyan-500"
                 >
-                  {cat.name}
-                  {cat.subcategories.length > 0 && (
-                    <FaChevronDown className="text-xs" />
-                  )}
-                </button>
+                  Dashboard
+                </Link>
+              )}
 
-                {/* Subcategories */}
-                {openCategory === cat._id &&
-                  cat.subcategories.length > 0 && (
-                    <div className="flex flex-col ml-4 mt-1 space-y-1">
-                      {cat.subcategories.map((sub) => (
-                        <button
-                          key={sub._id}
-                          onClick={() => {
-                            navigate(`/subcategory/${sub._id}`);
-                            setIsOpen(false);
-                            setOpenCategory(null);
-                          }}
-                          className="px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-sm text-gray-700 dark:text-gray-200 text-left"
-                        >
-                          {sub.name}
-                        </button>
-                      ))}
+              {/* Categories */}
+              {menuData.length > 0 && (
+                <div className="flex flex-col space-y-1 mt-2">
+                  <div className="font-semibold text-gray-700 dark:text-gray-200">
+                    Categories
+                  </div>
+                  {menuData.map((cat) => (
+                    <div key={cat._id} className="flex flex-col">
+                      <button
+                        onClick={() =>
+                          setOpenCategory(
+                            openCategory === cat._id ? null : cat._id
+                          )
+                        }
+                        className="flex justify-between items-center px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+                      >
+                        {cat.name}
+                        {cat.subcategories.length > 0 && (
+                          <FaChevronDown className="text-xs" />
+                        )}
+                      </button>
+
+                      {/* Subcategories */}
+                      {openCategory === cat._id &&
+                        cat.subcategories.length > 0 && (
+                          <div className="flex flex-col ml-4 mt-1 space-y-1">
+                            {cat.subcategories.map((sub) => (
+                              <button
+                                key={sub._id}
+                                onClick={() => {
+                                  navigate(`/subcategory/${sub._id}`);
+                                  setIsOpen(false);
+                                  setOpenCategory(null);
+                                }}
+                                className="px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-sm text-gray-700 dark:text-gray-200 text-left"
+                              >
+                                {sub.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                     </div>
-                  )}
-              </div>
-            ))}
-          </div>
-        )}
+                  ))}
+                </div>
+              )}
 
-        {/* Theme Toggle */}
-        {/* <div className="mt-3">
+              {/* Theme Toggle */}
+              {/* <div className="mt-3">
           <ThemeChange />
         </div> */}
 
-        {/* Auth Buttons */}
-        {user ? (
-          <button
-            onClick={() => {
-              handleLogOut();
-              setIsOpen(false);
-            }}
-            className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md mt-3"
-          >
-            Logout
-          </button>
-        ) : (
-          <button
-            onClick={handleLogin}
-            className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-md flex items-center justify-center mt-3"
-          >
-            <FaUser className="mr-2" /> Login
-          </button>
+              {/* Auth Buttons */}
+              {user ? (
+                <button
+                  onClick={() => {
+                    handleLogOut();
+                    setIsOpen(false);
+                  }}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md mt-3"
+                >
+                  Logout
+                </button>
+              ) : (
+                <button
+                  onClick={handleLogin}
+                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-md flex items-center justify-center mt-3"
+                >
+                  <FaUser className="mr-2" /> Login
+                </button>
+              )}
+            </div>
+          </motion.div>
         )}
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
-
+      </AnimatePresence>
     </nav>
   );
 };

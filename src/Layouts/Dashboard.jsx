@@ -18,7 +18,11 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { MdInventory, MdLocalShipping, MdOutlineDashboardCustomize } from "react-icons/md";
+import {
+  MdInventory,
+  MdLocalShipping,
+  MdOutlineDashboardCustomize,
+} from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { NavLink, Outlet } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
@@ -73,12 +77,21 @@ const Dashboard = () => {
 
       <div className="flex min-h-screen">
         {/* Sidebar */}
+        {/* <div
+          className={`${
+            isSidebarOpen ? "w-64" : "w-0 md:w-64"
+          } bg-gray-100 text-black transition-all duration-300 flex flex-col justify-between`}
+        > */}
+
         <div
           className={`${
             isSidebarOpen ? "w-64" : "w-0 md:w-64"
-          } bg-gray-100 text-black dark:bg-black dark:text-white transition-all duration-300 flex flex-col justify-between`}
+          } bg-black text-white md:bg-gray-100 md:text-black transition-all duration-300 flex flex-col justify-between`}
         >
-          <ul onClick={toggleSidebar} className="p-6 space-y-2 text-md h-[calc(100vh-4rem)] overflow-y-auto scroll-smooth">
+          <ul
+            onClick={toggleSidebar}
+            className="p-6 space-y-2 text-md h-[calc(100vh-4rem)] overflow-y-auto scroll-smooth"
+          >
             {/* Admin Menu */}
             {userRole === "admin" && (
               <>
@@ -160,7 +173,7 @@ const Dashboard = () => {
                   >
                     <FaChartLine /> <span>Stock Report</span>
                   </NavLink>
-                </li>  
+                </li>
 
                 {/* POS & Orders */}
                 <li className=" pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
@@ -219,7 +232,7 @@ const Dashboard = () => {
                     <FaChartBar /> <span>Sales Report</span>
                   </NavLink>
                 </li>
-                              
+
                 <li>
                   <NavLink
                     to="/dashboard/ExpenseReport"
@@ -302,7 +315,7 @@ const Dashboard = () => {
                   >
                     <FaGift /> <span>Offers</span>
                   </NavLink>
-                </li>               
+                </li>
                 <li>
                   <NavLink
                     to="/dashboard/CourierSettings"
@@ -316,7 +329,7 @@ const Dashboard = () => {
                     to="/dashboard/FooterInfo"
                     className="flex items-center px-2 py-2 space-x-3"
                   >
-                    <FaInfoCircle /> <span>Footer Info</span>
+                    <FaInfoCircle /> <span>Logo & Info</span>
                   </NavLink>
                 </li>
 

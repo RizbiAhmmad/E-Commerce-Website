@@ -13,7 +13,9 @@ const AddFooterInfo = () => {
     email: "",
     address: "",
     facebook: "",
+    youtube: "",
     linkedin: "",
+    tiktok: "",
   });
 
   const [logoFile, setLogoFile] = useState(null);
@@ -88,7 +90,7 @@ const AddFooterInfo = () => {
 
   return (
     <div className="max-w-xl p-6 mx-auto mt-6 bg-white rounded-lg shadow-md">
-      <h2 className="mb-6 text-2xl font-bold text-center">Add Footer Info</h2>
+      <h2 className="mb-6 text-2xl font-bold text-center">Add Information</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Logo Upload */}
         <div>
@@ -168,9 +170,25 @@ const AddFooterInfo = () => {
         />
         <input
           type="text"
+          name="youtube"
+          placeholder="YouTube URL"
+          value={formData.youtube}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="text"
           name="linkedin"
           placeholder="LinkedIn URL"
           value={formData.linkedin}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="text"
+          name="tiktok"
+          placeholder="TikTok URL"
+          value={formData.tiktok}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
         />
@@ -180,7 +198,7 @@ const AddFooterInfo = () => {
           disabled={loading}
           className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
-          {loading ? "Submitting..." : "Add Footer Info"}
+          {loading ? "Submitting..." : "Add Information"}
         </button>
       </form>
     </div>

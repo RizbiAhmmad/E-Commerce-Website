@@ -26,6 +26,8 @@ const SalesReport = () => {
     today: 0,
     yesterday: 0,
   });
+  const [orders, setOrders] = useState([]);
+  const [filter, setFilter] = useState("today"); // all | today | week | month
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -45,14 +47,41 @@ const SalesReport = () => {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const res = await axios.get("https://e-commerce-server-api.onrender.com/sales-report");
+        const res = await axios.get(
+          "https://e-commerce-server-api.onrender.com/sales-report"
+        );
+        console.log("Sales report data:", res.data);
         setReport(res.data);
+        setOrders(res.data.allOrders || []);
       } catch (err) {
         console.error(err);
       }
     };
     fetchReport();
   }, []);
+
+  // helper for filtering orders
+  const getFilteredOrders = () => {
+    const now = new Date();
+    return orders.filter((order) => {
+      const orderDate = new Date(order.createdAt);
+      if (filter === "today") {
+        return orderDate.toDateString() === now.toDateString();
+      }
+      if (filter === "week") {
+        const weekAgo = new Date();
+        weekAgo.setDate(now.getDate() - 7);
+        return orderDate >= weekAgo;
+      }
+      if (filter === "month") {
+        return (
+          orderDate.getMonth() === now.getMonth() &&
+          orderDate.getFullYear() === now.getFullYear()
+        );
+      }
+      return true; // all
+    });
+  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -96,6 +125,7 @@ const SalesReport = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
+
         {/* Pie Chart */}
         <div className="bg-white shadow rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4 text-center">Pie Chart</h3>
@@ -118,55 +148,18 @@ const SalesReport = () => {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
-
-          {/* Custom Legend for Pie */}
-          <div className="flex justify-center flex-wrap gap-4 mt-4 text-sm">
-            <div className="flex items-center gap-2">
-              <span
-                className="w-4 h-4 rounded-sm"
-                style={{ background: "#0088FE" }}
-              ></span>
-              <span className="text-gray-700 font-medium">All Time</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className="w-4 h-4 rounded-sm"
-                style={{ background: "#00C49F" }}
-              ></span>
-              <span className="text-gray-700 font-medium">This Month</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className="w-4 h-4 rounded-sm"
-                style={{ background: "#FFBB28" }}
-              ></span>
-              <span className="text-gray-700 font-medium">This Week</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span
-                className="w-4 h-4 rounded-sm"
-                style={{ background: "#FF8042" }}
-              ></span>
-              <span className="text-gray-700 font-medium">Today</span>
-            </div>
-          </div>
         </div>
-        
-        {/* Line Chart */}{" "}
+
+        {/* Line Chart */}
         <div className="bg-white shadow rounded-lg p-4">
-          {" "}
-          <h3 className="text-lg font-semibold mb-4 text-center">
-            Line Chart
-          </h3>{" "}
+          <h3 className="text-lg font-semibold mb-4 text-center">Line Chart</h3>
           <ResponsiveContainer width="100%" height={300}>
-            {" "}
             <LineChart data={chartData}>
-              {" "}
-              <CartesianGrid strokeDasharray="3 3" /> <XAxis dataKey="name" />{" "}
-              <YAxis /> <Tooltip /> <Legend />{" "}
-              <Line type="monotone" dataKey="value" stroke="#82ca9d" />{" "}
-            </LineChart>{" "}
-          </ResponsiveContainer>{" "}
+              <CartesianGrid strokeDasharray="3 3" /> <XAxis dataKey="name" />
+              <YAxis /> <Tooltip /> <Legend />
+              <Line type="monotone" dataKey="value" stroke="#82ca9d" />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
 
         {/* Comparison Chart */}
@@ -185,29 +178,70 @@ const SalesReport = () => {
               <Bar dataKey="Previous" fill="#FF8042" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
+        </div>
+      </div>
 
-          {/* Custom Legend for Comparison */}
-          <div className="flex flex-wrap justify-center gap-4 mt-4 text-sm">
-  <div className="flex items-center gap-2">
-    <span
-      className="w-4 h-4 rounded-sm"
-      style={{ background: "#0088FE" }}
-    ></span>
-    <span className="text-gray-700 font-medium">
-      Current (This Month/Week/Today)
-    </span>
-  </div>
-  <div className="flex items-center gap-2">
-    <span
-      className="w-4 h-4 rounded-sm"
-      style={{ background: "#FF8042" }}
-    ></span>
-    <span className="text-gray-700 font-medium">
-      Previous (Last Month/Week/Yesterday)
-    </span>
-  </div>
-</div>
+      {/* Product Details Table */}
+      <div className="bg-white shadow rounded-lg p-4 mt-10">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">Sold Products</h3>
+          {/* Filter Buttons */}
+          <div className="flex gap-2">
+            {["all", "today", "week", "month"].map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1 rounded ${
+                  filter === f
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 hover:bg-gray-300"
+                }`}
+              >
+                {f === "all"
+                  ? "All"
+                  : f === "today"
+                  ? "Today"
+                  : f === "week"
+                  ? "This Week"
+                  : "This Month"}
+              </button>
+            ))}
+          </div>
+        </div>
 
+        <div className="overflow-x-auto">
+          <table className="table-auto w-full border border-gray-200 text-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                {/* <th className="px-4 py-2 border">Order ID</th> */}
+                <th className="px-4 py-2 border">Product Name</th>
+                <th className="px-4 py-2 border">Price</th>
+                <th className="px-4 py-2 border">Quantity</th>
+                <th className="px-4 py-2 border">Total</th>
+                <th className="px-4 py-2 border">Discount</th>
+                <th className="px-4 py-2 border">Date</th>
+                <th className="px-4 py-2 border">Order Type</th>
+
+              </tr>
+            </thead>
+            <tbody>
+  {getFilteredOrders().flatMap((order) =>
+    (order.cartItems || []).map((p, idx) => (
+      <tr key={`${order._id}-${idx}`}>
+        <td className="px-4 py-2 border">{p.productName || p.name || p.title}</td>
+        <td className="px-4 py-2 border">৳{p.price}</td>
+        <td className="px-4 py-2 border">{p.quantity}</td>
+        <td className="px-4 py-2 border">৳{p.price * p.quantity}</td>
+        <td className="px-4 py-2 border">৳{order.discount || 0}</td>
+        <td className="px-4 py-2 border">{new Date(order.createdAt).toLocaleDateString()}</td>
+        <td className="px-4 py-2 border">{order.orderType}</td>
+      </tr>
+    ))
+  )}
+</tbody>
+
+
+          </table>
         </div>
       </div>
     </div>

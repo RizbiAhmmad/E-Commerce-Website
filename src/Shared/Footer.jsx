@@ -6,6 +6,8 @@ import {
   FaEnvelope,
   FaPhone,
   FaMapMarkerAlt,
+  FaYoutube,
+  FaTiktok,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -63,6 +65,26 @@ export default function Footer() {
                 className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
               >
                 <FaFacebookF />
+              </a>
+            )}
+            {footerInfo.youtube && (
+              <a
+                href={footerInfo.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
+              >
+                <FaYoutube />
+              </a>
+            )}
+            {footerInfo.tiktok && (
+              <a
+                href={footerInfo.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
+              >
+                <FaTiktok />
               </a>
             )}
             {footerInfo.linkedin && (

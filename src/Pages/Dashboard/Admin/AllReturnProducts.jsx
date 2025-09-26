@@ -237,7 +237,7 @@ const AllReturnProducts = () => {
               ✖
             </button>
             <h3 className="mb-4 text-xl font-semibold">Edit Return Product</h3>
-            <form onSubmit={handleUpdate} className="space-y-4">
+            <form onSubmit={handleUpdate} className="space-y-2">
               <input
                 type="text"
                 name="name"

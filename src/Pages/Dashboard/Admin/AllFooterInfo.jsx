@@ -14,20 +14,22 @@ const AllFooterInfo = () => {
     email: "",
     address: "",
     facebook: "",
+    youtube: "",
     linkedin: "",
+    tiktok: "",
     logo: "",
   });
   const [logoFile, setLogoFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const fetchFooters = async () => {
-  try {
-    const res = await axios.get("https://e-commerce-server-api.onrender.com/footer");
-    setFooters(res.data);
-  } catch (err) {
-    console.error("Error fetching footers:", err);
-  }
-};
+    try {
+      const res = await axios.get("https://e-commerce-server-api.onrender.com/footer");
+      setFooters(res.data);
+    } catch (err) {
+      console.error("Error fetching footers:", err);
+    }
+  };
 
   useEffect(() => {
     fetchFooters();
@@ -42,7 +44,9 @@ const AllFooterInfo = () => {
       email: footer.email,
       address: footer.address,
       facebook: footer.facebook,
+      youtube: footer.youtube,
       linkedin: footer.linkedin,
+      tiktok: footer.tiktok,
       logo: footer.logo,
     });
     setIsModalOpen(true);
@@ -63,7 +67,6 @@ const AllFooterInfo = () => {
     try {
       let logoUrl = formData.logo;
       if (logoFile) {
-        // Upload logo to Cloudinary
         const cloudinaryData = new FormData();
         cloudinaryData.append("file", logoFile);
         cloudinaryData.append("upload_preset", "eCommerce");
@@ -117,18 +120,18 @@ const AllFooterInfo = () => {
   };
 
   return (
-    <div className="max-w-7xl p-6 mx-auto">
+    <div className="max-w-6xl p-6 mx-auto">
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
-        All Footer Info
+        All Information
       </h2>
 
-      {/* Add Footer Button */}
+      {/* Add Button */}
       <div className="flex justify-end mb-4">
         <button
           onClick={() => window.location.href = "/dashboard/addFooterInfo"}
           className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
-          <FaPlus /> Add Footer Info
+          <FaPlus /> Add Information
         </button>
       </div>
 
@@ -143,6 +146,7 @@ const AllFooterInfo = () => {
               <th className="px-4 py-3">Phone</th>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Address</th>
+              <th className="px-4 py-3">Social Links</th>
               <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
@@ -161,6 +165,12 @@ const AllFooterInfo = () => {
                 <td className="px-4 py-3">{footer.phone}</td>
                 <td className="px-4 py-3">{footer.email}</td>
                 <td className="px-4 py-3">{footer.address}</td>
+                <td className="px-4 py-3 space-y-1">
+                  {footer.facebook && <div>{footer.facebook}</div>}
+                  {footer.youtube && <div>{footer.youtube}</div>}
+                  {footer.linkedin && <div>{footer.linkedin}</div>}
+                  {footer.tiktok && <div>{footer.tiktok}</div>}
+                </td>
                 <td className="flex gap-4 px-4 py-3">
                   <button onClick={() => openEditModal(footer)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
@@ -173,8 +183,8 @@ const AllFooterInfo = () => {
             ))}
             {footers.length === 0 && (
               <tr>
-                <td colSpan="7" className="py-6 text-center text-gray-500">
-                  No footer info found.
+                <td colSpan="8" className="py-6 text-center text-gray-500">
+                  No information found.
                 </td>
               </tr>
             )}
@@ -192,8 +202,8 @@ const AllFooterInfo = () => {
             >
               ✖
             </button>
-            <h3 className="mb-4 text-xl font-semibold">Edit Footer Info</h3>
-            <form onSubmit={handleUpdate} className="space-y-3">
+            <h3 className="mb-2 text-xl text-center font-semibold">Edit Information</h3>
+            <form onSubmit={handleUpdate} className="space-y-2">
               {/* Logo Upload */}
               <div>
                 <label className="block mb-1 font-semibold">Logo</label>
@@ -233,7 +243,7 @@ const AllFooterInfo = () => {
                 onChange={handleChange}
                 placeholder="Company Description"
                 className="w-full p-2 border rounded"
-                rows={3}
+                rows={2}
                 required
               />
               <input
@@ -270,10 +280,26 @@ const AllFooterInfo = () => {
               />
               <input
                 type="text"
+                name="youtube"
+                value={formData.youtube}
+                onChange={handleChange}
+                placeholder="YouTube URL"
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="text"
                 name="linkedin"
                 value={formData.linkedin}
                 onChange={handleChange}
                 placeholder="LinkedIn URL"
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="text"
+                name="tiktok"
+                value={formData.tiktok}
+                onChange={handleChange}
+                placeholder="TikTok URL"
                 className="w-full p-2 border rounded"
               />
 
@@ -282,7 +308,7 @@ const AllFooterInfo = () => {
                 disabled={loading}
                 className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
               >
-                {loading ? "Updating..." : "Update Footer Info"}
+                {loading ? "Updating..." : "Update Information"}
               </button>
             </form>
           </div>

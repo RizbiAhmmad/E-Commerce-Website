@@ -18,10 +18,13 @@ const AllSliders = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSlider, setSelectedSlider] = useState(null);
   const [formData, setFormData] = useState({ status: "active", image: "" });
+  const [newImageFile, setNewImageFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const openEditModal = (slider) => {
     setSelectedSlider(slider);
     setFormData({ status: slider.status, image: slider.image });
+    setNewImageFile(null);
     setIsModalOpen(true);
   };
 
@@ -30,15 +33,40 @@ const AllSliders = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    setNewImageFile(e.target.files[0]);
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://e-commerce-server-api.onrender.com/slider/${selectedSlider._id}`, formData);
+      let imageUrl = formData.image;
+
+      if (newImageFile) {
+        setUploading(true);
+        const fd = new FormData();
+        fd.append("file", newImageFile);
+        fd.append("upload_preset", "eCommerce"); // তোমার Cloudinary preset
+        const uploadRes = await axios.post(
+          "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
+          fd
+        );
+        imageUrl = uploadRes.data.secure_url;
+        setUploading(false);
+      }
+
+      await axios.put(
+        `https://e-commerce-server-api.onrender.com/slider/${selectedSlider._id}`,
+        { status: formData.status, image: imageUrl }
+      );
+
       Swal.fire("Updated!", "Slider has been updated.", "success");
       setIsModalOpen(false);
       refetch();
     } catch (err) {
       Swal.fire("Error", "Failed to update slider", "error");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -75,7 +103,7 @@ const AllSliders = () => {
           onClick={() => navigate("/dashboard/addSlider")}
           className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
         >
-        <FaPlus />  Add Slider
+          <FaPlus /> Add Slider
         </button>
       </div>
 
@@ -95,13 +123,21 @@ const AllSliders = () => {
               <tr key={slider._id} className="transition duration-200 hover:bg-gray-50">
                 <td className="px-6 py-4">{index + 1}</td>
                 <td className="px-6 py-4">
-                  <img src={slider.image} alt="Slider" className="object-cover w-20 h-12 border rounded" />
+                  <img
+                    src={slider.image}
+                    alt="Slider"
+                    className="object-cover w-20 h-12 border rounded"
+                  />
                 </td>
                 <td className="px-6 py-4">
                   {slider.status === "active" ? (
-                    <span className="px-2 py-1 text-xs text-green-800 bg-green-100 rounded">Active</span>
+                    <span className="px-2 py-1 text-xs text-green-800 bg-green-100 rounded">
+                      Active
+                    </span>
                   ) : (
-                    <span className="px-2 py-1 text-xs text-red-800 bg-red-100 rounded">Inactive</span>
+                    <span className="px-2 py-1 text-xs text-red-800 bg-red-100 rounded">
+                      Inactive
+                    </span>
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
@@ -129,20 +165,44 @@ const AllSliders = () => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
-            <button onClick={() => setIsModalOpen(false)} className="absolute top-2 right-2 text-gray-500 text-xl">✖</button>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-2 text-gray-500 text-xl"
+            >
+              ✖
+            </button>
             <h3 className="mb-4 text-xl font-semibold">Edit Slider</h3>
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium">Image URL</label>
+                <label className="block text-sm font-medium">Image (Cloudinary)</label>
+                <div className="flex items-center gap-4">
+                  <label
+                    htmlFor="newImage"
+                    className="px-4 py-2 text-white bg-cyan-500 rounded cursor-pointer hover:bg-cyan-600"
+                  >
+                    Choose File
+                  </label>
+                  <span className="text-sm text-gray-600">
+                    {newImageFile ? newImageFile.name : "Keep current image"}
+                  </span>
+                </div>
                 <input
-                  type="text"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded"
-                  required
+                  id="newImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
                 />
+                {formData.image && (
+                  <img
+                    src={formData.image}
+                    alt="current"
+                    className="w-20 h-12 mt-2 rounded object-cover border"
+                  />
+                )}
+                {uploading && <p className="text-sm text-gray-500 mt-1">Uploading...</p>}
               </div>
+
               <div>
                 <label className="block text-sm font-medium">Status</label>
                 <select
@@ -155,7 +215,11 @@ const AllSliders = () => {
                   <option value="inactive">Inactive</option>
                 </select>
               </div>
-              <button type="submit" className="px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600">
+              <button
+                type="submit"
+                disabled={uploading}
+                className="px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 disabled:opacity-60"
+              >
                 Update Slider
               </button>
             </form>

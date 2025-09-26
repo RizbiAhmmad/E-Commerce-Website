@@ -180,7 +180,7 @@ const AllBrands = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium">Logo (Cloudinary)</label>
+                <label className="block text-sm font-medium">Logo</label>
                 <div className="flex items-center gap-4">
                   <label
                     htmlFor="newLogo"

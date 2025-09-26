@@ -139,8 +139,9 @@ const CartPage = () => {
                     type="checkbox"
                     checked={!!item.selected}
                     onChange={() => toggleSelect(item._id)}
-                    className="w-5 h-5"
+                    className="w-5 h-5 md:w-6 md:h-6 lg:w-6 lg:h-6 transform scale-125"
                   />
+
                   <img
                     src={
                       product.images?.[0] || "https://via.placeholder.com/80"

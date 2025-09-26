@@ -57,7 +57,7 @@ const AddOffer = () => {
       <h2 className="mb-6 text-2xl font-bold text-center">Add New Offer</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block mb-1 font-semibold">Offer Image</label>
+          <label className="block mb-1 font-semibold">Offer Image (800 x 400 px)</label>
           <div className="flex items-center gap-4">
             <label
               htmlFor="image"

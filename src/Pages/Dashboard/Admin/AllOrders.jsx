@@ -8,7 +8,7 @@ const AllOrders = () => {
   const [couriers, setCouriers] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState(""); // 🔹 Search state
+  const [searchTerm, setSearchTerm] = useState("");
   const ordersPerPage = 20;
 
   // Fetch orders
@@ -155,7 +155,7 @@ const AllOrders = () => {
         All Orders
       </h2>
 
-      {/* 🔹 Search & Filter */}
+      {/*  Search & Filter */}
       <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
         <input
           type="text"

@@ -11,7 +11,7 @@ function ThemeChange() {
     setTheme(newTheme);
   };
   return (
-    <span className="flex items-center justify-center p-2 m-2 rounded-full bg-popover text-popover-foreground w-fit">
+    <span className="flex items-center ml-2 justify-center rounded-full bg-popover text-popover-foreground w-fit">
       <button onClick={handleThemeChange}>
         {theme === "dark" && (
           <h1>

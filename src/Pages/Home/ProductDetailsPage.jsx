@@ -326,10 +326,10 @@ const ProductDetailsPage = () => {
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
-                      className={`w-8 h-8 rounded-full border-2 ${
+                      className={`w-10 h-10 rounded-full border-2 ${
                         selectedColor === color
-                          ? "border-[#0FABCA]"
-                          : "border-transparent"
+                          ? "border-[#0FABCA] border-3"
+                          : "border-red-200 border-2"
                       }`}
                       style={{ backgroundColor: color }}
                       aria-label={`Select color ${color}`}
@@ -348,7 +348,7 @@ const ProductDetailsPage = () => {
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`border rounded px-3 py-1 text-sm cursor-pointer select-none ${
+                      className={`border rounded px-3 py-2 text-sm cursor-pointer select-none ${
                         selectedSize === size
                           ? "bg-[#0FABCA] text-white border-[#0FABCA]"
                           : "border-gray-400"
@@ -363,7 +363,7 @@ const ProductDetailsPage = () => {
 
             {/* Quantity + Wishlist */}
             <div className="flex gap-4 items-center pt-6">
-              <div className="flex items-center dark:bg-black dark:text-white bg-gray-100 rounded-md p-2">
+              <div className="flex items-center dark:bg-black dark:text-white bg-gray-100 border border-cyan-500 rounded-md p-2">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-4"

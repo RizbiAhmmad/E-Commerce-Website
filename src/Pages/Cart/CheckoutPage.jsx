@@ -108,6 +108,7 @@ const CheckoutPage = () => {
       status: payment === "cash on delivery" ? "pending" : "initiated",
       tran_id: `order_${Date.now()}`,
       createdAt: new Date(),
+      orderType: "Online",
     };
 
     try {
