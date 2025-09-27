@@ -70,19 +70,19 @@ export default function ExpenseReport() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-blue-100 shadow p-4 rounded-lg text-center">
           <p className="text-gray-500">Total</p>
-          <h3 className="text-xl font-bold text-cyan-600">${report.total}</h3>
+          <h3 className="text-xl font-bold text-cyan-600">৳{report.total}</h3>
         </div>
         <div className="bg-green-100 shadow p-4 rounded-lg text-center">
           <p className="text-gray-500">This Month</p>
-          <h3 className="text-xl font-bold text-cyan-600">${report.thisMonth}</h3>
+          <h3 className="text-xl font-bold text-cyan-600">৳{report.thisMonth}</h3>
         </div>
         <div className="bg-cyan-100 shadow p-4 rounded-lg text-center">
           <p className="text-gray-500">This Week</p>
-          <h3 className="text-xl font-bold text-cyan-600">${report.thisWeek}</h3>
+          <h3 className="text-xl font-bold text-cyan-600">৳{report.thisWeek}</h3>
         </div>
         <div className="bg-red-100 shadow p-4 rounded-lg text-center">
           <p className="text-gray-500">Today</p>
-          <h3 className="text-xl font-bold text-cyan-600">${report.today}</h3>
+          <h3 className="text-xl font-bold text-cyan-600">৳{report.today}</h3>
         </div>
       </div>
 

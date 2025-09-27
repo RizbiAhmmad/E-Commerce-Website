@@ -28,6 +28,7 @@ const AllProducts = () => {
   // Form states for Add and Edit
   const initialFormData = {
     name: "",
+    barcode: "",
     description: "",
     specification: "",
     categoryId: "",
@@ -60,14 +61,18 @@ const AllProducts = () => {
     axios
       .get("https://e-commerce-server-api.onrender.com/brands")
       .then((res) => setBrands(res.data));
-    axios.get("https://e-commerce-server-api.onrender.com/sizes").then((res) => setSizes(res.data));
+    axios
+      .get("https://e-commerce-server-api.onrender.com/sizes")
+      .then((res) => setSizes(res.data));
     axios
       .get("https://e-commerce-server-api.onrender.com/colors")
       .then((res) => setColors(res.data));
   }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get("https://e-commerce-server-api.onrender.com/products");
+    const res = await axios.get(
+      "https://e-commerce-server-api.onrender.com/products"
+    );
     setProducts(res.data);
   };
 
@@ -80,7 +85,9 @@ const AllProducts = () => {
       showCancelButton: true,
     });
     if (confirm.isConfirmed) {
-      await axios.delete(`https://e-commerce-server-api.onrender.com/products/${id}`);
+      await axios.delete(
+        `https://e-commerce-server-api.onrender.com/products/${id}`
+      );
       Swal.fire("Deleted!", "Product deleted successfully", "success");
       fetchProducts();
     }
@@ -187,42 +194,37 @@ const AllProducts = () => {
     }
   };
 
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+ const handleEditSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      // Step 1: Start with existing images (already filtered on UI)
-      let imageUrls = editProduct.images || [];
+  try {
+    let imageUrls = editProduct.images || [];
 
-      // Step 2: Upload new images (if any) and append URLs to existing images array
-      if (imageFiles.length > 0) {
-        const uploadedUrls = await uploadImages(imageFiles);
-        imageUrls = [...imageUrls, ...uploadedUrls];
-      }
-
-      // Step 3: Prepare updated product data with combined images
-      const updatedData = { ...editProduct, images: imageUrls };
-
-      // Step 4: Send update request
-      await axios.put(
-        `https://e-commerce-server-api.onrender.com/products/${editProduct._id}`,
-        updatedData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      Swal.fire("Success", "Product updated successfully!", "success");
-      fetchProducts();
-      closeModals();
-    } catch (err) {
-      console.error("Update Error:", err);
-      Swal.fire("Error", "Failed to update product", "error");
-    } finally {
-      setLoading(false);
+    if (imageFiles.length > 0) {
+      const uploadedUrls = await uploadImages(imageFiles);
+      imageUrls = [...imageUrls, ...uploadedUrls];
     }
-  };
+
+    const updatedData = { ...editProduct, images: imageUrls };
+
+    await axios.put(
+      `https://e-commerce-server-api.onrender.com/products/${editProduct._id}`,
+      updatedData,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    Swal.fire("Success", "Product updated successfully!", "success");
+    fetchProducts();
+    closeModals();
+  } catch (err) {
+    console.error("Update Error:", err);
+    Swal.fire("Error", "Failed to update product", "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDeleteExistingImage = (urlToDelete) => {
     setEditProduct((prev) => ({
@@ -231,7 +233,7 @@ const AllProducts = () => {
     }));
   };
 
-  // search + pagination একসাথে কাজ করবে
+  
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -290,17 +292,18 @@ const AllProducts = () => {
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
             <tr>
-              <th className="px-6 py-3">#</th>
-              <th className="px-6 py-3">Images</th>
-              <th className="px-6 py-3">Name</th>
-              <th className="px-6 py-3">Category</th>
-              <th className="px-6 py-3">Brand</th>
-              <th className="px-6 py-3">Price</th>
-              <th className="px-6 py-3">Stock</th>
-              <th className="px-6 py-3">Sizes</th>
-              <th className="px-6 py-3">Colors</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Actions</th>
+              <th className="px-4 py-3">#</th>
+              <th className="px-4 py-3">Images</th>
+              <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Barcode</th>
+              <th className="px-4 py-3">Category</th>
+              <th className="px-4 py-3">Brand</th>
+              <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Stock</th>
+              <th className="px-4 py-3">Sizes</th>
+              <th className="px-4 py-3">Colors</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -316,8 +319,8 @@ const AllProducts = () => {
                 key={p._id}
                 className="transition duration-200 hover:bg-gray-50"
               >
-                <td className="px-6 py-4">{indexOfFirstProduct + index + 1}</td>
-                <td className="px-6 py-4">
+                <td className="px-4 py-4">{indexOfFirstProduct + index + 1}</td>
+                <td className="px-4 py-4">
                   {p.images && p.images.length > 0 ? (
                     <div className="grid grid-cols-2 gap-1 max-w-[100px]">
                       {p.images.map((imgUrl, idx) => (
@@ -334,25 +337,28 @@ const AllProducts = () => {
                     "-"
                   )}
                 </td>
-                <td className="px-6 py-4 font-semibold text-gray-800">
+                <td className="px-4 py-4 font-semibold text-gray-800">
                   {p.name}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-4 py-4 font-semibold text-gray-800">
+                  {p.barcode || "-"}
+                </td>
+                <td className="px-4 py-4">
                   {categories.find((c) => c._id === p.categoryId)?.name || "-"}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-4 py-4">
                   {brands.find((b) => b._id === p.brandId)?.name || "-"}
                 </td>
-                <td className="px-6 py-4 font-mono">
+                <td className="px-4 py-4 font-mono">
                   {p.newPrice ? `৳${p.newPrice}` : "0"}
                 </td>
-                <td className="px-6 py-4 font-mono">
+                <td className="px-4 py-4 font-mono">
                   {p.stock ? `${p.stock}` : "0"}
                 </td>
-                <td className="px-6 py-4">{p.sizes?.join(", ") || "-"}</td>
-                <td className="px-6 py-4">{p.colors?.join(", ") || "-"}</td>
+                <td className="px-4 py-4">{p.sizes?.join(", ") || "-"}</td>
+                <td className="px-4 py-4">{p.colors?.join(", ") || "-"}</td>
 
-                <td className="px-6 py-4">
+                <td className="px-4 py-4">
                   {p.status === "active" ? (
                     <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
                       Active
@@ -364,7 +370,7 @@ const AllProducts = () => {
                   )}
                 </td>
 
-                <td className="flex gap-4 px-6 py-6">
+                <td className="flex gap-4 px-4 py-4">
                   <button
                     onClick={() => handleEdit(p)}
                     className="text-cyan-500 hover:text-cyan-600"
@@ -406,6 +412,14 @@ const AllProducts = () => {
                 name="name"
                 placeholder="Product Name"
                 value={formData.name}
+                onChange={handleChange}
+                required
+                className="border p-2 rounded"
+              />
+              <input
+                name="barcode"
+                placeholder="Barcode"
+                value={formData.barcode}
                 onChange={handleChange}
                 required
                 className="border p-2 rounded"
@@ -640,6 +654,14 @@ const AllProducts = () => {
                 value={editProduct.name}
                 onChange={handleChange}
                 placeholder="Product Name"
+                required
+                className="border p-2 rounded"
+              />
+              <input
+                name="barcode"
+                value={editProduct.barcode}
+                onChange={handleChange}
+                placeholder="Barcode"
                 required
                 className="border p-2 rounded"
               />

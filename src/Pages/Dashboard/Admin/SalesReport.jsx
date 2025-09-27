@@ -50,7 +50,7 @@ const SalesReport = () => {
         const res = await axios.get(
           "https://e-commerce-server-api.onrender.com/sales-report"
         );
-        console.log("Sales report data:", res.data);
+        // console.log("Sales report data:", res.data);
         setReport(res.data);
         setOrders(res.data.allOrders || []);
       } catch (err) {
@@ -219,6 +219,7 @@ const SalesReport = () => {
                 <th className="px-4 py-2 border">Quantity</th>
                 <th className="px-4 py-2 border">Total</th>
                 <th className="px-4 py-2 border">Discount</th>
+                <th className="px-4 py-2 border">Tax</th>
                 <th className="px-4 py-2 border">Date</th>
                 <th className="px-4 py-2 border">Order Type</th>
 
@@ -233,6 +234,7 @@ const SalesReport = () => {
         <td className="px-4 py-2 border">{p.quantity}</td>
         <td className="px-4 py-2 border">৳{p.price * p.quantity}</td>
         <td className="px-4 py-2 border">৳{order.discount || 0}</td>
+        <td className="px-4 py-2 border">৳{order.tax || 0}</td>
         <td className="px-4 py-2 border">{new Date(order.createdAt).toLocaleDateString()}</td>
         <td className="px-4 py-2 border">{order.orderType}</td>
       </tr>

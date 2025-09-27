@@ -263,6 +263,7 @@ const ProductDetailsPage = () => {
           {/* Right - Product Info */}
           <div className="space-y-4">
             <h1 className="text-3xl font-semibold">{product.name}</h1>
+            <h1 className="text-xl font-semibold">Code: {product.barcode}</h1>
 
             {/* Specification */}
             <div className="mt-2 p-4 dark:bg-black dark:text-white bg-white ">

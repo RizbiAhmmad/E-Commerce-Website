@@ -72,7 +72,7 @@ const POSPage = () => {
   //   }
   // }, [posCart]);
 
-    useEffect(() => {
+  useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = `
       @media print {
@@ -136,7 +136,9 @@ const POSPage = () => {
   const updateQuantity = (id, qty) => {
     if (qty < 1) return;
     axios
-      .patch(`https://e-commerce-server-api.onrender.com/pos/cart/${id}`, { quantity: qty })
+      .patch(`https://e-commerce-server-api.onrender.com/pos/cart/${id}`, {
+        quantity: qty,
+      })
       .then(() => fetchPosCart())
       .catch((err) => console.error(err));
   };
@@ -231,7 +233,10 @@ const POSPage = () => {
     };
 
     try {
-      await axios.post("https://e-commerce-server-api.onrender.com/pos/orders", orderData);
+      await axios.post(
+        "https://e-commerce-server-api.onrender.com/pos/orders",
+        orderData
+      );
       // keep a copy for the receipt before we reset
       return orderData;
     } catch (err) {
@@ -280,13 +285,13 @@ const POSPage = () => {
     setTimeout(() => setReceiptData(null), 500);
   };
 
-    // Search + Status active filter
+  // Search + Status active filter
   const filteredProducts = products.filter(
     (p) =>
       p.status === "active" &&
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+      (p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.barcode?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-
 
   const openModal = (product) => {
     setSelectedProduct(product);
@@ -304,14 +309,22 @@ const POSPage = () => {
           type="text"
           ref={searchInputRef}
           className="border p-2 w-full rounded mb-4 text-lg"
-          placeholder="Search product..."
+          placeholder="Search product by name or barcode..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && filteredProducts.length > 0)
-              openModal(filteredProducts[0]);
+            if (e.key === "Enter" && filteredProducts.length > 0) {
+              const product = filteredProducts[0];
+              if (searchTerm === product.barcode) {
+                addToCart(product, 1);
+                setSearchTerm("");
+              } else {
+                openModal(product);
+              }
+            }
           }}
         />
+
         <div className="h-[450px] overflow-y-auto pr-2">
           <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
             {filteredProducts.map((p) => (
@@ -328,7 +341,8 @@ const POSPage = () => {
                   alt={p.name}
                   className="w-30 h-30 object-cover mb-2 rounded"
                 />
-                <span className="text-sm text-center">{p.name}</span>
+                <span className="text-sm font-bold text-center">{p.name}</span>
+                <span className="text-sm text-center">{p.barcode}</span>
                 <span className="font-semibold">৳{p.newPrice}</span>
                 {p.stock === 0 && (
                   <span className="text-red-500 font-bold text-xs mt-1">
@@ -852,46 +866,45 @@ const POSPage = () => {
 
             <hr className="border-t-2 border-dashed border-gray-400 my-3" />
             <div className="text-sm">
-  <div className="flex justify-between">
-    <span>Payment Type:</span>
-    <span className="capitalize">{receiptData.payment.method}</span>
-  </div>
+              <div className="flex justify-between">
+                <span>Payment Type:</span>
+                <span className="capitalize">{receiptData.payment.method}</span>
+              </div>
 
-  {receiptData.payment.method === "cash" && (
-    <>
-      <div className="flex justify-between">
-        <span>Cash:</span>
-        <span>৳{fmt(receiptData.payment.amount)}</span>
-      </div>
-      <div className="flex justify-between">
-        <span>Change :</span>
-        <span>৳{fmt(receiptData.payment.change)}</span>
-      </div>
-    </>
-  )}
+              {receiptData.payment.method === "cash" && (
+                <>
+                  <div className="flex justify-between">
+                    <span>Cash:</span>
+                    <span>৳{fmt(receiptData.payment.amount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Change :</span>
+                    <span>৳{fmt(receiptData.payment.change)}</span>
+                  </div>
+                </>
+              )}
 
-  {receiptData.payment.method === "card" && (
-    <div className="flex justify-between">
-      <span>Card Last 4 digits:</span>
-      <span>{receiptData.payment.amount}</span>
-    </div>
-  )}
+              {receiptData.payment.method === "card" && (
+                <div className="flex justify-between">
+                  <span>Card Last 4 digits:</span>
+                  <span>{receiptData.payment.amount}</span>
+                </div>
+              )}
 
-  {receiptData.payment.method === "mfs" && (
-    <div className="flex justify-between">
-      <span>Mobile Number:</span>
-      <span>{receiptData.payment.amount}</span>
-    </div>
-  )}
+              {receiptData.payment.method === "mfs" && (
+                <div className="flex justify-between">
+                  <span>Mobile Number:</span>
+                  <span>{receiptData.payment.amount}</span>
+                </div>
+              )}
 
-  {receiptData.payment.method === "other" && (
-    <div className="flex justify-between">
-      <span>Reference:</span>
-      <span>{receiptData.payment.amount}</span>
-    </div>
-  )}
-</div>
-
+              {receiptData.payment.method === "other" && (
+                <div className="flex justify-between">
+                  <span>Reference:</span>
+                  <span>{receiptData.payment.amount}</span>
+                </div>
+              )}
+            </div>
 
             <div className="text-center mt-6 text-sm">
               <div>Thank You</div>

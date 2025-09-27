@@ -121,13 +121,14 @@ const AllOrders = () => {
     }
   };
 
-  // 🔹 Search + Filter Orders
+  // Search + Filter Orders
   const searchedOrders = orders.filter((order) => {
     const term = searchTerm.toLowerCase();
     return (
       order.fullName?.toLowerCase().includes(term) ||
       order.email?.toLowerCase().includes(term) ||
       order.phone?.toLowerCase().includes(term) ||
+      order._id?.toLowerCase().includes(term) ||
       order.cartItems.some((item) =>
         item.productName?.toLowerCase().includes(term)
       )
@@ -199,17 +200,17 @@ const AllOrders = () => {
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
             <tr>
-              <th className="px-6 py-3">#</th>
-              <th className="px-6 py-3">Customer</th>
-              <th className="px-6 py-3">Address</th>
-              <th className="px-6 py-3">Shipping</th>
-              <th className="px-6 py-3">Payment</th>
-              <th className="px-6 py-3">Cart Items</th>
-              <th className="px-6 py-3">Total</th>
-              <th className="px-6 py-3">Date & Time</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Courier</th>
-              <th className="px-6 py-3">Actions</th>
+              <th className="px-3 py-3">#</th>
+              <th className="px-3 py-3">Customer</th>
+              <th className="px-3 py-3">Address</th>
+              <th className="px-3 py-3">Shipping</th>
+              <th className="px-3 py-3">Payment</th>
+              <th className="px-3 py-3">Cart Items</th>
+              <th className="px-3 py-3">Total</th>
+              <th className="px-3 py-3">Date & Time</th>
+              <th className="px-3 py-3">Status</th>
+              <th className="px-3 py-3">Courier</th>
+              <th className="px-3 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -218,18 +219,19 @@ const AllOrders = () => {
                 key={order._id}
                 className="transition duration-200 hover:bg-gray-50"
               >
-                <td className="px-6 py-4">{indexOfFirstOrder + index + 1}</td>
-                <td className="px-6 py-4">
+                <td className="px-3 py-3">{indexOfFirstOrder + index + 1}</td>
+                <td className="px-3 py-3">
                   <div className="font-semibold text-gray-800">
                     {order.fullName}
                   </div>
                   <div className="text-gray-500">{order.email}</div>
                   <div className="text-gray-500">{order.phone}</div>
+                  <div className="text-gray-500">Order No: {order._id}</div>
                 </td>
-                <td className="px-6 py-4">{order.address}</td>
-                <td className="px-6 py-4">{order.shipping}</td>
-                <td className="px-6 py-4">{order.payment}</td>
-                <td className="px-6 py-4">
+                <td className="px-3 py-3">{order.address}</td>
+                <td className="px-3 py-3">{order.shipping}</td>
+                <td className="px-3 py-3">{order.payment}</td>
+                <td className="px-3 py-3">
                   {order.cartItems.map((item) => (
                     <div
                       key={item.productId}
@@ -250,12 +252,12 @@ const AllOrders = () => {
                     </div>
                   ))}
                 </td>
-                <td className="px-6 py-4 font-bold">৳{order.total}</td>
-                <td className="px-6 py-4 font-bold">
+                <td className="px-3 py-3 font-bold">৳{order.total}</td>
+                <td className="px-3 py-3 font-bold">
                   {new Date(order.createdAt).toLocaleString()}
                 </td>
 
-                <td className="px-6 py-4">
+                <td className="px-3 py-3">
                   <div className="flex items-center gap-2">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusClasses(
@@ -282,7 +284,7 @@ const AllOrders = () => {
                   </div>
                 </td>
 
-                <td className="px-6 py-4">
+                <td className="px-3 py-3">
                   <select
                     value={order.courier || ""}
                     onChange={(e) => {
@@ -300,10 +302,10 @@ const AllOrders = () => {
                   </select>
                 </td>
 
-                <td className="flex gap-4 px-6 py-6">
-                  <button onClick={() => handleDelete(order._id)}>
-                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                <td className="flex gap-4 px-3 py-3">                 
+                    <button onClick={() => handleDelete(order._id)}>
+                      <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                    </button>
                 </td>
               </tr>
             ))}

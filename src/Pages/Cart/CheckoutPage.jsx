@@ -43,10 +43,13 @@ const CheckoutPage = () => {
       return Swal.fire("Error!", "Please enter a coupon code", "error");
     }
     try {
-      const res = await axios.post("https://e-commerce-server-api.onrender.com/apply-coupon", {
-        code,
-        totalAmount: subtotal,
-      });
+      const res = await axios.post(
+        "https://e-commerce-server-api.onrender.com/apply-coupon",
+        {
+          code,
+          totalAmount: subtotal,
+        }
+      );
 
       const { discount: serverDiscount, code: applied } = res.data || {};
       setDiscount(serverDiscount || 0);
@@ -65,16 +68,27 @@ const CheckoutPage = () => {
     if (!fullName || !phone || !email || !address) {
       return Swal.fire("Error", "Please fill all required fields", "error");
     }
+    if (!/^01\d{9}$/.test(phone)) {
+      return Swal.fire(
+        "Invalid Phone",
+        "Please enter a valid 11-digit Bangladeshi phone number starting with 01",
+        "error"
+      );
+    }
 
     const outOfStockItems = cartItems.filter((item) => {
       const product = productsMap[item.productId];
-      return Number(product?.stock) === 0 || item.quantity > Number(product?.stock);
+      return (
+        Number(product?.stock) === 0 || item.quantity > Number(product?.stock)
+      );
     });
 
     if (outOfStockItems.length > 0) {
       return Swal.fire(
         "Out of Stock",
-        `These items are out of stock: ${outOfStockItems.map((i) => productsMap[i.productId]?.name).join(", ")}`,
+        `These items are out of stock: ${outOfStockItems
+          .map((i) => productsMap[i.productId]?.name)
+          .join(", ")}`,
         "error"
       );
     }
@@ -112,7 +126,10 @@ const CheckoutPage = () => {
     };
 
     try {
-      await axios.post("https://e-commerce-server-api.onrender.com/orders", orderData);
+      await axios.post(
+        "https://e-commerce-server-api.onrender.com/orders",
+        orderData
+      );
 
       if (payment === "online") {
         const { data } = await axios.post(
@@ -165,9 +182,15 @@ const CheckoutPage = () => {
                 placeholder="Phone Number *"
                 className="border p-2 rounded w-full"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d{0,11}$/.test(value)) {
+                    setPhone(value);
+                  }
+                }}
                 required
               />
+
               <input
                 type="email"
                 placeholder="Email Address"
@@ -293,7 +316,10 @@ const CheckoutPage = () => {
           {cartItems.map((item) => {
             const product = productsMap[item.productId];
             return (
-              <div key={item._id} className="flex justify-between mb-3 text-sm sm:text-base">
+              <div
+                key={item._id}
+                className="flex justify-between mb-3 text-sm sm:text-base"
+              >
                 <span>
                   {product?.name} × {item.quantity}
                 </span>

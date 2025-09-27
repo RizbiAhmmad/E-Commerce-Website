@@ -85,8 +85,11 @@ const Navbar = () => {
       axios
         .get("https://e-commerce-server-api.onrender.com/products")
         .then((res) => {
-          const filtered = res.data.filter((p) =>
-            p.name.toLowerCase().includes(searchText.toLowerCase())
+          const filtered = res.data.filter(
+            (p) =>
+              p.status === "active" &&
+              (p.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                p.barcode?.toLowerCase().includes(searchText.toLowerCase()))
           );
           setSearchResults(filtered);
         })
@@ -152,8 +155,7 @@ const Navbar = () => {
 
         {/* Desktop Search + Categories */}
         <div className="hidden md:flex items-center w-1/2 relative gap-4">
-          
-           <div className="flex items-center gap-4 ">
+          <div className="flex items-center gap-4 ">
             <Link
               to="/"
               className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl "
@@ -224,7 +226,7 @@ const Navbar = () => {
             <FaSearch className="absolute left-3 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search products by name or barcode..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               className="pl-10 pr-4 py-2 w-full rounded-md bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none"
@@ -238,14 +240,14 @@ const Navbar = () => {
                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => setSearchText("")}
                   >
-                    {product.name}
+
+                    {product.name } (Code: {product.barcode})
+                    
                   </Link>
                 ))}
               </div>
             )}
           </div>
-
-         
         </div>
 
         {/* Right Icons */}

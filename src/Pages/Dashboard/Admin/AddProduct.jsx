@@ -24,6 +24,7 @@ const AddProduct = () => {
     stock: "",
     status: "active",
     variant: "",
+    barcode: "",
   });
 
   const [imageFiles, setImageFiles] = useState([]);
@@ -138,6 +139,15 @@ const AddProduct = () => {
           name="name"
           placeholder="Product Name"
           value={formData.name}
+          onChange={handleChange}
+          required
+          className="border p-2 rounded"
+        />
+
+        <input
+          name="barcode"
+          placeholder="Barcode"
+          value={formData.barcode}
           onChange={handleChange}
           required
           className="border p-2 rounded"

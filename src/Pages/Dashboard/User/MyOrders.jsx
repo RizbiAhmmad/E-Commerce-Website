@@ -54,7 +54,7 @@ const MyOrders = () => {
               <div className="bg-gradient-to-r from-cyan-500 to-blue-400 text-white px-4 md:px-6 py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                 <div>
                   <h3 className="font-semibold text-lg break-all">
-                    Order #{order._id}
+                    Order: {order._id}
                   </h3>
                   <p className="text-sm opacity-90">
                     {order.createdAt
