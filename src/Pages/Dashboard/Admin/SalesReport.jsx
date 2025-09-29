@@ -222,27 +222,40 @@ const SalesReport = () => {
                 <th className="px-4 py-2 border">Tax</th>
                 <th className="px-4 py-2 border">Date</th>
                 <th className="px-4 py-2 border">Order Type</th>
-
               </tr>
             </thead>
             <tbody>
-  {getFilteredOrders().flatMap((order) =>
-    (order.cartItems || []).map((p, idx) => (
-      <tr key={`${order._id}-${idx}`}>
-        <td className="px-4 py-2 border">{p.productName || p.name || p.title}</td>
-        <td className="px-4 py-2 border">৳{p.price}</td>
-        <td className="px-4 py-2 border">{p.quantity}</td>
-        <td className="px-4 py-2 border">৳{p.price * p.quantity}</td>
-        <td className="px-4 py-2 border">৳{order.discount || 0}</td>
-        <td className="px-4 py-2 border">৳{order.tax || 0}</td>
-        <td className="px-4 py-2 border">{new Date(order.createdAt).toLocaleDateString()}</td>
-        <td className="px-4 py-2 border">{order.orderType}</td>
-      </tr>
-    ))
-  )}
-</tbody>
+              {getFilteredOrders().flatMap((order) =>
+                (order.cartItems || []).map((p, idx) => (
+                  <tr key={`${order._id}-${idx}`}>
+                    <td className="px-4 py-2 border">
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {p.productName || p.name || p.title}
+                        </span>
+                        {p.barcode && (
+                          <span className="text-xs text-gray-500">
+                            Code: {p.barcode}
+                          </span>
+                        )}
+                      </div>
+                    </td>
 
-
+                    <td className="px-4 py-2 border">৳{p.price}</td>
+                    <td className="px-4 py-2 border">{p.quantity}</td>
+                    <td className="px-4 py-2 border">
+                      ৳{p.price * p.quantity}
+                    </td>
+                    <td className="px-4 py-2 border">৳{order.discount || 0}</td>
+                    <td className="px-4 py-2 border">৳{order.tax || 0}</td>
+                    <td className="px-4 py-2 border">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-2 border">{order.orderType}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
           </table>
         </div>
       </div>

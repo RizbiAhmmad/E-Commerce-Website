@@ -55,6 +55,7 @@ import AddOffer from "@/Pages/Dashboard/Admin/AddOffer";
 import AllOffers from "@/Pages/Dashboard/Admin/AllOffers";
 import CourierSettings from "@/Pages/Courier/CourierSettings";
 import Favourite from "@/Pages/Dashboard/User/Favourite";
+import ProfitLossReport from "@/Pages/Dashboard/Admin/ProfitLossReport";
 
 export const router = createBrowserRouter([
   {
@@ -196,6 +197,10 @@ export const router = createBrowserRouter([
       {
         path: "sales",
         element: <SalesReport />,
+      },
+      {
+        path: "ProfitLossReport",
+        element: <ProfitLossReport />,
       },
       {
         path: "addCoupon",

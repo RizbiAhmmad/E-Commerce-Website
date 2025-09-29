@@ -118,11 +118,13 @@ const POSPage = () => {
       .post("https://e-commerce-server-api.onrender.com/pos/cart", {
         productId: product._id,
         productName: product.name,
+        barCode: product.barcode || "",
         price: product.newPrice,
         quantity: qty,
         color,
         size,
         productImage: product.images?.[0] || productImage || "",
+        purchasePrice: product.purchasePrice || 0,
       })
       .then(() => {
         fetchPosCart();

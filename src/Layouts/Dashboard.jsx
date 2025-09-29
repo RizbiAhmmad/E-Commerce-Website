@@ -3,6 +3,7 @@ import { GiCash } from "react-icons/gi";
 import { TbCashRegister, TbTruckReturn } from "react-icons/tb";
 import { RiFileDamageFill } from "react-icons/ri";
 import {
+  FaBalanceScale,
   FaChartBar,
   FaChartLine,
   FaGift,
@@ -239,6 +240,14 @@ const Dashboard = () => {
                     className="flex items-center px-2 py-2 space-x-3"
                   >
                     <TbCashRegister /> <span>Expense Report</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/ProfitLossReport"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaBalanceScale /> <span>Profit/Loss Report</span>
                   </NavLink>
                 </li>
                 {/* Expense */}
