@@ -29,6 +29,9 @@ const AllCoupons = () => {
     image: "",
   });
 
+  const [newImageFile, setNewImageFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
   const openEditModal = (coupon) => {
     setSelectedCoupon(coupon);
     setFormData({
@@ -42,6 +45,7 @@ const AllCoupons = () => {
       status: coupon.status,
       image: coupon.image,
     });
+    setNewImageFile(null);
     setIsModalOpen(true);
   };
 
@@ -50,15 +54,43 @@ const AllCoupons = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    setNewImageFile(e.target.files[0]);
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://e-commerce-server-api.onrender.com/coupons/${selectedCoupon._id}`, formData);
+      let imageUrl = formData.image;
+
+      if (newImageFile) {
+        setUploading(true);
+        const fd = new FormData();
+        fd.append("file", newImageFile);
+        fd.append("upload_preset", "eCommerce"); // তোমার Cloudinary preset
+        const uploadRes = await axios.post(
+          "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
+          fd
+        );
+        imageUrl = uploadRes.data.secure_url;
+        setUploading(false);
+      }
+
+      await axios.put(
+        `https://e-commerce-server-api.onrender.com/coupons/${selectedCoupon._id}`,
+        {
+          ...formData,
+          image: imageUrl,
+        }
+      );
+
       Swal.fire("Updated!", "Coupon has been updated.", "success");
       setIsModalOpen(false);
       refetch();
     } catch (err) {
       Swal.fire("Error", "Failed to update coupon", "error");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -166,7 +198,7 @@ const AllCoupons = () => {
       {/* Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 px-4">
-          <div className="bg-white p-4 sm:p-6 rounded shadow-lg w-full max-w-md relative">
+          <div className="bg-white p-2 sm:p-4 rounded shadow-lg w-full max-w-md relative">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-2 right-2 text-gray-500 text-xl"
@@ -174,7 +206,7 @@ const AllCoupons = () => {
               ✖
             </button>
             <h3 className="mb-4 text-xl font-semibold">Edit Coupon</h3>
-            <form onSubmit={handleUpdate} className="space-y-3 sm:space-y-4">
+            <form onSubmit={handleUpdate} className="space-y-2 sm:space-y-3">
               <input
                 type="text"
                 name="name"
@@ -235,14 +267,37 @@ const AllCoupons = () => {
                 className="w-full p-2 border rounded"
                 required
               />
-              <input
-                type="text"
-                name="image"
-                value={formData.image}
-                onChange={handleModalChange}
-                placeholder="Image URL"
-                className="w-full p-2 border rounded"
-              />
+
+              <div>
+                <label className="block text-sm font-medium">Image</label>
+                <div className="flex items-center gap-4">
+                  <label
+                    htmlFor="newImage"
+                    className="px-4 py-2 text-white bg-cyan-500 rounded cursor-pointer hover:bg-cyan-600"
+                  >
+                    Choose File
+                  </label>
+                  <span className="text-sm text-gray-600">
+                    {newImageFile ? newImageFile.name : "Keep current image"}
+                  </span>
+                </div>
+                <input
+                  id="newImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+                {formData.image && (
+                  <img
+                    src={formData.image}
+                    alt="current"
+                    className="w-16 h-16 mt-2 rounded object-cover border"
+                  />
+                )}
+                {uploading && <p className="text-sm text-gray-500 mt-1">Uploading...</p>}
+              </div>
+
               <select
                 name="status"
                 value={formData.status}
@@ -254,7 +309,8 @@ const AllCoupons = () => {
               </select>
               <button
                 type="submit"
-                className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
+                disabled={uploading}
+                className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 disabled:opacity-60"
               >
                 Update Coupon
               </button>

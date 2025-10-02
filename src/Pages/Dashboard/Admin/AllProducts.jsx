@@ -235,7 +235,9 @@ const AllProducts = () => {
 
   
   const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    (p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.barcode?.toLowerCase().includes(searchTerm.toLowerCase()))
+
   );
 
   // pagination on filtered products
@@ -270,7 +272,7 @@ const AllProducts = () => {
           {/* Input */}
           <input
             type="text"
-            placeholder="Search by product name..."
+            placeholder="Search by product name or barcode..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);

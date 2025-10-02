@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import SocialLogin from "./SocialLogin";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { AuthContext } from "@/provider/AuthProvider";
 
 const SignUp = () => {
@@ -17,7 +17,9 @@ const SignUp = () => {
   const { createUser, updateUserProfile } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/"; // ✅ আগের পেজ বা fallback "/"
+  const from = location.state?.from?.pathname || "/"; 
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = (data) => {
     createUser(data.email, data.password)
@@ -51,7 +53,7 @@ const SignUp = () => {
                     icon: "success",
                     draggable: true,
                   });
-                  navigate(from, { replace: true }); // ✅ এখন সরাসরি আগের পেজে যাবে
+                  navigate(from, { replace: true });
                 }
               })
               .catch((error) =>
@@ -74,8 +76,7 @@ const SignUp = () => {
       }}
     >
       <div className="w-full max-w-md p-6 shadow-xl bg-white/20 backdrop-blur-lg rounded-xl sm:p-8">
-
-        {/*  Back Button in normal flow */}
+        {/*  Back Button */}
         <div className="mb-4">
           <Link
             to="/"
@@ -109,15 +110,10 @@ const SignUp = () => {
             <label className="block font-medium text-white">Photo URL</label>
             <input
               type="text"
-              {...register("photoURL", { required: false })}
+              {...register("photoURL")}
               placeholder="Profile image URL"
               className="w-full px-4 py-2 mt-1 text-white border rounded-lg bg-white/20 backdrop-blur-md border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
-            {errors.photoURL && (
-              <span className="text-sm text-red-400">
-                Photo URL is required
-              </span>
-            )}
           </div>
 
           {/* Email */}
@@ -137,17 +133,25 @@ const SignUp = () => {
           {/* Password */}
           <div>
             <label className="block font-medium text-white">Password</label>
-            <input
-              type="password"
-              {...register("password", {
-                required: true,
-                minLength: 6,
-                maxLength: 20,
-                pattern: /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/,
-              })}
-              placeholder="Enter password"
-              className="w-full px-4 py-2 mt-1 text-white border rounded-lg bg-white/20 backdrop-blur-md border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                {...register("password", {
+                  required: true,
+                  minLength: 6,
+                  maxLength: 20,
+                  pattern: /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/,
+                })}
+                placeholder="Enter password"
+                className="w-full px-4 py-2 mt-1 text-white border rounded-lg bg-white/20 backdrop-blur-md border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+              <span
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEye /> : <FaEyeSlash /> }
+              </span>
+            </div>
             {errors.password?.type === "required" && (
               <span className="text-sm text-red-400">
                 Password is required

@@ -145,7 +145,7 @@ const Navbar = () => {
             />
           ) : (
             <img
-              src="/fallback-logo.png"
+              src=""
               alt="Logo"
               className="w-12 h-12 rounded-lg"
             />

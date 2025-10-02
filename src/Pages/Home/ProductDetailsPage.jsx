@@ -8,6 +8,9 @@ import Loading from "@/Shared/Loading";
 import { AuthContext } from "@/provider/AuthProvider";
 import Swal from "sweetalert2";
 import ImageZoom from "react-image-zooom";
+import { motion } from "framer-motion";
+import { IoCartOutline } from "react-icons/io5";
+import { GrView } from "react-icons/gr";
 
 const ProductDetailsPage = () => {
   const { user } = useContext(AuthContext);
@@ -21,6 +24,7 @@ const ProductDetailsPage = () => {
   const [selectedSize, setSelectedSize] = useState("");
   // const [isFavorite, setIsFavorite] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   // Review form state
   const [reviewRating, setReviewRating] = useState(0);
@@ -34,15 +38,17 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     // Fetch product data
-    axios.get(`https://e-commerce-server-api.onrender.com/products/${id}`).then((res) => {
-      setProduct(res.data);
-      if (res.data.colors?.length > 0) {
-        setSelectedColor(res.data.colors[0]);
-      }
-      if (res.data.sizes?.length > 0) {
-        setSelectedSize(res.data.sizes[0]);
-      }
-    });
+    axios
+      .get(`https://e-commerce-server-api.onrender.com/products/${id}`)
+      .then((res) => {
+        setProduct(res.data);
+        if (res.data.colors?.length > 0) {
+          setSelectedColor(res.data.colors[0]);
+        }
+        if (res.data.sizes?.length > 0) {
+          setSelectedSize(res.data.sizes[0]);
+        }
+      });
 
     // Fetch reviews separately by productId
     axios
@@ -53,6 +59,21 @@ const ProductDetailsPage = () => {
         setReviews([]);
       });
   }, [id]);
+  useEffect(() => {
+    if (product?.categoryId) {
+      axios
+        .get(
+          `https://e-commerce-server-api.onrender.com/products?categoryId=${product.categoryId}`
+        )
+        .then((res) => {
+          const filtered = res.data.filter(
+            (p) => p._id !== product._id && p.status === "active"
+          );
+          setRelatedProducts(filtered);
+        })
+        .catch((err) => console.error("Error fetching related products:", err));
+    }
+  }, [product]);
 
   useEffect(() => {
     axios
@@ -137,7 +158,6 @@ const ProductDetailsPage = () => {
     }
   };
 
-  // Add this function inside ProductDetailsPage
   const handleAddToCart = async () => {
     if (!user) {
       Swal.fire({
@@ -158,7 +178,10 @@ const ProductDetailsPage = () => {
     };
 
     try {
-      const res = await axios.post("https://e-commerce-server-api.onrender.com/cart", cartData);
+      const res = await axios.post(
+        "https://e-commerce-server-api.onrender.com/cart",
+        cartData
+      );
       if (res.data.insertedId) {
         Swal.fire({
           icon: "success",
@@ -559,6 +582,135 @@ const ProductDetailsPage = () => {
             )}
           </div>
         </div>
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold mb-8 text-left">
+              You may also like
+            </h2>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {relatedProducts.map((product) => {
+                const oldPriceNum = Number(product.oldPrice);
+                const newPriceNum = Number(product.newPrice);
+                const hasDiscount =
+                  oldPriceNum > newPriceNum &&
+                  oldPriceNum > 0 &&
+                  newPriceNum > 0;
+
+                const discountPercent = hasDiscount
+                  ? Math.round(
+                      ((oldPriceNum - newPriceNum) / oldPriceNum) * 100
+                    )
+                  : 0;
+
+                const formatPrice = (price) =>
+                  `৳ ${price.toLocaleString("en-US", {
+                    minimumFractionDigits: 0,
+                  })}`;
+
+                return (
+                  <motion.div
+                    key={product._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    onClick={() => navigate(`/product/${product._id}`)}
+                    className="border border-gray-700 dark:border-gray-300 hover:bg-cyan-100 dark:hover:bg-cyan-700 rounded-xl p-2 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300"
+                  >
+                    {/* Image */}
+                    <div className="relative overflow-hidden rounded-md">
+                      <motion.img
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.3 }}
+                        alt={product.name}
+                        src={
+                          product.images?.[0] ||
+                          "https://via.placeholder.com/300"
+                        }
+                        className="w-full aspect-square object-cover rounded-md"
+                      />
+
+                      {/* Discount Badge */}
+                      {hasDiscount && (
+                        <motion.div
+                          initial={{ rotateY: 90, opacity: 0 }}
+                          animate={{ rotateY: 0, opacity: 1 }}
+                          transition={{ duration: 0.5 }}
+                          className="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
+                        >
+                          {discountPercent}% OFF
+                        </motion.div>
+                      )}
+                    </div>
+
+                    {/* Info */}
+                    <div className="mt-2 p-1">
+                      <div className="min-h-[2.5rem] max-h-[5rem] overflow-auto">
+                        <h3 className="text-[1.1rem] dark:text-white font-medium">
+                          {product.name}
+                        </h3>
+                      </div>
+
+                      <div className="flex items-end justify-between my-2 flex-wrap gap-2">
+                        <div>
+                          <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
+                            {!product.stock || Number(product.stock) === 0 ? (
+                              <span className="text-red-500 font-semibold">
+                                Out of stock
+                              </span>
+                            ) : (
+                              <span className="text-green-500 font-semibold">
+                                In Stock
+                              </span>
+                            )}
+                          </span>
+
+                          <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
+                            {hasDiscount ? (
+                              <>
+                                <span className="text-red-500 line-through">
+                                  {formatPrice(oldPriceNum)}
+                                </span>
+                                <span className="font-bold text-black dark:text-white">
+                                  {formatPrice(newPriceNum)}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="font-bold dark:text-white text-black">
+                                {formatPrice(newPriceNum)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-6 flex-shrink-0"
+                >
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                  >
+                    <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
+                  </button>
+
+                  <button
+                    onClick={() => navigate(`/product/${product._id}`)}
+                    className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                  >
+                    <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
+                  </button>
+                </div> */}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaSearch, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const POSPage = () => {
@@ -307,25 +307,28 @@ const POSPage = () => {
     <div className="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-8">
       {/* Left: Products */}
       <div className="md:col-span-2 border rounded p-4">
-        <input
-          type="text"
-          ref={searchInputRef}
-          className="border p-2 w-full rounded mb-4 text-lg"
-          placeholder="Search product by name or barcode..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && filteredProducts.length > 0) {
-              const product = filteredProducts[0];
-              if (searchTerm === product.barcode) {
-                addToCart(product, 1);
-                setSearchTerm("");
-              } else {
-                openModal(product);
+        <div className="relative w-full mb-4">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <input
+            type="text"
+            ref={searchInputRef}
+            className="border p-2 w-full rounded text-lg pl-10"
+            placeholder="Search product by name or barcode..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && filteredProducts.length > 0) {
+                const product = filteredProducts[0];
+                if (searchTerm === product.barcode) {
+                  addToCart(product, 1);
+                  setSearchTerm("");
+                } else {
+                  openModal(product);
+                }
               }
-            }
-          }}
-        />
+            }}
+          />
+        </div>
 
         <div className="h-[450px] overflow-y-auto pr-2">
           <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
