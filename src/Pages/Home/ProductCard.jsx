@@ -309,7 +309,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           {product.name}
         </h3> */}
         <div className="min-h-[2.5rem] max-h-[5rem] overflow-auto">
-          <h3 className="text-[1.1rem] dark:text-white font-medium">
+          <h3 className="text-[1rem] md:text-[1.1rem] leading-tight line-clamp-2 dark:text-white font-medium">
             {product.name}
           </h3>
         </div>

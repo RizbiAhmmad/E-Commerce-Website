@@ -8,6 +8,7 @@ import {
   FaMapMarkerAlt,
   FaYoutube,
   FaTiktok,
+  FaInstagram,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -75,6 +76,16 @@ export default function Footer() {
                 className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
               >
                 <FaYoutube />
+              </a>
+            )}
+            {footerInfo.instagram && (
+              <a
+                href={footerInfo.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
+              >
+                <FaInstagram />
               </a>
             )}
             {footerInfo.tiktok && (

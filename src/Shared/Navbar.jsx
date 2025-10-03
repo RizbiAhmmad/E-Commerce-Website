@@ -135,27 +135,22 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-xl md:text-2xl items-center flex gap-2 font-bold text-cyan-500 dark:text-cyan-300"
+          className="leading-tight text-lg md:text-2xl items-center flex gap-2 font-bold text-cyan-500 dark:text-cyan-300"
         >
-          {footerInfo?.logo ? (
+          {footerInfo?.logo && (
             <img
               src={footerInfo.logo}
               alt="Logo"
-              className="w-12 h-12 rounded-lg"
-            />
-          ) : (
-            <img
-              src=""
-              alt="Logo"
-              className="w-12 h-12 rounded-lg"
+              className="w-12 h-12 rounded-full"
             />
           )}
-          <Link to="/">{footerInfo?.name || ""}</Link>
+
+          <Link to="/">{footerInfo?.name}</Link>
         </motion.div>
 
         {/* Desktop Search + Categories */}
         <div className="hidden md:flex items-center w-1/2 relative gap-4">
-          <div className="flex items-center gap-4 ">
+          {/* <div className="flex items-center gap-4 ">
             <Link
               to="/"
               className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl "
@@ -174,7 +169,7 @@ const Navbar = () => {
             >
               Contact
             </Link>
-          </div>
+          </div> */}
 
           {/* Categories */}
           <div className="relative">
@@ -240,9 +235,7 @@ const Navbar = () => {
                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => setSearchText("")}
                   >
-
-                    {product.name } (Code: {product.barcode})
-                    
+                    {product.name} (Code: {product.barcode})
                   </Link>
                 ))}
               </div>

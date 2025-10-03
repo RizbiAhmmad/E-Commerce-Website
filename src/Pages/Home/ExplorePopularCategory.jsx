@@ -6,6 +6,12 @@ import Loading from "@/Shared/Loading";
 import { useNavigate } from "react-router-dom";
 import { Typewriter } from "react-simple-typewriter";
 
+// Swiper import
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+
 const ExplorePopularCategory = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +37,7 @@ const ExplorePopularCategory = () => {
   }
 
   return (
-    <div className="py-4 max-w-7xl mx-auto text-center dark:bg-black dark:text-white">
+    <div className="py-8 max-w-7xl mx-auto text-center dark:bg-black dark:text-white">
       <motion.h1
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -49,29 +55,42 @@ const ExplorePopularCategory = () => {
         />
       </motion.h1>
 
-      <p className="text-gray-500 dark:text-gray-100 mb-4">
+      <p className="text-gray-500 dark:text-gray-100 mb-6">
         Find your preferred item in the highlighted product selection.
       </p>
 
-      <div className="flex flex-wrap justify-center gap-6">
+      {/* Swiper Carousel */}
+      <Swiper
+        modules={[Navigation, Autoplay]}
+        spaceBetween={2}
+        slidesPerView={6}
+        navigation
+        autoplay={{ delay: 2500, disableOnInteraction: false }}
+        breakpoints={{
+          320: { slidesPerView: 2 },
+          640: { slidesPerView: 3 },
+          1024: { slidesPerView: 6 },
+        }}
+      >
         {categories.map((cat) => (
-          <motion.div
-            key={cat._id}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => navigate(`/category/${cat._id}`)}
-            className="text-center cursor-pointer"
-          >
-            <div className="w-28 h-28 mx-auto rounded-full overflow-hidden border shadow-xl">
-              <img
-                src={cat.image}
-                alt={cat.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <p className="mt-2 font-semibold uppercase">{cat.name}</p>
-          </motion.div>
+          <SwiperSlide key={cat._id}>
+            <motion.div
+              
+              onClick={() => navigate(`/category/${cat._id}`)}
+              className="text-center cursor-pointer"
+            >
+              <div className="w-28 h-28 mx-auto rounded-full overflow-hidden border shadow-xl">
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <p className="mt-2 font-medium leading-tight line-clamp-2 uppercase">{cat.name}</p>
+            </motion.div>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
     </div>
   );
 };

@@ -16,6 +16,7 @@ const AddFooterInfo = () => {
     youtube: "",
     linkedin: "",
     tiktok: "",
+    instagram: "",
   });
 
   const [logoFile, setLogoFile] = useState(null);
@@ -74,6 +75,9 @@ const AddFooterInfo = () => {
           address: "",
           facebook: "",
           linkedin: "",
+          youtube: "",
+          tiktok: "",
+          instagram: "",
         });
         setLogoFile(null);
         navigate("/dashboard/FooterInfo");
@@ -173,6 +177,14 @@ const AddFooterInfo = () => {
           name="youtube"
           placeholder="YouTube URL"
           value={formData.youtube}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="text"
+          name="instagram"
+          placeholder="Instagram URL"
+          value={formData.instagram}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
         />

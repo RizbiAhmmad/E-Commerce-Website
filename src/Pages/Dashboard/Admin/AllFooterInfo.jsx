@@ -15,6 +15,7 @@ const AllFooterInfo = () => {
     address: "",
     facebook: "",
     youtube: "",
+    instagram: "",
     linkedin: "",
     tiktok: "",
     logo: "",
@@ -45,6 +46,7 @@ const AllFooterInfo = () => {
       address: footer.address,
       facebook: footer.facebook,
       youtube: footer.youtube,
+      instagram: footer.instagram,
       linkedin: footer.linkedin,
       tiktok: footer.tiktok,
       logo: footer.logo,
@@ -168,6 +170,7 @@ const AllFooterInfo = () => {
                 <td className="px-4 py-3 space-y-1">
                   {footer.facebook && <div>{footer.facebook}</div>}
                   {footer.youtube && <div>{footer.youtube}</div>}
+                  {footer.instagram && <div>{footer.instagram}</div>}
                   {footer.linkedin && <div>{footer.linkedin}</div>}
                   {footer.tiktok && <div>{footer.tiktok}</div>}
                 </td>
@@ -195,7 +198,7 @@ const AllFooterInfo = () => {
       {/* Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-lg relative">
+          <div className="bg-white p-4 rounded shadow-lg w-full max-w-lg relative">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-2 right-2 text-gray-500 text-xl"
@@ -284,6 +287,14 @@ const AllFooterInfo = () => {
                 value={formData.youtube}
                 onChange={handleChange}
                 placeholder="YouTube URL"
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="text"
+                name="instagram"
+                value={formData.instagram}
+                onChange={handleChange}
+                placeholder="Instagram URL"
                 className="w-full p-2 border rounded"
               />
               <input
