@@ -14,7 +14,9 @@ const StockReport = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/products");
+      const res = await axios.get(
+        "https://e-commerce-server-api.onrender.com/products"
+      );
       setProducts(res.data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -43,8 +45,10 @@ const StockReport = () => {
   };
 
   // search filter
-  const filteredProducts = products.filter((p) =>
-    p.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products.filter(
+    (p) =>
+      p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.barcode?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // pagination logic
@@ -67,12 +71,12 @@ const StockReport = () => {
       </h2>
 
       {/* Search */}
-      <div className="flex justify-end mb-4">
-        <div className="relative w-64">
+      <div className="flex justify-start mb-4">
+        <div className="relative w-80">
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by product name..."
+            placeholder="Search by product name or barcode..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -124,8 +128,13 @@ const StockReport = () => {
                   )}
                 </td>
 
-                <td className="px-6 py-4 font-semibold align-middle">
-                  {p.name}
+                <td className="px-6 py-4 align-middle">
+                  <div className="font-semibold">{p.name}</div>
+                  {p.barcode && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      Barcode: {p.barcode}
+                    </div>
+                  )}
                 </td>
 
                 <td className="px-6 mt-4 py-4 flex items-center gap-2 align-middle">

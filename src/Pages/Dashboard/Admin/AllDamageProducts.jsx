@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaPlus, FaSearch, FaTrashAlt } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
@@ -58,8 +58,10 @@ const AllDamageProducts = () => {
   const filteredProducts = damageProducts.filter(
     (product) =>
       product.name.toLowerCase().includes(search.toLowerCase()) ||
-      (product.barcode && product.barcode.toLowerCase().includes(search.toLowerCase())) ||
-      (product.note && product.note.toLowerCase().includes(search.toLowerCase()))
+      (product.barcode &&
+        product.barcode.toLowerCase().includes(search.toLowerCase())) ||
+      (product.note &&
+        product.note.toLowerCase().includes(search.toLowerCase()))
   );
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginatedProducts = filteredProducts.slice(
@@ -150,7 +152,9 @@ const AllDamageProducts = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://e-commerce-server-api.onrender.com/damage-products/${id}`)
+          .delete(
+            `https://e-commerce-server-api.onrender.com/damage-products/${id}`
+          )
           .then((res) => {
             if (res.data.deletedCount > 0) {
               refetch();
@@ -169,16 +173,21 @@ const AllDamageProducts = () => {
 
       {/* Top Controls */}
       <div className="flex flex-col items-center justify-between gap-4 mb-4 md:flex-row">
-        <input
-          type="text"
-          placeholder="Search by name, barcode, or note..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="w-full p-2 border rounded md:w-1/3"
-        />
+        <div className="flex justify-start mb-4">
+          <div className="relative w-80">
+            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name, barcode, or note..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+          </div>
+        </div>
 
         <button
           onClick={() => navigate("/dashboard/addDamageProduct")}
@@ -294,18 +303,20 @@ const AllDamageProducts = () => {
             >
               ✖
             </button>
-            <h3 className="mb-4 text-xl font-semibold">
-              Edit Damaged Product
-            </h3>
+            <h3 className="mb-4 text-xl font-semibold">Edit Damaged Product</h3>
             <form onSubmit={handleUpdate} className="space-y-4">
               {/* Product Dropdown */}
               <div>
-                <label className="block mb-1 font-semibold">Select Product</label>
+                <label className="block mb-1 font-semibold">
+                  Select Product
+                </label>
                 <Select
                   options={productOptions}
                   value={
                     formData.productId
-                      ? productOptions.find((p) => p.value === formData.productId)
+                      ? productOptions.find(
+                          (p) => p.value === formData.productId
+                        )
                       : null
                   }
                   onChange={handleProductSelect}
@@ -370,7 +381,9 @@ const AllDamageProducts = () => {
 
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-medium">Product Image</label>
+                <label className="block text-sm font-medium">
+                  Product Image
+                </label>
                 <div className="flex items-center gap-4">
                   <label
                     htmlFor="newImage"

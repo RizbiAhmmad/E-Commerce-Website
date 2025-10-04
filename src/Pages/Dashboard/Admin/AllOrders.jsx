@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaSearch, FaTrashAlt } from "react-icons/fa";
 import axios from "axios";
 
 const AllOrders = () => {
@@ -118,8 +118,8 @@ const AllOrders = () => {
         return "bg-green-100 text-green-800 border border-green-300";
       case "cancelled":
         return "bg-red-100 text-red-800 border border-red-300";
-      case "placed":
-        return "bg-cyan-100 text-cyan-800 border border-cyan-300";
+      case "returned":
+        return "bg-orange-100 text-orange-800 border border-orange-300";
       case "failed":
         return "bg-red-200 text-red-800 border border-red-400";
       default:
@@ -169,16 +169,21 @@ const AllOrders = () => {
 
       {/*  Search & Filter */}
       <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-        <input
-          type="text"
-          placeholder="Search by name, email, phone or product..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="border border-gray-300 rounded px-3 py-2 w-full md:w-1/3 shadow-sm"
-        />
+        <div className="flex justify-start mb-4">
+          <div className="relative w-90">
+            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name, email, phone or product..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+          </div>
+        </div>
 
         <div className="flex items-center">
           <label
@@ -202,6 +207,7 @@ const AllOrders = () => {
             <option value="shipped">Shipped</option>
             <option value="delivered">Delivered</option>
             <option value="cancelled">Cancelled</option>
+            <option value="returned">Returned</option>
           </select>
         </div>
       </div>
@@ -284,13 +290,14 @@ const AllOrders = () => {
                       onChange={(e) =>
                         handleStatusChange(order._id, e.target.value)
                       }
-                      className="border border-gray-300 rounded px-2 py-1 text-xs focus:ring focus:ring-red-200"
+                      className="border border-blue-300 rounded px-2 py-1 text-xs focus:ring focus:ring-red-200"
                     >
                       <option value="pending">Pending</option>
                       <option value="processing">Processing</option>
                       <option value="shipped">Shipped</option>
                       <option value="delivered">Delivered</option>
                       <option value="cancelled">Cancelled</option>
+                      <option value="returned">Returned</option>
                     </select>
                   </div>
                 </td>

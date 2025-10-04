@@ -74,8 +74,8 @@ const AllPOSOrders = () => {
       </h2>
 
       {/* Search Bar */}
-      <div className="flex justify-end mb-4">
-        <div className="relative w-64">
+      <div className="flex justify-start mb-4">
+        <div className="relative w-100">
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
