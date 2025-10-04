@@ -4,23 +4,30 @@ import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 
 const AllDamageProducts = () => {
   const { data: damageProducts = [], refetch } = useQuery({
     queryKey: ["damageProducts"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/damage-products");
+      const res = await axios.get(
+        "https://e-commerce-server-api.onrender.com/damage-products"
+      );
       return res.data;
     },
   });
 
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [formData, setFormData] = useState({
+    productId: "",
     name: "",
+    barcode: "",
     referenceNo: "",
     price: "",
+    quantity: "",
     note: "",
     image: "",
   });
@@ -32,9 +39,26 @@ const AllDamageProducts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
+  // Fetch all products for dropdown
+  useEffect(() => {
+    axios
+      .get("https://e-commerce-server-api.onrender.com/products")
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  const productOptions = products.map((p) => ({
+    value: p._id,
+    label: `${p.name} (${p.barcode}) - ${p.newPrice}৳`,
+    name: p.name,
+    barcode: p.barcode,
+    price: p.newPrice,
+  }));
+
   const filteredProducts = damageProducts.filter(
     (product) =>
       product.name.toLowerCase().includes(search.toLowerCase()) ||
+      (product.barcode && product.barcode.toLowerCase().includes(search.toLowerCase())) ||
       (product.note && product.note.toLowerCase().includes(search.toLowerCase()))
   );
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -46,9 +70,12 @@ const AllDamageProducts = () => {
   const openEditModal = (product) => {
     setSelectedProduct(product);
     setFormData({
+      productId: product.productId || "",
       name: product.name,
+      barcode: product.barcode || "",
       referenceNo: product.referenceNo,
       price: product.price,
+      quantity: product.quantity,
       note: product.note,
       image: product.image,
     });
@@ -61,6 +88,18 @@ const AllDamageProducts = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleProductSelect = (selected) => {
+    if (selected) {
+      setFormData((prev) => ({
+        ...prev,
+        productId: selected.value,
+        name: selected.name,
+        barcode: selected.barcode,
+        price: selected.price,
+      }));
+    }
+  };
+
   const handleImageChange = (e) => {
     setNewImageFile(e.target.files[0]);
   };
@@ -70,12 +109,11 @@ const AllDamageProducts = () => {
     try {
       let imageUrl = formData.image;
 
-      // if new image selected → upload to cloudinary
       if (newImageFile) {
         setUploading(true);
         const fd = new FormData();
         fd.append("file", newImageFile);
-        fd.append("upload_preset", "eCommerce"); // apnar Cloudinary preset
+        fd.append("upload_preset", "eCommerce");
         const uploadRes = await axios.post(
           "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
           fd
@@ -111,12 +149,14 @@ const AllDamageProducts = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/damage-products/${id}`).then((res) => {
-          if (res.data.deletedCount > 0) {
-            refetch();
-            Swal.fire("Deleted!", "Product removed.", "success");
-          }
-        });
+        axios
+          .delete(`https://e-commerce-server-api.onrender.com/damage-products/${id}`)
+          .then((res) => {
+            if (res.data.deletedCount > 0) {
+              refetch();
+              Swal.fire("Deleted!", "Product removed.", "success");
+            }
+          });
       }
     });
   };
@@ -131,7 +171,7 @@ const AllDamageProducts = () => {
       <div className="flex flex-col items-center justify-between gap-4 mb-4 md:flex-row">
         <input
           type="text"
-          placeholder="Search by name or note..."
+          placeholder="Search by name, barcode, or note..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -153,32 +193,43 @@ const AllDamageProducts = () => {
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
             <tr>
-              <th className="px-6 py-3">#</th>
-              <th className="px-6 py-3">Image</th>
-              <th className="px-6 py-3">Name</th>
-              <th className="px-6 py-3">Reference No</th>
-              <th className="px-6 py-3">Price</th>
-              <th className="px-6 py-3">Note</th>
-              <th className="px-6 py-3">Actions</th>
+              <th className="px-4 py-3">#</th>
+              <th className="px-4 py-3">Image</th>
+              <th className="px-4 py-3">Product Name</th>
+              <th className="px-4 py-3">Barcode</th>
+              <th className="px-4 py-3">Reference No</th>
+              <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Quantity</th>
+              <th className="px-4 py-3">Note</th>
+              <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {paginatedProducts.map((product, index) => (
-              <tr key={product._id} className="transition duration-200 hover:bg-gray-50">
-                <td className="px-6 py-4">
+              <tr
+                key={product._id}
+                className="transition duration-200 hover:bg-gray-50"
+              >
+                <td className="px-4 py-4">
                   {(currentPage - 1) * itemsPerPage + index + 1}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-4 py-4">
                   <img
                     src={product.image}
                     alt={product.name}
                     className="object-cover w-10 h-10 border rounded"
                   />
                 </td>
-                <td className="px-6 py-4 font-semibold text-gray-800">{product.name}</td>
-                <td className="px-6 py-4">{product.referenceNo}</td>
-                <td className="px-6 py-4">{product.price}</td>
-                <td className="px-6 py-4">{product.note || "-"}</td>
+                <td className="px-4 py-4 font-semibold text-gray-800">
+                  {product.name}
+                </td>
+                <td className="px-4 py-4 font-semibold text-gray-800">
+                  {product.barcode}
+                </td>
+                <td className="px-4 py-4">{product.referenceNo}</td>
+                <td className="px-4 py-4">{product.price}</td>
+                <td className="px-4 py-4">{product.quantity}</td>
+                <td className="px-4 py-4">{product.note || "-"}</td>
                 <td className="flex gap-4 px-6 py-4">
                   <button onClick={() => openEditModal(product)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
@@ -191,7 +242,7 @@ const AllDamageProducts = () => {
             ))}
             {paginatedProducts.length === 0 && (
               <tr>
-                <td colSpan="7" className="py-6 text-center text-gray-500">
+                <td colSpan="8" className="py-6 text-center text-gray-500">
                   No damaged products found.
                 </td>
               </tr>
@@ -203,7 +254,6 @@ const AllDamageProducts = () => {
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-4">
-          {/* Prev / Next buttons */}
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => prev - 1)}
@@ -216,7 +266,9 @@ const AllDamageProducts = () => {
               key={i}
               onClick={() => setCurrentPage(i + 1)}
               className={`px-3 py-1 text-sm rounded ${
-                currentPage === i + 1 ? "bg-cyan-500 text-white" : "bg-gray-200 hover:bg-gray-300"
+                currentPage === i + 1
+                  ? "bg-cyan-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
               }`}
             >
               {i + 1}
@@ -242,25 +294,53 @@ const AllDamageProducts = () => {
             >
               ✖
             </button>
-            <h3 className="mb-4 text-xl font-semibold">Edit Damaged Product</h3>
+            <h3 className="mb-4 text-xl font-semibold">
+              Edit Damaged Product
+            </h3>
             <form onSubmit={handleUpdate} className="space-y-4">
+              {/* Product Dropdown */}
+              <div>
+                <label className="block mb-1 font-semibold">Select Product</label>
+                <Select
+                  options={productOptions}
+                  value={
+                    formData.productId
+                      ? productOptions.find((p) => p.value === formData.productId)
+                      : null
+                  }
+                  onChange={handleProductSelect}
+                  placeholder="Search by product name or barcode..."
+                  isSearchable
+                  isClearable
+                />
+              </div>
+
+              {/* Auto-filled Fields */}
               <input
                 type="text"
                 name="name"
                 value={formData.name}
-                onChange={handleModalChange}
-                className="w-full p-2 border rounded"
-                required
+                readOnly
+                className="w-full p-2 border rounded bg-gray-100"
                 placeholder="Product Name"
+                required
               />
               <input
                 type="text"
+                name="barcode"
+                value={formData.barcode}
+                readOnly
+                className="w-full p-2 border rounded bg-gray-100"
+                placeholder="Barcode"
+              />
+              <input
+                type="number"
                 name="referenceNo"
                 value={formData.referenceNo}
                 onChange={handleModalChange}
                 className="w-full p-2 border rounded"
-                required
                 placeholder="Reference No"
+                required
               />
               <input
                 type="number"
@@ -268,8 +348,17 @@ const AllDamageProducts = () => {
                 value={formData.price}
                 onChange={handleModalChange}
                 className="w-full p-2 border rounded"
-                required
                 placeholder="Price"
+                required
+              />
+              <input
+                type="number"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleModalChange}
+                className="w-full p-2 border rounded"
+                placeholder="Quantity"
+                required
               />
               <textarea
                 name="note"
@@ -279,6 +368,7 @@ const AllDamageProducts = () => {
                 placeholder="Note"
               />
 
+              {/* Image Upload */}
               <div>
                 <label className="block text-sm font-medium">Product Image</label>
                 <div className="flex items-center gap-4">
@@ -306,7 +396,9 @@ const AllDamageProducts = () => {
                     className="w-16 h-16 mt-2 border rounded object-cover"
                   />
                 )}
-                {uploading && <p className="text-sm text-gray-500 mt-1">Uploading...</p>}
+                {uploading && (
+                  <p className="text-sm text-gray-500 mt-1">Uploading...</p>
+                )}
               </div>
 
               <button

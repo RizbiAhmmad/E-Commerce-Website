@@ -58,14 +58,14 @@ const AllReviews = () => {
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
             <tr>
-              <th className="px-6 py-3">#</th>
-              <th className="px-6 py-3">Product</th>
-              <th className="px-6 py-3">Reviewer</th>
-              <th className="px-6 py-3">Email</th>
-              <th className="px-6 py-3">Rating</th>
-              <th className="px-6 py-3">Review</th>
-              <th className="px-6 py-3">Date</th>
-              <th className="px-6 py-3">Actions</th>
+              <th className="px-4 py-3">#</th>
+              <th className="px-4 py-3">Product</th>
+              <th className="px-4 py-3">Reviewer</th>
+              <th className="px-4 py-3">Email</th>
+              <th className="px-4 py-3">Rating</th>
+              <th className="px-4 py-3">Review</th>
+              <th className="px-4 py-3">Date</th>
+              <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -75,10 +75,10 @@ const AllReviews = () => {
                   key={review._id}
                   className="transition duration-200 hover:bg-gray-50"
                 >
-                  <td className="px-6 py-4">{index + 1}</td>
+                  <td className="px-4 py-4">{index + 1}</td>
 
                   {/* Product Image + Name */}
-                  <td className="px-6 py-4 font-semibold text-gray-800 flex items-center gap-3">
+                  <td className="px-4 py-4 font-semibold text-gray-800 flex items-center gap-3">
                     <img
                       src={
                         products.find((p) => p._id === review.productId)
@@ -90,19 +90,19 @@ const AllReviews = () => {
                     <span>{getProductName(review.productId)}</span>
                   </td>
 
-                  <td className="px-6 py-4">{review.name}</td>
-                  <td className="px-6 py-4">{review.email || "-"}</td>
-                  <td className="px-6 py-4">{review.rating}</td>
+                  <td className="px-4 py-4">{review.name}</td>
+                  <td className="px-4 py-4">{review.email || "-"}</td>
+                  <td className="px-4 py-4">{review.rating}</td>
                   <td
-                    className="px-6 py-4 max-w-xs truncate"
+                    className="px-4 py-4 max-w-xs truncate"
                     title={review.text}
                   >
                     {review.text}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-4">
                     {new Date(review.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-4">
                     <button
                       onClick={() => handleDelete(review._id)}
                       className="text-red-500 hover:text-red-700"

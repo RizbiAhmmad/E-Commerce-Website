@@ -5,8 +5,6 @@ import { motion } from "framer-motion";
 import Loading from "@/Shared/Loading";
 import { useNavigate } from "react-router-dom";
 import { Typewriter } from "react-simple-typewriter";
-
-// Swiper import
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -15,6 +13,7 @@ import "swiper/css/navigation";
 const ExplorePopularCategory = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,6 +29,14 @@ const ExplorePopularCategory = () => {
       }
     };
     fetchCategories();
+
+    // ✅ detect mobile screen
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint এর নিচে হলে mobile ধরছি
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (loading) {
@@ -59,23 +66,44 @@ const ExplorePopularCategory = () => {
         Find your preferred item in the highlighted product selection.
       </p>
 
-      {/* Swiper Carousel */}
-      <Swiper
-        modules={[Navigation, Autoplay]}
-        spaceBetween={2}
-        slidesPerView={6}
-        navigation
-        autoplay={{ delay: 2500, disableOnInteraction: false }}
-        breakpoints={{
-          320: { slidesPerView: 2 },
-          640: { slidesPerView: 3 },
-          1024: { slidesPerView: 6 },
-        }}
-      >
-        {categories.map((cat) => (
-          <SwiperSlide key={cat._id}>
+      {isMobile || categories.length >= 8 ? (
+        <Swiper
+          modules={[Navigation, Autoplay]}
+          spaceBetween={2}
+          slidesPerView={8}
+          navigation
+          autoplay={{ delay: 2500, disableOnInteraction: false }}
+          breakpoints={{
+            320: { slidesPerView: 2 },
+            640: { slidesPerView: 3 },
+            1024: { slidesPerView: 8 },
+          }}
+        >
+          {categories.map((cat) => (
+            <SwiperSlide key={cat._id}>
+              <motion.div
+                onClick={() => navigate(`/category/${cat._id}`)}
+                className="text-center cursor-pointer"
+              >
+                <div className="w-28 h-28 mx-auto rounded-full overflow-hidden border shadow-xl">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <p className="mt-2 font-medium leading-tight line-clamp-2 uppercase">
+                  {cat.name}
+                </p>
+              </motion.div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <div className="flex flex-wrap justify-center gap-6">
+          {categories.map((cat) => (
             <motion.div
-              
+              key={cat._id}
               onClick={() => navigate(`/category/${cat._id}`)}
               className="text-center cursor-pointer"
             >
@@ -86,11 +114,13 @@ const ExplorePopularCategory = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <p className="mt-2 font-medium leading-tight line-clamp-2 uppercase">{cat.name}</p>
+              <p className="mt-2 font-medium leading-tight line-clamp-2 uppercase">
+                {cat.name}
+              </p>
             </motion.div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

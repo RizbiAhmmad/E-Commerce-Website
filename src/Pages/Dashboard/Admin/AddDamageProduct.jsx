@@ -1,18 +1,50 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../../../provider/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import Select from "react-select";
 
 const AddDamageProduct = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    productId: "",
     name: "",
+    referenceNo: "",
+    price: "",
     note: "",
+    barcode: "",
+    quantity: 1,  
   });
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("https://e-commerce-server-api.onrender.com/products")
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error("Error fetching products", err));
+  }, []);
+
+  const productOptions = products.map((p) => ({
+    value: p._id,
+    label: `${p.name} (${p.barcode}) - ${p.newPrice}৳`,
+    name: p.name,
+    barcode: p.barcode,
+    price: p.newPrice,
+  }));
+
+  const handleProductSelect = (selected) => {
+    setFormData({
+      ...formData,
+      productId: selected.value,
+      name: selected.name,
+      price: selected.price,
+      barcode: selected.barcode,
+    });
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,6 +57,9 @@ const AddDamageProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.productId) {
+      return Swal.fire("Error", "Please select a product", "error");
+    }
     if (!imageFile) {
       return Swal.fire("Error", "Please select an image", "error");
     }
@@ -44,38 +79,38 @@ const AddDamageProduct = () => {
 
       const imageUrl = cloudinaryRes.data.secure_url;
 
-      // Submit to backend
       const damageProductData = {
         ...formData,
         image: imageUrl,
         email: user?.email,
         price: Number(formData.price),
         referenceNo: Number(formData.referenceNo),
+        quantity: Number(formData.quantity),
       };
 
       const res = await axios.post(
         "https://e-commerce-server-api.onrender.com/damage-products",
-        JSON.stringify(damageProductData),
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        damageProductData
       );
 
-      if (res.data.insertedId) {
-        Swal.fire("Success", "Damage product added successfully!", "success");
-        setFormData({ name: "", referenceNo: "", price: "", note: "" });
+      if (res.data.damageResult?.insertedId) {
+        Swal.fire("Success", "Damage product added & stock updated!", "success");
+        setFormData({
+          productId: "",
+          name: "",
+          referenceNo: "",
+          price: "",
+          note: "",
+          barcode: "",
+          quantity: 1,
+        });
         setImageFile(null);
         navigate("/dashboard/allDamageProducts");
       } else {
         Swal.fire("Error", "Server error. Product not added.", "error");
       }
     } catch (err) {
-      console.error(
-        "❌ Add Damage Product Error:",
-        err.response?.data || err.message
-      );
+      console.error("❌ Add Damage Product Error:", err.response?.data || err.message);
       Swal.fire("Error", "Something went wrong", "error");
     } finally {
       setLoading(false);
@@ -84,20 +119,66 @@ const AddDamageProduct = () => {
 
   return (
     <div className="max-w-xl p-6 mx-auto mt-6 bg-white rounded-lg shadow-md">
-      <h2 className="mb-6 text-2xl font-bold text-center">
-        Add Damaged Product
-      </h2>
+      <h2 className="mb-6 text-2xl font-bold text-center">Add Damaged Product</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
+
+        <div>
+          <label className="block mb-1 font-semibold">Select Product</label>
+          <Select
+            options={productOptions}
+            onChange={handleProductSelect}
+            placeholder="Search by product name or barcode..."
+            isSearchable
+          />
+        </div>
+
+        {/* Auto-filled product name */}
         <div>
           <label className="block mb-1 font-semibold">Product Name</label>
           <input
             type="text"
             name="name"
-            required
             value={formData.name}
+            readOnly
+            className="w-full px-4 py-2 border rounded bg-gray-100"
+          />
+        </div>
+
+        {/* Auto-filled barcode */}
+        <div>
+          <label className="block mb-1 font-semibold">Barcode</label>
+          <input
+            type="text"
+            name="barcode"
+            value={formData.barcode}
+            readOnly
+            className="w-full px-4 py-2 border rounded bg-gray-100"
+          />
+        </div>
+
+        {/* Auto-filled price */}
+        <div>
+          <label className="block mb-1 font-semibold">Price</label>
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            readOnly
+            className="w-full px-4 py-2 border rounded bg-gray-100"
+          />
+        </div>
+
+        {/* Damaged Quantity */}
+        <div>
+          <label className="block mb-1 font-semibold">Damaged Quantity</label>
+          <input
+            type="number"
+            name="quantity"
+            min="1"
+            value={formData.quantity}
             onChange={handleChange}
-            placeholder="Product Name"
             className="w-full px-4 py-2 border rounded"
+            required
           />
         </div>
 
@@ -110,19 +191,6 @@ const AddDamageProduct = () => {
             value={formData.referenceNo}
             onChange={handleChange}
             placeholder="Reference Number"
-            className="w-full px-4 py-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-semibold">Price</label>
-          <input
-            type="number"
-            name="price"
-            required
-            value={formData.price}
-            onChange={handleChange}
-            placeholder="Price"
             className="w-full px-4 py-2 border rounded"
           />
         </div>

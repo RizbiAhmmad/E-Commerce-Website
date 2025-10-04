@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaLinkedin, FaYoutube, FaTiktok } from "react-icons/fa";
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaLinkedin, FaYoutube, FaTiktok, FaInstagram } from "react-icons/fa";
 import axios from "axios";
 
 const Contact = () => {
@@ -10,7 +10,6 @@ const Contact = () => {
     const fetchFooterInfo = async () => {
       try {
         const res = await axios.get("https://e-commerce-server-api.onrender.com/footer");
-        // ধরে নিচ্ছি backend থেকে array আসবে, তাই প্রথম element নিচ্ছি
         setFooterInfo(res.data[0]);
       } catch (err) {
         console.error("❌ Footer Info Fetch Error:", err.message);
@@ -104,6 +103,11 @@ const Contact = () => {
           {footerInfo.youtube && (
             <a href={footerInfo.youtube} target="_blank" rel="noreferrer" className="hover:text-cyan-500">
               <FaYoutube />
+            </a>
+          )}
+          {footerInfo.instagram && (
+            <a href={footerInfo.instagram} target="_blank" rel="noreferrer" className="hover:text-cyan-500">
+              <FaInstagram />
             </a>
           )}
           {footerInfo.tiktok && (

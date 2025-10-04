@@ -265,7 +265,7 @@ const AllProducts = () => {
 
       {/* Add Product Button */}
       <div className="flex justify-between mb-4">
-        <div className="relative w-64">
+        <div className="relative w-80">
           {/* Search Icon */}
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
 

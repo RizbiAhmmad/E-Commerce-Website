@@ -52,7 +52,7 @@ const CourierSettings = () => {
   const cardClasses = "border rounded-lg p-4 shadow-md mb-4 bg-white";
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-white">
+    <div className="min-h-auto flex flex-col items-center justify-center p-6 bg-white">
       <h2 className="text-2xl font-bold mb-6">Courier Settings</h2>
 
       {/* Centered Courier Form */}

@@ -14,7 +14,9 @@ const AllOrders = () => {
   // Fetch orders
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/orders");
+      const res = await axios.get(
+        "https://e-commerce-server-api.onrender.com/orders"
+      );
       setOrders(res.data);
     } catch (error) {
       console.error(error);
@@ -25,7 +27,9 @@ const AllOrders = () => {
   // Fetch active couriers
   const fetchCouriers = async () => {
     try {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/courier/settings");
+      const res = await axios.get(
+        "https://e-commerce-server-api.onrender.com/courier/settings"
+      );
       setCouriers(res.data);
     } catch (error) {
       console.error(error);
@@ -50,12 +54,14 @@ const AllOrders = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/orders/${id}`).then((res) => {
-          if (res.data.deletedCount > 0) {
-            fetchOrders();
-            Swal.fire("Deleted!", "Order removed.", "success");
-          }
-        });
+        axios
+          .delete(`https://e-commerce-server-api.onrender.com/orders/${id}`)
+          .then((res) => {
+            if (res.data.deletedCount > 0) {
+              fetchOrders();
+              Swal.fire("Deleted!", "Order removed.", "success");
+            }
+          });
       }
     });
   };
@@ -138,12 +144,17 @@ const AllOrders = () => {
   const filteredOrders =
     statusFilter === "all"
       ? searchedOrders
-      : searchedOrders.filter((order) => order.status?.toLowerCase() === statusFilter);
+      : searchedOrders.filter(
+          (order) => order.status?.toLowerCase() === statusFilter
+        );
 
   // Pagination logic
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const handlePageChange = (page) => {
@@ -302,10 +313,10 @@ const AllOrders = () => {
                   </select>
                 </td>
 
-                <td className="flex gap-4 px-3 py-3">                 
-                    <button onClick={() => handleDelete(order._id)}>
-                      <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                    </button>
+                <td className="px-3 py-3 flex items-center justify-center">
+                  <button onClick={() => handleDelete(order._id)}>
+                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                  </button>
                 </td>
               </tr>
             ))}
