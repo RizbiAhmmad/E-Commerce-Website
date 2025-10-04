@@ -341,6 +341,14 @@ const Dashboard = () => {
                     <FaInfoCircle /> <span>Logo & Info</span>
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allPolicies"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaInfoCircle /> <span>Policies</span>
+                  </NavLink>
+                </li>
 
                 {/* Profile */}
                 <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">

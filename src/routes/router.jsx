@@ -56,6 +56,8 @@ import AllOffers from "@/Pages/Dashboard/Admin/AllOffers";
 import CourierSettings from "@/Pages/Courier/CourierSettings";
 import Favourite from "@/Pages/Dashboard/User/Favourite";
 import ProfitLossReport from "@/Pages/Dashboard/Admin/ProfitLossReport";
+import AddPolicy from "@/Pages/Dashboard/Admin/AddPolicy";
+import AllPolicies from "@/Pages/Dashboard/Admin/AllPolicies";
 
 export const router = createBrowserRouter([
   {
@@ -273,6 +275,14 @@ export const router = createBrowserRouter([
       {
         path: "FooterInfo",
         element: <AllFooterInfo />,
+      },
+      {
+        path: "addPolicy",
+        element: <AddPolicy />,
+      },
+      {
+        path: "allPolicies",
+        element: <AllPolicies />,
       },
       {
         path: "ExpenseReport",
