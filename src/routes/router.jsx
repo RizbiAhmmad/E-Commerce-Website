@@ -58,6 +58,9 @@ import Favourite from "@/Pages/Dashboard/User/Favourite";
 import ProfitLossReport from "@/Pages/Dashboard/Admin/ProfitLossReport";
 import AddPolicy from "@/Pages/Dashboard/Admin/AddPolicy";
 import AllPolicies from "@/Pages/Dashboard/Admin/AllPolicies";
+import PrivacyPolicy from "@/Shared/PrivacyPolicy";
+import RefundPolicy from "@/Shared/RefundPolicy";
+import TermsConditions from "@/Shared/TermsConditions";
 
 export const router = createBrowserRouter([
   {
@@ -99,6 +102,18 @@ export const router = createBrowserRouter([
       {
         path: "favourites",
         element: <Favourite />,
+      },
+      {
+        path: "privacyPolicy",
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: "ReturnAndRefundPolicy",
+        element: <RefundPolicy />,
+      },
+      {
+        path: "TermsAndConditions",
+        element: <TermsConditions />,
       },
       {
         path: "checkout",

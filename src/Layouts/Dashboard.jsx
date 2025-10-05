@@ -23,6 +23,7 @@ import {
   MdInventory,
   MdLocalShipping,
   MdOutlineDashboardCustomize,
+  MdPrivacyTip,
 } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { NavLink, Outlet } from "react-router-dom";
@@ -346,7 +347,7 @@ const Dashboard = () => {
                     to="/dashboard/allPolicies"
                     className="flex items-center px-2 py-2 space-x-3"
                   >
-                    <FaInfoCircle /> <span>Policies</span>
+                    <MdPrivacyTip /> <span>Policies</span>
                   </NavLink>
                 </li>
 

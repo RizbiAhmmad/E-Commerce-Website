@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const PrivacyPolicy = () => {
+const TermsConditions = () => {
   const [policy, setPolicy] = useState(null);
 
   useEffect(() => {
@@ -9,17 +9,17 @@ const PrivacyPolicy = () => {
       .get("https://e-commerce-server-api.onrender.com/policies")
       .then((res) => {
         const activePolicy = res.data.find(
-          (p) => p.title === "Privacy Policy" && p.status === "active"
+          (p) => p.title === "Terms & Conditions" && p.status === "active"
         );
         setPolicy(activePolicy);
       })
-      .catch((err) => console.error("❌ Privacy Policy Fetch Error:", err));
+      .catch((err) => console.error("❌ Terms Policy Fetch Error:", err));
   }, []);
 
   if (!policy) {
     return (
       <div className="flex items-center justify-center min-h-[50vh] text-gray-500">
-        No active Privacy Policy available.
+        No active Terms & Conditions available.
       </div>
     );
   }
@@ -34,4 +34,4 @@ const PrivacyPolicy = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default TermsConditions;
