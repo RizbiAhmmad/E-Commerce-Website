@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 // import { FaTrashAlt } from "react-icons/fa";
 import axios from "axios";
+import { FaSearch } from "react-icons/fa";
 
 const AllReturnProducts = () => {
   const [returnOrders, setReturnOrders] = useState([]);
@@ -21,7 +22,7 @@ const AllReturnProducts = () => {
   const fetchReturnOrders = async () => {
     try {
       const res = await axios.get(
-        "https://e-commerce-server-api.onrender.com/orders"
+        "https://api.sports.bangladeshiit.com/orders"
       );
       const returned = res.data.filter(
         (order) => order.status?.toLowerCase() === "returned"
@@ -50,7 +51,7 @@ const AllReturnProducts = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://e-commerce-server-api.onrender.com/orders/${id}`)
+          .delete(`https://api.sports.bangladeshiit.com/orders/${id}`)
           .then((res) => {
             if (res.data.deletedCount > 0) {
               fetchReturnOrders();
@@ -104,16 +105,21 @@ const AllReturnProducts = () => {
       </h2>
 
       <div className="mb-4 flex justify-between items-center">
-        <input
-          type="text"
-          placeholder="Search by name, email, phone, or product..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="border border-gray-300 rounded px-4 py-2 text-sm shadow-sm w-72"
-        />
+        <div className="flex justify-start mb-4">
+          <div className="relative w-90">
+            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name, email, phone, or product..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
@@ -155,8 +161,8 @@ const AllReturnProducts = () => {
                       <div>
                         <div className="font-semibold">{item.productName}</div>
                         <div className="text-sm text-gray-500">
-                          Size: {item.size || "-"}, Color: {item.color || "-"}, Qty:{" "}
-                          {item.quantity}
+                          Size: {item.size || "-"}, Color: {item.color || "-"},
+                          Qty: {item.quantity}
                         </div>
                       </div>
                     </div>
@@ -164,10 +170,14 @@ const AllReturnProducts = () => {
                 </td>
                 <td className="px-4 py-3 font-bold">৳{order.total}</td>
                 <td className="px-4 py-3 font-bold">
-                  <div>Date: {order.returnDate ? new Date(order.returnDate).toLocaleDateString() : "-"}</div>
+                  <div>
+                    Date:{" "}
+                    {order.returnDate
+                      ? new Date(order.returnDate).toLocaleDateString()
+                      : "-"}
+                  </div>
                 </td>
                 <td className="px-4 py-3 font-semibold">
-                  
                   <div>Reason: {order.returnReason || "-"}</div>
                 </td>
                 <td className="px-4 py-3 flex items-center justify-center gap-2">
@@ -200,7 +210,9 @@ const AllReturnProducts = () => {
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className={`px-4 py-2 rounded-lg font-semibold text-white ${
-              currentPage === 1 ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-600"
+              currentPage === 1
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-cyan-500 hover:bg-cyan-600"
             }`}
           >
             Previous
@@ -212,7 +224,9 @@ const AllReturnProducts = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className={`px-4 py-2 rounded-lg font-semibold text-white ${
-              currentPage === totalPages ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-600"
+              currentPage === totalPages
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-cyan-500 hover:bg-cyan-600"
             }`}
           >
             Next
@@ -230,7 +244,7 @@ const AllReturnProducts = () => {
                 e.preventDefault();
                 try {
                   await axios.patch(
-                    `https://e-commerce-server-api.onrender.com/orders/${selectedOrder._id}/return`,
+                    `https://api.sports.bangladeshiit.com/orders/${selectedOrder._id}/return`,
                     returnData
                   );
                   Swal.fire("Saved!", "Return info updated.", "success");
@@ -247,7 +261,10 @@ const AllReturnProducts = () => {
                   type="date"
                   value={returnData.returnDate}
                   onChange={(e) =>
-                    setReturnData((prev) => ({ ...prev, returnDate: e.target.value }))
+                    setReturnData((prev) => ({
+                      ...prev,
+                      returnDate: e.target.value,
+                    }))
                   }
                   className="border p-2 w-full rounded"
                   required
@@ -258,7 +275,10 @@ const AllReturnProducts = () => {
                 <textarea
                   value={returnData.returnReason}
                   onChange={(e) =>
-                    setReturnData((prev) => ({ ...prev, returnReason: e.target.value }))
+                    setReturnData((prev) => ({
+                      ...prev,
+                      returnReason: e.target.value,
+                    }))
                   }
                   className="border p-2 w-full rounded"
                   rows={3}
@@ -274,7 +294,10 @@ const AllReturnProducts = () => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 rounded bg-cyan-500 text-white">
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded bg-cyan-500 text-white"
+                >
                   Save
                 </button>
               </div>

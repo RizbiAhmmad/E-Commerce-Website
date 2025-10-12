@@ -12,7 +12,7 @@ const AllPOSOrders = () => {
   // fetch POS orders
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/pos/orders");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/pos/orders");
       setOrders(res.data);
     } catch (error) {
       console.error(error);
@@ -36,7 +36,7 @@ const AllPOSOrders = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/pos/orders/${id}`).then((res) => {
+        axios.delete(`https://api.sports.bangladeshiit.com/pos/orders/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             fetchOrders();
             Swal.fire("Deleted!", "Order removed.", "success");
@@ -146,9 +146,10 @@ const AllPOSOrders = () => {
                 </td>
 
                 <td className="flex gap-4 px-6 py-6">
-                  <button onClick={() => handleDelete(order._id)}>
+                  <h1>Delete option hidden for demo show</h1>
+                  {/* <button onClick={() => handleDelete(order._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

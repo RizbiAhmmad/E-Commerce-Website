@@ -53,25 +53,25 @@ const AllProducts = () => {
   useEffect(() => {
     fetchProducts();
     axios
-      .get("https://e-commerce-server-api.onrender.com/categories")
+      .get("https://api.sports.bangladeshiit.com/categories")
       .then((res) => setCategories(res.data));
     axios
-      .get("https://e-commerce-server-api.onrender.com/subcategories")
+      .get("https://api.sports.bangladeshiit.com/subcategories")
       .then((res) => setSubcategories(res.data));
     axios
-      .get("https://e-commerce-server-api.onrender.com/brands")
+      .get("https://api.sports.bangladeshiit.com/brands")
       .then((res) => setBrands(res.data));
     axios
-      .get("https://e-commerce-server-api.onrender.com/sizes")
+      .get("https://api.sports.bangladeshiit.com/sizes")
       .then((res) => setSizes(res.data));
     axios
-      .get("https://e-commerce-server-api.onrender.com/colors")
+      .get("https://api.sports.bangladeshiit.com/colors")
       .then((res) => setColors(res.data));
   }, []);
 
   const fetchProducts = async () => {
     const res = await axios.get(
-      "https://e-commerce-server-api.onrender.com/products"
+      "https://api.sports.bangladeshiit.com/products"
     );
     setProducts(res.data);
   };
@@ -86,7 +86,7 @@ const AllProducts = () => {
     });
     if (confirm.isConfirmed) {
       await axios.delete(
-        `https://e-commerce-server-api.onrender.com/products/${id}`
+        `https://api.sports.bangladeshiit.com/products/${id}`
       );
       Swal.fire("Deleted!", "Product deleted successfully", "success");
       fetchProducts();
@@ -172,7 +172,7 @@ const AllProducts = () => {
       };
 
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/products",
+        "https://api.sports.bangladeshiit.com/products",
         productData,
         {
           headers: { "Content-Type": "application/json" },
@@ -209,7 +209,7 @@ const AllProducts = () => {
     const updatedData = { ...editProduct, images: imageUrls };
 
     await axios.put(
-      `https://e-commerce-server-api.onrender.com/products/${editProduct._id}`,
+      `https://api.sports.bangladeshiit.com/products/${editProduct._id}`,
       updatedData,
       { headers: { "Content-Type": "application/json" } }
     );
@@ -373,20 +373,21 @@ const AllProducts = () => {
                 </td>
 
                 <td className="flex gap-4 px-4 py-4">
-                  <button
+                  <h1>Edit & delete option hidden for demo show</h1>
+                  {/* <button
                     onClick={() => handleEdit(p)}
                     className="text-cyan-500 hover:text-cyan-600"
                     title="Edit"
                   >
                     <FaEdit className="text-xl" />
-                  </button>
-                  <button
+                  </button> */}
+                  {/* <button
                     onClick={() => handleDelete(p._id)}
                     className="text-red-500 hover:text-red-700"
                     title="Delete"
                   >
                     <FaTrashAlt className="text-xl" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

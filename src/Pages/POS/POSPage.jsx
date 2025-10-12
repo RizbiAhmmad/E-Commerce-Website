@@ -44,12 +44,12 @@ const POSPage = () => {
   // Fetch products & coupons
   useEffect(() => {
     axios
-      .get("https://e-commerce-server-api.onrender.com/products")
+      .get("https://api.sports.bangladeshiit.com/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
 
     axios
-      .get("https://e-commerce-server-api.onrender.com/coupons?status=active")
+      .get("https://api.sports.bangladeshiit.com/coupons?status=active")
       .then((res) => setCoupons(res.data))
       .catch((err) => console.error(err));
 
@@ -59,7 +59,7 @@ const POSPage = () => {
   // Fetch POS cart
   const fetchPosCart = () => {
     axios
-      .get("https://e-commerce-server-api.onrender.com/pos/cart")
+      .get("https://api.sports.bangladeshiit.com/pos/cart")
       .then((res) => setPosCart(res.data))
       .catch((err) => console.error(err));
   };
@@ -115,7 +115,7 @@ const POSPage = () => {
   // Add to cart
   const addToCart = (product, qty = 1, color = "", size = "", productImage) => {
     axios
-      .post("https://e-commerce-server-api.onrender.com/pos/cart", {
+      .post("https://api.sports.bangladeshiit.com/pos/cart", {
         productId: product._id,
         productName: product.name,
         barCode: product.barcode || "",
@@ -138,7 +138,7 @@ const POSPage = () => {
   const updateQuantity = (id, qty) => {
     if (qty < 1) return;
     axios
-      .patch(`https://e-commerce-server-api.onrender.com/pos/cart/${id}`, {
+      .patch(`https://api.sports.bangladeshiit.com/pos/cart/${id}`, {
         quantity: qty,
       })
       .then(() => fetchPosCart())
@@ -148,7 +148,7 @@ const POSPage = () => {
   // Delete item
   const deleteItem = (id) => {
     axios
-      .delete(`https://e-commerce-server-api.onrender.com/pos/cart/${id}`)
+      .delete(`https://api.sports.bangladeshiit.com/pos/cart/${id}`)
       .then(() => fetchPosCart())
       .catch((err) => console.error(err));
   };
@@ -236,7 +236,7 @@ const POSPage = () => {
 
     try {
       await axios.post(
-        "https://e-commerce-server-api.onrender.com/pos/orders",
+        "https://api.sports.bangladeshiit.com/pos/orders",
         orderData
       );
       // keep a copy for the receipt before we reset
@@ -271,7 +271,7 @@ const POSPage = () => {
     searchInputRef.current?.focus();
 
     await axios
-      .get("https://e-commerce-server-api.onrender.com/products")
+      .get("https://api.sports.bangladeshiit.com/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
 

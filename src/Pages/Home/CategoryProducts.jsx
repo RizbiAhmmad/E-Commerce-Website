@@ -31,13 +31,13 @@ const CategoryProducts = () => {
       try {
         // Get products by category
         const res = await axios.get(
-          `https://e-commerce-server-api.onrender.com/products?categoryId=${id}`
+          `https://api.sports.bangladeshiit.com/products?categoryId=${id}`
         );
         setProducts(res.data);
 
         // Use categories-with-subcategories API
         const subRes = await axios.get(
-          "https://e-commerce-server-api.onrender.com/categories-with-subcategories"
+          "https://api.sports.bangladeshiit.com/categories-with-subcategories"
         );
         const category = subRes.data.find((c) => c._id === id);
         setSubcategories(category ? category.subcategories : []);
@@ -125,7 +125,7 @@ const filteredProducts = sortedProducts.filter((p) => {
           productId: product._id,
           quantity: 1,
         };
-        const res = await axios.post("https://e-commerce-server-api.onrender.com/cart", cartData);
+        const res = await axios.post("https://api.sports.bangladeshiit.com/cart", cartData);
         if (res.data.insertedId) {
           Swal.fire({
             icon: "success",

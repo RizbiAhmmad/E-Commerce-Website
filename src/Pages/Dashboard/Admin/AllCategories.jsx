@@ -9,7 +9,7 @@ const AllCategories = () => {
   const { data: categories = [], refetch } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/categories");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/categories");
       return res.data;
     },
   });
@@ -72,7 +72,7 @@ const AllCategories = () => {
       }
 
       await axios.put(
-        `https://e-commerce-server-api.onrender.com/categories/${selectedCategory._id}`,
+        `https://api.sports.bangladeshiit.com/categories/${selectedCategory._id}`,
         {
           name: formData.name,
           status: formData.status,
@@ -101,7 +101,7 @@ const AllCategories = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/categories/${id}`).then((res) => {
+        axios.delete(`https://api.sports.bangladeshiit.com/categories/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Category removed.", "success");
@@ -112,7 +112,7 @@ const AllCategories = () => {
   };
 
   return (
-    <div className="max-w-6xl p-6 mx-auto">
+    <div className="max-w-4xl p-6 mx-auto">
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
         All Categories
       </h2>
@@ -163,12 +163,13 @@ const AllCategories = () => {
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                  <button onClick={() => openEditModal(cat)}>
+                 <h1>Edit & delete option hidden for demo show</h1>
+                  {/* <button onClick={() => openEditModal(cat)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(cat._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

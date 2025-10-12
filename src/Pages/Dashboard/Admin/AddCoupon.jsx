@@ -46,7 +46,7 @@ const AddCoupon = () => {
       const couponData = { ...formData, image: imageUrl };
 
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/coupons",
+        "https://api.sports.bangladeshiit.com/coupons",
         couponData,
         {
           headers: { "Content-Type": "application/json" },

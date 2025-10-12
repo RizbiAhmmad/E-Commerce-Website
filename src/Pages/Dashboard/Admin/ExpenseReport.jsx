@@ -18,7 +18,7 @@ export default function ExpenseReport() {
   const { data: report = {}, isLoading, refetch } = useQuery({
     queryKey: ["expenseReport", dateFilter],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/expenses/report", {
+      const res = await axios.get("https://api.sports.bangladeshiit.com/expenses/report", {
         params: dateFilter.startDate && dateFilter.endDate ? dateFilter : {},
       });
       return res.data;

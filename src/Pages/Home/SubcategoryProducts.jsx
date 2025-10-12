@@ -27,7 +27,7 @@ const SubcategoryProducts = () => {
   const fetchProducts = async () => {
     try {
       const res = await axios.get(
-        `https://e-commerce-server-api.onrender.com/products?subcategoryId=${subId}`
+        `https://api.sports.bangladeshiit.com/products?subcategoryId=${subId}`
       );
       const activeProducts = res.data.filter((p) => p.status === "active");
       setProducts(activeProducts);
@@ -104,7 +104,7 @@ const SubcategoryProducts = () => {
           productId: product._id,
           quantity: 1,
         };
-        const res = await axios.post("https://e-commerce-server-api.onrender.com/cart", cartData);
+        const res = await axios.post("https://api.sports.bangladeshiit.com/cart", cartData);
         if (res.data.insertedId) {
           Swal.fire({
             icon: "success",

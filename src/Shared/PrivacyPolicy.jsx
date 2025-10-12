@@ -6,7 +6,7 @@ const PrivacyPolicy = () => {
 
   useEffect(() => {
     axios
-      .get("https://e-commerce-server-api.onrender.com/policies")
+      .get("https://api.sports.bangladeshiit.com/policies")
       .then((res) => {
         const activePolicy = res.data.find(
           (p) => p.title === "Privacy Policy" && p.status === "active"

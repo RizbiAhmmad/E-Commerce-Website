@@ -22,7 +22,7 @@ const SocialLogin = () => {
           createdAt: new Date(),
         };
 
-        fetch("https://e-commerce-server-api.onrender.com/users", {
+        fetch("https://api.sports.bangladeshiit.com/users", {
           method: "POST",
           headers: {
             "content-type": "application/json",

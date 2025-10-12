@@ -8,7 +8,7 @@ const AllReviews = () => {
   const { data: reviews = [], refetch: refetchReviews } = useQuery({
     queryKey: ["reviews"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/reviews");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/reviews");
       return res.data;
     },
   });
@@ -17,7 +17,7 @@ const AllReviews = () => {
   const { data: products = [] } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/products");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/products");
       return res.data;
     },
   });
@@ -38,7 +38,7 @@ const AllReviews = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/reviews/${id}`).then((res) => {
+        axios.delete(`https://api.sports.bangladeshiit.com/reviews/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             Swal.fire("Deleted!", "Review has been deleted.", "success");
             refetchReviews();
@@ -103,13 +103,13 @@ const AllReviews = () => {
                     {new Date(review.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-4">
-                    <button
+                    {/* <button
                       onClick={() => handleDelete(review._id)}
                       className="text-red-500 hover:text-red-700"
                       title="Delete Review"
                     >
                       <FaTrashAlt size={18} />
-                    </button>
+                    </button> */}
                   </td>
                 </tr>
               ))

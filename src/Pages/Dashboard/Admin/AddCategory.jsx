@@ -52,7 +52,7 @@ const AddCategory = () => {
       };
 
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/categories",
+        "https://api.sports.bangladeshiit.com/categories",
         JSON.stringify(categoryData),
         {
           headers: {

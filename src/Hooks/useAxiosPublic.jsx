@@ -1,7 +1,7 @@
 import Axios  from "axios";
 
 const axiosPublic=Axios.create({
-    baseURL: "https://e-commerce-server-api.onrender.com",
+    baseURL: "https://api.sports.bangladeshiit.com",
    
 })
 const useAxiosPublic = () => {

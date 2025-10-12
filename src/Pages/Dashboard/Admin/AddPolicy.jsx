@@ -30,7 +30,7 @@ const AddPolicy = () => {
       };
 
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/policies",
+        "https://api.sports.bangladeshiit.com/policies",
         JSON.stringify(policyData),
         {
           headers: { "Content-Type": "application/json" },

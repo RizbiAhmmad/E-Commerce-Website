@@ -11,7 +11,7 @@ const MyOrders = () => {
     if (user?.email) {
       axios
         .get(
-          `https://e-commerce-server-api.onrender.com/orders?email=${user.email}`
+          `https://api.sports.bangladeshiit.com/orders?email=${user.email}`
         )
         .then((res) => setOrders(res.data))
         .catch((err) => console.error(err));

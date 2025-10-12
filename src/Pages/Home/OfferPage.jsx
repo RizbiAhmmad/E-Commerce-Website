@@ -9,7 +9,7 @@ const OfferPage = () => {
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-        const res = await axios.get("https://e-commerce-server-api.onrender.com/offers");
+        const res = await axios.get("https://api.sports.bangladeshiit.com/offers");
         setOffers(res.data.filter((o) => o.status === "active").slice(0, 2)); // only 2
       } catch (err) {
         console.error(err);

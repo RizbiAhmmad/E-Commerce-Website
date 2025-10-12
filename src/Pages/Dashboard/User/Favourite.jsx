@@ -22,7 +22,7 @@ const Favourite = () => {
     }
 
     axios
-      .get(`https://e-commerce-server-api.onrender.com/whisper?email=${user.email}`)
+      .get(`https://api.sports.bangladeshiit.com/whisper?email=${user.email}`)
       .then((res) => {
         setFavourites(res.data);
         setLoading(false);
@@ -49,7 +49,7 @@ const Favourite = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://e-commerce-server-api.onrender.com/whisper/${id}`)
+          .delete(`https://api.sports.bangladeshiit.com/whisper/${id}`)
           .then((res) => {
             if (res.data.deletedCount > 0) {
               Swal.fire("Removed!", "Item removed successfully.", "success");

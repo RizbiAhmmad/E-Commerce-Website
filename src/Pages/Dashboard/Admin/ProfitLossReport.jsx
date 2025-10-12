@@ -10,7 +10,7 @@ const ProfitLossReport = () => {
     const fetchReport = async () => {
       try {
         const res = await axios.get(
-          "https://e-commerce-server-api.onrender.com/profit-loss-report"
+          "https://api.sports.bangladeshiit.com/profit-loss-report"
         );
         setReport(res.data);
         setOrders(res.data.allOrders || []);
@@ -145,7 +145,7 @@ const ProfitLossReport = () => {
                       <td className="px-4 py-2 border">
                         ৳{order.discount || 0}
                       </td>
-                      <td className="px-4 py-2 border">৳{order.tax || 0}</td>
+                      <td className="px-4 py-2 border">৳{Number(order.tax || 0).toFixed(2)}</td>
                       <td
                         className={`px-4 py-2 border font-bold ${
                           profit >= 0 ? "text-green-600" : "text-red-600"

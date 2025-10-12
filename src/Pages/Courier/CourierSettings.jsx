@@ -19,7 +19,7 @@ const CourierSettings = () => {
 
   const fetchCouriers = async () => {
     try {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/courier/settings");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/courier/settings");
       setCouriers(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error(err);
@@ -34,7 +34,7 @@ const CourierSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://e-commerce-server-api.onrender.com/courier/settings", formData);
+      await axios.post("https://api.sports.bangladeshiit.com/courier/settings", formData);
       Swal.fire("Saved!", "Courier settings updated", "success");
       setFormData({
         courierName: "",

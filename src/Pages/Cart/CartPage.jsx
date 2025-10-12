@@ -18,7 +18,7 @@ const CartPage = () => {
     setLoading(true);
     axios
       .get(
-        `https://e-commerce-server-api.onrender.com/cart?email=${user.email}`
+        `https://api.sports.bangladeshiit.com/cart?email=${user.email}`
       )
       .then(async (res) => {
         const items = res.data;
@@ -27,7 +27,7 @@ const CartPage = () => {
         const productDetails = await Promise.all(
           productIds.map((id) =>
             axios
-              .get(`https://e-commerce-server-api.onrender.com/products/${id}`)
+              .get(`https://api.sports.bangladeshiit.com/products/${id}`)
               .then((res) => res.data)
           )
         );
@@ -60,7 +60,7 @@ const CartPage = () => {
     const newSelected = !item.selected;
 
     axios
-      .patch(`https://e-commerce-server-api.onrender.com/cart/${itemId}`, {
+      .patch(`https://api.sports.bangladeshiit.com/cart/${itemId}`, {
         selected: newSelected,
       })
       .then(() => {
@@ -77,7 +77,7 @@ const CartPage = () => {
     if (newQty < 1) return;
 
     axios
-      .patch(`https://e-commerce-server-api.onrender.com/cart/${itemId}`, {
+      .patch(`https://api.sports.bangladeshiit.com/cart/${itemId}`, {
         quantity: newQty,
       })
       .then(() => {
@@ -94,7 +94,7 @@ const CartPage = () => {
 
   const deleteItem = (itemId) => {
     axios
-      .delete(`https://e-commerce-server-api.onrender.com/cart/${itemId}`)
+      .delete(`https://api.sports.bangladeshiit.com/cart/${itemId}`)
       .then(() => {
         setCartItems((prev) => prev.filter((item) => item._id !== itemId));
         window.dispatchEvent(new Event("cartUpdated"));

@@ -12,7 +12,7 @@ const AllCustomersWithSegments = () => {
   const fetchCustomers = async () => {
     try {
       const res = await axios.get(
-        "https://e-commerce-server-api.onrender.com/customer-segments"
+        "https://api.sports.bangladeshiit.com/customer-segments"
       );
       setCustomers(res.data);
     } catch (error) {

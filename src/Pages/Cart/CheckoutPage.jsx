@@ -44,7 +44,7 @@ const CheckoutPage = () => {
     }
     try {
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/apply-coupon",
+        "https://api.sports.bangladeshiit.com/apply-coupon",
         {
           code,
           totalAmount: subtotal,
@@ -130,13 +130,13 @@ const CheckoutPage = () => {
 
     try {
       await axios.post(
-        "https://e-commerce-server-api.onrender.com/orders",
+        "https://api.sports.bangladeshiit.com/orders",
         orderData
       );
 
       if (payment === "online") {
         const { data } = await axios.post(
-          "https://e-commerce-server-api.onrender.com/sslcommerz/init",
+          "https://api.sports.bangladeshiit.com/sslcommerz/init",
           {
             orderId: orderData.tran_id,
             totalAmount: total,

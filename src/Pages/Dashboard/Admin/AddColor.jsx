@@ -25,7 +25,7 @@ const AddColor = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("https://e-commerce-server-api.onrender.com/colors", colorData);
+      const res = await axios.post("https://api.sports.bangladeshiit.com/colors", colorData);
       if (res.data.insertedId) {
         Swal.fire("Success!", "Color added successfully", "success");
         setColorData({ name: "", hex: "#000000", status: "active" });

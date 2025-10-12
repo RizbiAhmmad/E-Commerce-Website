@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import useAuth from "@/Hooks/useAuth";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import Loading from "@/Shared/Loading";
+import { TbTruckReturn } from "react-icons/tb";
 
 const DashboardHome = () => {
   const { user } = useAuth();
@@ -44,9 +45,9 @@ const DashboardHome = () => {
     const fetchStats = async () => {
       try {
         const [usersRes, productsRes, ordersRes] = await Promise.all([
-          axios.get("https://e-commerce-server-api.onrender.com/users"),
-          axios.get("https://e-commerce-server-api.onrender.com/products"),
-          axios.get("https://e-commerce-server-api.onrender.com/orders"),
+          axios.get("https://api.sports.bangladeshiit.com/users"),
+          axios.get("https://api.sports.bangladeshiit.com/products"),
+          axios.get("https://api.sports.bangladeshiit.com/orders"),
         ]);
 
         const orders = ordersRes.data;
@@ -60,6 +61,7 @@ const DashboardHome = () => {
           ordersShipped: orders.filter((o) => o.status === "shipped").length,
           ordersDelivered: orders.filter((o) => o.status === "delivered").length,
           ordersCancelled: orders.filter((o) => o.status === "cancelled").length,
+          ordersReturned: orders.filter((o) => o.status === "returned").length,
         });
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
@@ -81,6 +83,7 @@ const DashboardHome = () => {
     { title: "Shipped Orders", value: stats.ordersShipped, icon: FaShippingFast, bg: "bg-blue-500" },
     { title: "Delivered Orders", value: stats.ordersDelivered, icon: FaCheckCircle, bg: "bg-green-600" },
     { title: "Cancelled Orders", value: stats.ordersCancelled, icon: FaTimesCircle, bg: "bg-red-500" },
+    { title: "Returned Orders", value: stats.ordersReturned, icon: TbTruckReturn, bg: "bg-orange-500" },
   ];
 
   return (

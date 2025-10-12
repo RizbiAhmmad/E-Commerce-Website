@@ -9,7 +9,7 @@ const AllColors = () => {
   const { data: colors = [], refetch } = useQuery({
     queryKey: ["colors"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/colors");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/colors");
       return res.data;
     },
   });
@@ -41,7 +41,7 @@ const AllColors = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://e-commerce-server-api.onrender.com/colors/${selectedColor._id}`, formData);
+      await axios.put(`https://api.sports.bangladeshiit.com/colors/${selectedColor._id}`, formData);
       Swal.fire("Updated!", "Color has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -61,7 +61,7 @@ const AllColors = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/colors/${id}`).then((res) => {
+        axios.delete(`https://api.sports.bangladeshiit.com/colors/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Color removed.", "success");
@@ -123,12 +123,13 @@ const AllColors = () => {
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                  <button onClick={() => openEditModal(color)}>
+                  <h1>Edit & delete option hidden for demo show</h1>
+                  {/* <button onClick={() => openEditModal(color)}>
                     <FaEdit className="text-xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(color._id)}>
                     <FaTrashAlt className="text-xl text-red-500 hover:text-red-700" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

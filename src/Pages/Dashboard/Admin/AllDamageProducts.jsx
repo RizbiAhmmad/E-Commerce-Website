@@ -11,7 +11,7 @@ const AllDamageProducts = () => {
     queryKey: ["damageProducts"],
     queryFn: async () => {
       const res = await axios.get(
-        "https://e-commerce-server-api.onrender.com/damage-products"
+        "https://api.sports.bangladeshiit.com/damage-products"
       );
       return res.data;
     },
@@ -42,7 +42,7 @@ const AllDamageProducts = () => {
   // Fetch all products for dropdown
   useEffect(() => {
     axios
-      .get("https://e-commerce-server-api.onrender.com/products")
+      .get("https://api.sports.bangladeshiit.com/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
   }, []);
@@ -125,7 +125,7 @@ const AllDamageProducts = () => {
       }
 
       await axios.put(
-        `https://e-commerce-server-api.onrender.com/damage-products/${selectedProduct._id}`,
+        `https://api.sports.bangladeshiit.com/damage-products/${selectedProduct._id}`,
         { ...formData, image: imageUrl }
       );
 
@@ -153,7 +153,7 @@ const AllDamageProducts = () => {
       if (result.isConfirmed) {
         axios
           .delete(
-            `https://e-commerce-server-api.onrender.com/damage-products/${id}`
+            `https://api.sports.bangladeshiit.com/damage-products/${id}`
           )
           .then((res) => {
             if (res.data.deletedCount > 0) {
@@ -243,9 +243,9 @@ const AllDamageProducts = () => {
                   <button onClick={() => openEditModal(product)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
-                  <button onClick={() => handleDelete(product._id)}>
+                  {/* <button onClick={() => handleDelete(product._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

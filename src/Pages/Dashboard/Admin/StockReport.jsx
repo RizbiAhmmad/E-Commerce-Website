@@ -15,7 +15,7 @@ const StockReport = () => {
   const fetchProducts = async () => {
     try {
       const res = await axios.get(
-        "https://e-commerce-server-api.onrender.com/products"
+        "https://api.sports.bangladeshiit.com/products"
       );
       setProducts(res.data);
     } catch (error) {

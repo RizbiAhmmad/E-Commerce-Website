@@ -23,7 +23,7 @@ const AddDamageProduct = () => {
 
   useEffect(() => {
     axios
-      .get("https://e-commerce-server-api.onrender.com/products")
+      .get("https://api.sports.bangladeshiit.com/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error("Error fetching products", err));
   }, []);
@@ -89,7 +89,7 @@ const AddDamageProduct = () => {
       };
 
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/damage-products",
+        "https://api.sports.bangladeshiit.com/damage-products",
         damageProductData
       );
 

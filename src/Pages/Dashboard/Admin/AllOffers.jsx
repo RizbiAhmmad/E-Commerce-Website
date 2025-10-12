@@ -9,7 +9,7 @@ const AllOffers = () => {
   const { data: offers = [], refetch } = useQuery({
     queryKey: ["offers"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/offers");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/offers");
       return res.data;
     },
   });
@@ -62,7 +62,7 @@ const AllOffers = () => {
       }
 
       await axios.put(
-        `https://e-commerce-server-api.onrender.com/offers/${selectedOffer._id}`,
+        `https://api.sports.bangladeshiit.com/offers/${selectedOffer._id}`,
         {
           status: formData.status,
           image: imageUrl,
@@ -90,7 +90,7 @@ const AllOffers = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/offers/${id}`).then((res) => {
+        axios.delete(`https://api.sports.bangladeshiit.com/offers/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Offer removed.", "success");
@@ -145,9 +145,9 @@ const AllOffers = () => {
                   <button onClick={() => openEditModal(offer)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
-                  <button onClick={() => handleDelete(offer._id)}>
+                  {/* <button onClick={() => handleDelete(offer._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

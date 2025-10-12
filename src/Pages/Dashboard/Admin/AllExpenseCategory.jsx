@@ -12,7 +12,7 @@ const AllExpenseCategory = () => {
   const { data: expenseCategories = [], refetch } = useQuery({
     queryKey: ["expenseCategories"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/expense-categories");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/expense-categories");
       return res.data;
     },
   });
@@ -42,7 +42,7 @@ const AllExpenseCategory = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `https://e-commerce-server-api.onrender.com/expense-categories/${selectedCategory._id}`,
+        `https://api.sports.bangladeshiit.com/expense-categories/${selectedCategory._id}`,
         formData
       );
       Swal.fire("Updated!", "Expense category has been updated.", "success");
@@ -64,7 +64,7 @@ const AllExpenseCategory = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/expense-categories/${id}`).then((res) => {
+        axios.delete(`https://api.sports.bangladeshiit.com/expense-categories/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Expense category removed.", "success");
@@ -121,9 +121,9 @@ const AllExpenseCategory = () => {
                   <button onClick={() => openEditModal(cat)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
-                  <button onClick={() => handleDelete(cat._id)}>
+                  {/* <button onClick={() => handleDelete(cat._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

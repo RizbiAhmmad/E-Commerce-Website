@@ -39,7 +39,7 @@ const ProductDetailsPage = () => {
   useEffect(() => {
     // Fetch product data
     axios
-      .get(`https://e-commerce-server-api.onrender.com/products/${id}`)
+      .get(`https://api.sports.bangladeshiit.com/products/${id}`)
       .then((res) => {
         setProduct(res.data);
         if (res.data.colors?.length > 0) {
@@ -52,7 +52,7 @@ const ProductDetailsPage = () => {
 
     // Fetch reviews separately by productId
     axios
-      .get(`https://e-commerce-server-api.onrender.com/reviews?productId=${id}`)
+      .get(`https://api.sports.bangladeshiit.com/reviews?productId=${id}`)
       .then((res) => setReviews(res.data))
       .catch((err) => {
         console.error("Error fetching reviews:", err);
@@ -63,7 +63,7 @@ const ProductDetailsPage = () => {
     if (product?.categoryId) {
       axios
         .get(
-          `https://e-commerce-server-api.onrender.com/products?categoryId=${product.categoryId}`
+          `https://api.sports.bangladeshiit.com/products?categoryId=${product.categoryId}`
         )
         .then((res) => {
           const filtered = res.data.filter(
@@ -77,7 +77,7 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     axios
-      .get("https://e-commerce-server-api.onrender.com/brands")
+      .get("https://api.sports.bangladeshiit.com/brands")
       .then((res) => setBrands(res.data));
   }, []);
 
@@ -133,7 +133,7 @@ const ProductDetailsPage = () => {
 
     try {
       const response = await axios.post(
-        "https://e-commerce-server-api.onrender.com/reviews",
+        "https://api.sports.bangladeshiit.com/reviews",
         reviewData
       );
       if (response.data.acknowledged) {
@@ -179,7 +179,7 @@ const ProductDetailsPage = () => {
 
     try {
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/cart",
+        "https://api.sports.bangladeshiit.com/cart",
         cartData
       );
       if (res.data.insertedId) {

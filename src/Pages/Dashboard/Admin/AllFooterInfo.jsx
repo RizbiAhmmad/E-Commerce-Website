@@ -25,7 +25,7 @@ const AllFooterInfo = () => {
 
   const fetchFooters = async () => {
     try {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/footer");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/footer");
       setFooters(res.data);
     } catch (err) {
       console.error("Error fetching footers:", err);
@@ -80,7 +80,7 @@ const AllFooterInfo = () => {
         logoUrl = cloudRes.data.secure_url;
       }
 
-      await axios.put(`https://e-commerce-server-api.onrender.com/footer/${selectedFooter._id}`, {
+      await axios.put(`https://api.sports.bangladeshiit.com/footer/${selectedFooter._id}`, {
         ...formData,
         logo: logoUrl,
       });
@@ -109,7 +109,7 @@ const AllFooterInfo = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axios.delete(`https://e-commerce-server-api.onrender.com/footer/${id}`);
+          const res = await axios.delete(`https://api.sports.bangladeshiit.com/footer/${id}`);
           if (res.data.deletedCount > 0) {
             Swal.fire("Deleted!", "Footer info removed.", "success");
             fetchFooters();
@@ -178,9 +178,9 @@ const AllFooterInfo = () => {
                   <button onClick={() => openEditModal(footer)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
-                  <button onClick={() => handleDelete(footer._id)}>
+                  {/* <button onClick={() => handleDelete(footer._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

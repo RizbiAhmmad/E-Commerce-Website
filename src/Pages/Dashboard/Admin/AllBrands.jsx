@@ -10,7 +10,7 @@ const AllBrands = () => {
   const { data: brands = [], refetch } = useQuery({
     queryKey: ["brands"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/brands");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/brands");
       return res.data;
     },
   });
@@ -54,7 +54,7 @@ const AllBrands = () => {
         setUploading(false);
       }
 
-      await axios.put(`https://e-commerce-server-api.onrender.com/brands/${selectedBrand._id}`, {
+      await axios.put(`https://api.sports.bangladeshiit.com/brands/${selectedBrand._id}`, {
         name: formData.name,
         status: formData.status,
         logo: logoUrl,
@@ -82,7 +82,7 @@ const AllBrands = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const res = await axios.delete(`https://e-commerce-server-api.onrender.com/brands/${id}`);
+        const res = await axios.delete(`https://api.sports.bangladeshiit.com/brands/${id}`);
         if (res.data.deletedCount > 0) {
           refetch();
           Swal.fire("Deleted!", "Brand removed.", "success");
@@ -133,12 +133,13 @@ const AllBrands = () => {
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                  <button onClick={() => openEdit(b)}>
+                  <h1>Edit & delete option hidden for demo show</h1>
+                  {/* <button onClick={() => openEdit(b)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(b._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

@@ -10,7 +10,7 @@ export default function Banner() {
   useEffect(() => {
     const fetchSliders = async () => {
       try {
-        const res = await axios.get("https://e-commerce-server-api.onrender.com/slider");
+        const res = await axios.get("https://api.sports.bangladeshiit.com/slider");
         const activeSlides = res.data.filter((s) => s.status === "active");
         setSlides(activeSlides);
       } catch (err) {

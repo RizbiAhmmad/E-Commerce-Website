@@ -9,7 +9,7 @@ const AllSliders = () => {
   const { data: sliders = [], refetch } = useQuery({
     queryKey: ["sliders"],
     queryFn: async () => {
-      const res = await axios.get("https://e-commerce-server-api.onrender.com/slider");
+      const res = await axios.get("https://api.sports.bangladeshiit.com/slider");
       return res.data;
     },
   });
@@ -56,7 +56,7 @@ const AllSliders = () => {
       }
 
       await axios.put(
-        `https://e-commerce-server-api.onrender.com/slider/${selectedSlider._id}`,
+        `https://api.sports.bangladeshiit.com/slider/${selectedSlider._id}`,
         { status: formData.status, image: imageUrl }
       );
 
@@ -81,7 +81,7 @@ const AllSliders = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://e-commerce-server-api.onrender.com/slider/${id}`).then((res) => {
+        axios.delete(`https://api.sports.bangladeshiit.com/slider/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Slider removed.", "success");
@@ -144,9 +144,9 @@ const AllSliders = () => {
                   <button onClick={() => openEditModal(slider)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
-                  <button onClick={() => handleDelete(slider._id)}>
+                  {/* <button onClick={() => handleDelete(slider._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

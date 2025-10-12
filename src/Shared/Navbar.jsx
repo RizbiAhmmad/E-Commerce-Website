@@ -37,7 +37,7 @@ const Navbar = () => {
     }
     axios
       .get(
-        `https://e-commerce-server-api.onrender.com/whisper?email=${user.email}`
+        `https://api.sports.bangladeshiit.com/whisper?email=${user.email}`
       )
       .then((res) => setWhisperCount(res.data.length))
       .catch(() => setWhisperCount(0));
@@ -51,7 +51,7 @@ const Navbar = () => {
     }
     axios
       .get(
-        `https://e-commerce-server-api.onrender.com/cart?email=${user.email}`
+        `https://api.sports.bangladeshiit.com/cart?email=${user.email}`
       )
       .then((res) => {
         const totalCount = res.data.reduce(
@@ -83,7 +83,7 @@ const Navbar = () => {
   useEffect(() => {
     if (searchText.trim()) {
       axios
-        .get("https://e-commerce-server-api.onrender.com/products")
+        .get("https://api.sports.bangladeshiit.com/products")
         .then((res) => {
           const filtered = res.data.filter(
             (p) =>
@@ -112,7 +112,7 @@ const Navbar = () => {
   useEffect(() => {
     axios
       .get(
-        "https://e-commerce-server-api.onrender.com/categories-with-subcategories"
+        "https://api.sports.bangladeshiit.com/categories-with-subcategories"
       )
       .then((res) => setMenuData(res.data))
       .catch(() => setMenuData([]));
@@ -121,7 +121,7 @@ const Navbar = () => {
   // Footer info (logo, name)
   useEffect(() => {
     axios
-      .get("https://e-commerce-server-api.onrender.com/footer")
+      .get("https://api.sports.bangladeshiit.com/footer")
       .then((res) => {
         if (res.data.length > 0) setFooterInfo(res.data[0]);
       })

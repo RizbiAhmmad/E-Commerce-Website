@@ -48,7 +48,7 @@ const SalesReport = () => {
     const fetchReport = async () => {
       try {
         const res = await axios.get(
-          "https://e-commerce-server-api.onrender.com/sales-report"
+          "https://api.sports.bangladeshiit.com/sales-report"
         );
         // console.log("Sales report data:", res.data);
         setReport(res.data);
@@ -247,7 +247,7 @@ const SalesReport = () => {
                       ৳{p.price * p.quantity}
                     </td>
                     <td className="px-4 py-2 border">৳{order.discount || 0}</td>
-                    <td className="px-4 py-2 border">৳{order.tax || 0}</td>
+                    <td className="px-4 py-2 border">৳{Number(order.tax || 0).toFixed(2)}</td>
                     <td className="px-4 py-2 border">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>

@@ -14,21 +14,21 @@ import { GrView } from "react-icons/gr";
 
 const fetchProducts = async () => {
   const { data } = await axios.get(
-    "https://e-commerce-server-api.onrender.com/products"
+    "https://api.sports.bangladeshiit.com/products"
   );
   return data;
 };
 
 const fetchBrands = async () => {
   const { data } = await axios.get(
-    "https://e-commerce-server-api.onrender.com/brands"
+    "https://api.sports.bangladeshiit.com/brands"
   );
   return data;
 };
 
 const fetchReviews = async () => {
   const { data } = await axios.get(
-    "https://e-commerce-server-api.onrender.com/reviews"
+    "https://api.sports.bangladeshiit.com/reviews"
   );
   return data;
 };
@@ -180,7 +180,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
       };
 
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/cart",
+        "https://api.sports.bangladeshiit.com/cart",
         cartData
       );
       if (res.data.insertedId) {
@@ -224,7 +224,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
       };
 
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/whisper",
+        "https://api.sports.bangladeshiit.com/whisper",
         whisperData
       );
       if (res.data.insertedId) {
@@ -250,7 +250,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
     if (user) {
       axios
         .get(
-          `https://e-commerce-server-api.onrender.com/whisper?email=${user.email}`
+          `https://api.sports.bangladeshiit.com/whisper?email=${user.email}`
         )
         .then((res) => {
           const favExists = res.data.some(

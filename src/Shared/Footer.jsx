@@ -19,7 +19,7 @@ export default function Footer() {
   useEffect(() => {
   const fetchFooterInfo = async () => {
     try {
-      const res = await fetch("https://e-commerce-server-api.onrender.com/footer");
+      const res = await fetch("https://api.sports.bangladeshiit.com/footer");
       const data = await res.json();
       if (data.length > 0) {
         setFooterInfo(data[0]);

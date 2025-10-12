@@ -52,7 +52,7 @@ const AuthProvider = ({ children }) => {
   const fetchUserRole = async (email) => {
     if (email) {
       try {
-        const response = await fetch(`https://e-commerce-server-api.onrender.com/${email}`);
+        const response = await fetch(`https://api.sports.bangladeshiit.com/${email}`);
         const userData = await response.json();
         setUserRole(userData?.role || 'user'); 
       } catch (error) {

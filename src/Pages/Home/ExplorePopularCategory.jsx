@@ -19,7 +19,7 @@ const ExplorePopularCategory = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("https://e-commerce-server-api.onrender.com/categories");
+        const res = await axios.get("https://api.sports.bangladeshiit.com/categories");
         setCategories(res.data.filter((cat) => cat.status === "active"));
       } catch (err) {
         console.error("❌ Error fetching categories:", err);

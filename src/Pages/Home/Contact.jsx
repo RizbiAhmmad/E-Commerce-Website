@@ -9,7 +9,7 @@ const Contact = () => {
   useEffect(() => {
     const fetchFooterInfo = async () => {
       try {
-        const res = await axios.get("https://e-commerce-server-api.onrender.com/footer");
+        const res = await axios.get("https://api.sports.bangladeshiit.com/footer");
         setFooterInfo(res.data[0]);
       } catch (err) {
         console.error("❌ Footer Info Fetch Error:", err.message);

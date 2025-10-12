@@ -17,7 +17,7 @@ const AddExpenseCategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://e-commerce-server-api.onrender.com/expense-categories", formData);
+      const res = await axios.post("https://api.sports.bangladeshiit.com/expense-categories", formData);
       if (res.data.insertedId) {
         Swal.fire("Success", "Expense category added!", "success");
         setFormData({ name: "", status: "active" });

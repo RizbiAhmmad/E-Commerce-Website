@@ -28,7 +28,7 @@ const AddSize = () => {
     }
 
     try {
-      const res = await axios.post("https://e-commerce-server-api.onrender.com/sizes", formData);
+      const res = await axios.post("https://api.sports.bangladeshiit.com/sizes", formData);
       if (res.data.insertedId) {
         Swal.fire("Success", "Size added successfully", "success");
         setFormData({ name: "", status: "active" });

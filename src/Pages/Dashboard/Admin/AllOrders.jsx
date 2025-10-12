@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { FaSearch, FaTrashAlt } from "react-icons/fa";
+import { FaPrint, FaSearch, FaTrashAlt } from "react-icons/fa";
 import axios from "axios";
 
 const AllOrders = () => {
@@ -15,7 +15,7 @@ const AllOrders = () => {
   const fetchOrders = async () => {
     try {
       const res = await axios.get(
-        "https://e-commerce-server-api.onrender.com/orders"
+        "https://api.sports.bangladeshiit.com/orders"
       );
       setOrders(res.data);
     } catch (error) {
@@ -28,7 +28,7 @@ const AllOrders = () => {
   const fetchCouriers = async () => {
     try {
       const res = await axios.get(
-        "https://e-commerce-server-api.onrender.com/courier/settings"
+        "https://api.sports.bangladeshiit.com/courier/settings"
       );
       setCouriers(res.data);
     } catch (error) {
@@ -55,7 +55,7 @@ const AllOrders = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`https://e-commerce-server-api.onrender.com/orders/${id}`)
+          .delete(`https://api.sports.bangladeshiit.com/orders/${id}`)
           .then((res) => {
             if (res.data.deletedCount > 0) {
               fetchOrders();
@@ -70,7 +70,7 @@ const AllOrders = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const res = await axios.patch(
-        `https://e-commerce-server-api.onrender.com/orders/${id}/status`,
+        `https://api.sports.bangladeshiit.com/orders/${id}/status`,
         { status: newStatus }
       );
       if (res.data.success) {
@@ -90,7 +90,7 @@ const AllOrders = () => {
 
     try {
       const res = await axios.patch(
-        `https://e-commerce-server-api.onrender.com/orders/${orderId}/courier`,
+        `https://api.sports.bangladeshiit.com/orders/${orderId}/courier`,
         { courierName }
       );
       if (res.data.success) {
@@ -159,6 +159,133 @@ const AllOrders = () => {
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  const handlePrint = (order) => {
+    const printWindow = window.open("", "_blank");
+    const htmlContent = `
+    <html>
+      <head>
+        <title>Order Invoice - ${order._id}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+          h2 { text-align: center; margin-bottom: 20px; }
+          .section { margin-bottom: 20px; }
+          .info-line { margin: 4px 0; }
+          .items-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          .items-table th, .items-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+          }
+          .items-table th { background-color: #f5f5f5; }
+          .total-box { margin-top: 20px; float: right; width: 320px; }
+          .total-box table { width: 100%; border-collapse: collapse; }
+          .total-box td { padding: 6px 8px; }
+          .total-box tr td:first-child { text-align: left; }
+          .total-box tr td:last-child { text-align: right; }
+          .grand-total {
+            font-weight: bold;
+            font-size: 18px;
+            border-top: 2px solid #333;
+            padding-top: 10px;
+          }
+          .footer { text-align: center; margin-top: 60px; color: gray; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <h2>Order Invoice</h2>
+
+        <div class="section">
+          <div class="info-line"><strong>Order ID:</strong> ${order._id}</div>
+          <div class="info-line"><strong>Customer:</strong> ${
+            order.fullName
+          }</div>
+          <div class="info-line"><strong>Phone:</strong> ${order.phone}</div>
+          <div class="info-line"><strong>Email:</strong> ${order.email}</div>
+          <div class="info-line"><strong>Address:</strong> ${
+            order.address
+          }</div>
+          <div class="info-line"><strong>Shipping:</strong> ${
+            order.shipping === "inside" ? "Inside Dhaka" : "Outside Dhaka"
+          }</div>
+          <div class="info-line"><strong>Payment:</strong> ${
+            order.payment
+          }</div>
+          <div class="info-line"><strong>Date:</strong> ${new Date(
+            order.createdAt
+          ).toLocaleString()}</div>
+          <div class="info-line"><strong>Status:</strong> ${
+            order.status || "Pending"
+          }</div>
+        </div>
+
+        <div class="section">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Color</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.cartItems
+                ?.map(
+                  (item) => `
+                <tr>
+                  <td>${item.productName}</td>
+                  <td>${item.size || "-"}</td>
+                  <td>${item.color || "-"}</td>
+                  <td>${item.quantity}</td>
+                  <td>৳${item.price}</td>
+                  <td>৳${(item.price * item.quantity).toFixed(2)}</td>
+                </tr>`
+                )
+                .join("")}
+            </tbody>
+          </table>
+
+          <div class="total-box">
+            <table>
+              <tr>
+                <td>Subtotal:</td>
+                <td>৳${order.subtotal?.toFixed(2) || "0.00"}</td>
+              </tr>
+              <tr>
+                <td>Shipping Cost:</td>
+                <td>৳${order.shippingCost?.toFixed(2) || "0.00"}</td>
+              </tr>
+              ${
+                order.discount > 0
+                  ? `<tr><td>Discount${
+                      order.coupon ? ` (${order.coupon})` : ""
+                    }:</td><td>- ৳${order.discount.toFixed(2)}</td></tr>`
+                  : ""
+              }
+              <tr class="grand-total">
+                <td>Grand Total:</td>
+                <td>৳${order.total?.toFixed(2) || "0.00"}</td>
+              </tr>
+            </table>
+          </div>
+          <div style="clear:both;"></div>
+        </div>
+
+        <div class="footer">
+          Thank you for shopping with us ❤️<br/>
+          <small>Printed on ${new Date().toLocaleString()}</small>
+        </div>
+      </body>
+    </html>
+  `;
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
 
   return (
@@ -320,10 +447,13 @@ const AllOrders = () => {
                   </select>
                 </td>
 
-                <td className="px-3 py-3 flex items-center justify-center">
-                  <button onClick={() => handleDelete(order._id)}>
-                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                <td className="px-3 py-3 flex items-center justify-center gap-3">
+                  <button onClick={() => handlePrint(order)}>
+                    <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
+                  {/* <button onClick={() => handleDelete(order._id)}>
+                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                  </button> */}
                 </td>
               </tr>
             ))}

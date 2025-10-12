@@ -38,27 +38,27 @@ const AddProduct = () => {
 
   useEffect(() => {
     axios
-      .get("https://e-commerce-server-api.onrender.com/categories")
+      .get("https://api.sports.bangladeshiit.com/categories")
       .then((res) =>
         setCategories(res.data.filter((cat) => cat.status === "active"))
       );
 
     axios
-      .get("https://e-commerce-server-api.onrender.com/subcategories")
+      .get("https://api.sports.bangladeshiit.com/subcategories")
       .then((res) =>
         setSubcategories(res.data.filter((sub) => sub.status === "active"))
       );
 
     axios
-      .get("https://e-commerce-server-api.onrender.com/brands")
+      .get("https://api.sports.bangladeshiit.com/brands")
       .then((res) => setBrands(res.data.filter((b) => b.status === "active")));
 
     axios
-      .get("https://e-commerce-server-api.onrender.com/sizes")
+      .get("https://api.sports.bangladeshiit.com/sizes")
       .then((res) => setSizes(res.data.filter((s) => s.status === "active")));
 
     axios
-      .get("https://e-commerce-server-api.onrender.com/colors")
+      .get("https://api.sports.bangladeshiit.com/colors")
       .then((res) => setColors(res.data.filter((c) => c.status === "active")));
   }, []);
 
@@ -110,7 +110,7 @@ const AddProduct = () => {
       };
 
       const res = await axios.post(
-        "https://e-commerce-server-api.onrender.com/products",
+        "https://api.sports.bangladeshiit.com/products",
         productData,
         {
           headers: { "Content-Type": "application/json" },

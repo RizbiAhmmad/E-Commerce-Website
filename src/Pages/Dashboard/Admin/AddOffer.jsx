@@ -32,7 +32,7 @@ const AddOffer = () => {
 
       const offerData = { ...formData, image: cloudRes.data.secure_url, email: user?.email };
 
-      const res = await axios.post("https://e-commerce-server-api.onrender.com/offers", offerData, {
+      const res = await axios.post("https://api.sports.bangladeshiit.com/offers", offerData, {
         headers: { "Content-Type": "application/json" },
       });
 
