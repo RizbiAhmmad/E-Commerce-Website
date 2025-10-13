@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddSize = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,7 @@ const AddSize = () => {
   });
 
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +29,7 @@ const AddSize = () => {
     }
 
     try {
-      const res = await axios.post("https://api.sports.bangladeshiit.com/sizes", formData);
+      const res = await axiosPublic.post("/sizes", formData);
       if (res.data.insertedId) {
         Swal.fire("Success", "Size added successfully", "success");
         setFormData({ name: "", status: "active" });

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FaSearch, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const POSPage = () => {
   const [products, setProducts] = useState([]);
@@ -11,6 +12,7 @@ const POSPage = () => {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const searchInputRef = useRef(null);
+  const axiosPublic = useAxiosPublic();
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -43,13 +45,13 @@ const POSPage = () => {
 
   // Fetch products & coupons
   useEffect(() => {
-    axios
-      .get("https://api.sports.bangladeshiit.com/products")
+    axiosPublic
+      .get("/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
 
-    axios
-      .get("https://api.sports.bangladeshiit.com/coupons?status=active")
+    axiosPublic
+      .get("/coupons?status=active")
       .then((res) => setCoupons(res.data))
       .catch((err) => console.error(err));
 
@@ -58,8 +60,8 @@ const POSPage = () => {
 
   // Fetch POS cart
   const fetchPosCart = () => {
-    axios
-      .get("https://api.sports.bangladeshiit.com/pos/cart")
+    axiosPublic
+      .get("/pos/cart")
       .then((res) => setPosCart(res.data))
       .catch((err) => console.error(err));
   };
@@ -114,8 +116,8 @@ const POSPage = () => {
 
   // Add to cart
   const addToCart = (product, qty = 1, color = "", size = "", productImage) => {
-    axios
-      .post("https://api.sports.bangladeshiit.com/pos/cart", {
+    axiosPublic
+      .post("/pos/cart", {
         productId: product._id,
         productName: product.name,
         barCode: product.barcode || "",
@@ -137,8 +139,8 @@ const POSPage = () => {
   // Update quantity
   const updateQuantity = (id, qty) => {
     if (qty < 1) return;
-    axios
-      .patch(`https://api.sports.bangladeshiit.com/pos/cart/${id}`, {
+    axiosPublic
+      .patch(`/pos/cart/${id}`, {
         quantity: qty,
       })
       .then(() => fetchPosCart())
@@ -147,8 +149,8 @@ const POSPage = () => {
 
   // Delete item
   const deleteItem = (id) => {
-    axios
-      .delete(`https://api.sports.bangladeshiit.com/pos/cart/${id}`)
+    axiosPublic
+      .delete(`/pos/cart/${id}`)
       .then(() => fetchPosCart())
       .catch((err) => console.error(err));
   };
@@ -235,10 +237,7 @@ const POSPage = () => {
     };
 
     try {
-      await axios.post(
-        "https://api.sports.bangladeshiit.com/pos/orders",
-        orderData
-      );
+      await axiosPublic.post("/pos/orders", orderData);
       // keep a copy for the receipt before we reset
       return orderData;
     } catch (err) {
@@ -270,8 +269,8 @@ const POSPage = () => {
     setSelectedPaymentMethod("cash");
     searchInputRef.current?.focus();
 
-    await axios
-      .get("https://api.sports.bangladeshiit.com/products")
+    await axiosPublic
+      .get("/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
 

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { FaSearch } from "react-icons/fa";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const StockReport = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 20;
+  const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
     fetchProducts();
@@ -14,8 +15,8 @@ const StockReport = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(
-        "https://api.sports.bangladeshiit.com/products"
+      const res = await axiosPublic.get(
+        "/products"
       );
       setProducts(res.data);
     } catch (error) {

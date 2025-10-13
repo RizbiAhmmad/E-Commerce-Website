@@ -10,6 +10,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { app } from "@/firebase/firebase.config";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 export const AuthContext = createContext(null);
 const auth = getAuth(app);
@@ -18,7 +19,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const axiosPublic = useAxiosPublic();
   const googleProvider = new GoogleAuthProvider();
 
   const createUser = (email, password) => {
@@ -52,12 +53,12 @@ const AuthProvider = ({ children }) => {
   const fetchUserRole = async (email) => {
     if (email) {
       try {
-        const response = await fetch(`https://api.sports.bangladeshiit.com/${email}`);
-        const userData = await response.json();
-        setUserRole(userData?.role || 'user'); 
+        const response = await axiosPublic.get(`/users/${email}`); // ✅ এখন baseURL .env থেকে আসবে
+        const userData = response.data;
+        setUserRole(userData?.role || "user");
       } catch (error) {
         console.log("Error fetching user role:", error);
-        setUserRole('user'); 
+        setUserRole("user");
       }
     } else {
       setUserRole(null);

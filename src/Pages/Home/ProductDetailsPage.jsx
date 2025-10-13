@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { FaStar } from "react-icons/fa6";
 // import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
@@ -11,9 +10,11 @@ import ImageZoom from "react-image-zooom";
 import { motion } from "framer-motion";
 import { IoCartOutline } from "react-icons/io5";
 import { GrView } from "react-icons/gr";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const ProductDetailsPage = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
 
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -38,21 +39,19 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     // Fetch product data
-    axios
-      .get(`https://api.sports.bangladeshiit.com/products/${id}`)
-      .then((res) => {
-        setProduct(res.data);
-        if (res.data.colors?.length > 0) {
-          setSelectedColor(res.data.colors[0]);
-        }
-        if (res.data.sizes?.length > 0) {
-          setSelectedSize(res.data.sizes[0]);
-        }
-      });
+    axiosPublic.get(`/products/${id}`).then((res) => {
+      setProduct(res.data);
+      if (res.data.colors?.length > 0) {
+        setSelectedColor(res.data.colors[0]);
+      }
+      if (res.data.sizes?.length > 0) {
+        setSelectedSize(res.data.sizes[0]);
+      }
+    });
 
     // Fetch reviews separately by productId
-    axios
-      .get(`https://api.sports.bangladeshiit.com/reviews?productId=${id}`)
+    axiosPublic
+      .get(`/reviews?productId=${id}`)
       .then((res) => setReviews(res.data))
       .catch((err) => {
         console.error("Error fetching reviews:", err);
@@ -61,10 +60,8 @@ const ProductDetailsPage = () => {
   }, [id]);
   useEffect(() => {
     if (product?.categoryId) {
-      axios
-        .get(
-          `https://api.sports.bangladeshiit.com/products?categoryId=${product.categoryId}`
-        )
+      axiosPublic
+        .get(`/products?categoryId=${product.categoryId}`)
         .then((res) => {
           const filtered = res.data.filter(
             (p) => p._id !== product._id && p.status === "active"
@@ -76,9 +73,7 @@ const ProductDetailsPage = () => {
   }, [product]);
 
   useEffect(() => {
-    axios
-      .get("https://api.sports.bangladeshiit.com/brands")
-      .then((res) => setBrands(res.data));
+    axiosPublic.get("/brands").then((res) => setBrands(res.data));
   }, []);
 
   useEffect(() => {
@@ -132,10 +127,7 @@ const ProductDetailsPage = () => {
     };
 
     try {
-      const response = await axios.post(
-        "https://api.sports.bangladeshiit.com/reviews",
-        reviewData
-      );
+      const response = await axiosPublic.post("/reviews", reviewData);
       if (response.data.acknowledged) {
         setReviews((prev) => [...prev, response.data.review]);
         setReviewRating(0);
@@ -178,10 +170,7 @@ const ProductDetailsPage = () => {
     };
 
     try {
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/cart",
-        cartData
-      );
+      const res = await axiosPublic.post("/cart", cartData);
       if (res.data.insertedId) {
         Swal.fire({
           icon: "success",

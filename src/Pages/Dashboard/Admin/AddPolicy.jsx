@@ -1,11 +1,12 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../../provider/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddPolicy = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
@@ -29,8 +30,8 @@ const AddPolicy = () => {
         createdAt: new Date(),
       };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/policies",
+      const res = await axiosPublic.post(
+        "/policies",
         JSON.stringify(policyData),
         {
           headers: { "Content-Type": "application/json" },

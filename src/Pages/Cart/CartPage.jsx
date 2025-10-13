@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "@/provider/AuthProvider";
 import { FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const CartPage = () => {
   const { user } = useContext(AuthContext);
@@ -10,15 +10,16 @@ const CartPage = () => {
   const [productsMap, setProductsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   // Fetch cart items
   useEffect(() => {
     if (!user?.email) return;
 
     setLoading(true);
-    axios
+    axiosPublic
       .get(
-        `https://api.sports.bangladeshiit.com/cart?email=${user.email}`
+        `/cart?email=${user.email}`
       )
       .then(async (res) => {
         const items = res.data;
@@ -26,8 +27,8 @@ const CartPage = () => {
 
         const productDetails = await Promise.all(
           productIds.map((id) =>
-            axios
-              .get(`https://api.sports.bangladeshiit.com/products/${id}`)
+            axiosPublic
+              .get(`/products/${id}`)
               .then((res) => res.data)
           )
         );
@@ -59,8 +60,8 @@ const CartPage = () => {
     if (!item) return;
     const newSelected = !item.selected;
 
-    axios
-      .patch(`https://api.sports.bangladeshiit.com/cart/${itemId}`, {
+    axiosPublic
+      .patch(`/cart/${itemId}`, {
         selected: newSelected,
       })
       .then(() => {
@@ -76,8 +77,8 @@ const CartPage = () => {
   const updateQuantity = (itemId, newQty) => {
     if (newQty < 1) return;
 
-    axios
-      .patch(`https://api.sports.bangladeshiit.com/cart/${itemId}`, {
+    axiosPublic
+      .patch(`/cart/${itemId}`, {
         quantity: newQty,
       })
       .then(() => {
@@ -93,8 +94,8 @@ const CartPage = () => {
   };
 
   const deleteItem = (itemId) => {
-    axios
-      .delete(`https://api.sports.bangladeshiit.com/cart/${itemId}`)
+    axiosPublic
+      .delete(`/cart/${itemId}`)
       .then(() => {
         setCartItems((prev) => prev.filter((item) => item._id !== itemId));
         window.dispatchEvent(new Event("cartUpdated"));

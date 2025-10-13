@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { FaTrashAlt, FaSearch } from "react-icons/fa";
-import axios from "axios";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllPOSOrders = () => {
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 20;
+  const axiosPublic = useAxiosPublic();
 
   // fetch POS orders
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/pos/orders");
+      const res = await axiosPublic.get("/pos/orders");
       setOrders(res.data);
     } catch (error) {
       console.error(error);
@@ -36,7 +37,7 @@ const AllPOSOrders = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://api.sports.bangladeshiit.com/pos/orders/${id}`).then((res) => {
+        axiosPublic.delete(`/pos/orders/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             fetchOrders();
             Swal.fire("Deleted!", "Order removed.", "success");

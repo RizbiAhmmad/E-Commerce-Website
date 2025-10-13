@@ -6,10 +6,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const AllSizes = () => {
+  const axiosPublic = useAxiosPublic();
   const { data: sizes = [], refetch } = useQuery({
     queryKey: ["sizes"],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/sizes");
+      const res = await axiosPublic.get("/sizes");
       return res.data;
     },
   });
@@ -39,7 +40,7 @@ const AllSizes = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://api.sports.bangladeshiit.com/sizes/${selectedSize._id}`, formData);
+      await axiosPublic.put(`/sizes/${selectedSize._id}`, formData);
       Swal.fire("Updated!", "Size has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -59,7 +60,7 @@ const AllSizes = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://api.sports.bangladeshiit.com/sizes/${id}`).then((res) => {
+        axiosPublic.delete(`/sizes/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Size removed.", "success");

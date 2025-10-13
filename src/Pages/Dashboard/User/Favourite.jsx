@@ -1,5 +1,4 @@
 import { useEffect, useState, useContext } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { AuthContext } from "@/provider/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,9 +6,11 @@ import { FaTrashAlt } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import { motion } from "framer-motion";
 import Loading from "@/Shared/Loading";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const Favourite = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
   const [favourites, setFavourites] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -21,8 +22,8 @@ const Favourite = () => {
       return;
     }
 
-    axios
-      .get(`https://api.sports.bangladeshiit.com/whisper?email=${user.email}`)
+    axiosPublic
+      .get(`/whisper?email=${user.email}`)
       .then((res) => {
         setFavourites(res.data);
         setLoading(false);
@@ -48,8 +49,8 @@ const Favourite = () => {
       confirmButtonText: "Yes, Remove it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`https://api.sports.bangladeshiit.com/whisper/${id}`)
+        axiosPublic
+          .delete(`/whisper/${id}`)
           .then((res) => {
             if (res.data.deletedCount > 0) {
               Swal.fire("Removed!", "Item removed successfully.", "success");

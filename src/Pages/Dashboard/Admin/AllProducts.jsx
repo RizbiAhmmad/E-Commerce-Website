@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../../provider/AuthProvider";
 import Select from "react-select";
 import { FaEdit, FaPlus, FaSearch, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllProducts = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
 
   // Data states
   const [products, setProducts] = useState([]);
@@ -52,27 +53,16 @@ const AllProducts = () => {
   // Fetch all data once on mount
   useEffect(() => {
     fetchProducts();
-    axios
-      .get("https://api.sports.bangladeshiit.com/categories")
-      .then((res) => setCategories(res.data));
-    axios
-      .get("https://api.sports.bangladeshiit.com/subcategories")
-      .then((res) => setSubcategories(res.data));
-    axios
-      .get("https://api.sports.bangladeshiit.com/brands")
-      .then((res) => setBrands(res.data));
-    axios
-      .get("https://api.sports.bangladeshiit.com/sizes")
-      .then((res) => setSizes(res.data));
-    axios
-      .get("https://api.sports.bangladeshiit.com/colors")
-      .then((res) => setColors(res.data));
+
+    axiosPublic.get("/categories").then((res) => setCategories(res.data));
+    axiosPublic.get("/subcategories").then((res) => setSubcategories(res.data));
+    axiosPublic.get("/brands").then((res) => setBrands(res.data));
+    axiosPublic.get("/sizes").then((res) => setSizes(res.data));
+    axiosPublic.get("/colors").then((res) => setColors(res.data));
   }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get(
-      "https://api.sports.bangladeshiit.com/products"
-    );
+    const res = await axiosPublic.get("/products");
     setProducts(res.data);
   };
 
@@ -85,9 +75,8 @@ const AllProducts = () => {
       showCancelButton: true,
     });
     if (confirm.isConfirmed) {
-      await axios.delete(
-        `https://api.sports.bangladeshiit.com/products/${id}`
-      );
+      await axiosPublic.delete(`/products/${id}`)
+
       Swal.fire("Deleted!", "Product deleted successfully", "success");
       fetchProducts();
     }
@@ -145,7 +134,7 @@ const AllProducts = () => {
       const cloudinaryData = new FormData();
       cloudinaryData.append("file", file);
       cloudinaryData.append("upload_preset", "eCommerce");
-      return axios.post(
+      return axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
         cloudinaryData
       );
@@ -171,8 +160,7 @@ const AllProducts = () => {
         email: user?.email,
       };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/products",
+      const res = await axiosPublic.post("/products",
         productData,
         {
           headers: { "Content-Type": "application/json" },
@@ -194,37 +182,36 @@ const AllProducts = () => {
     }
   };
 
- const handleEditSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    let imageUrls = editProduct.images || [];
+    try {
+      let imageUrls = editProduct.images || [];
 
-    if (imageFiles.length > 0) {
-      const uploadedUrls = await uploadImages(imageFiles);
-      imageUrls = [...imageUrls, ...uploadedUrls];
+      if (imageFiles.length > 0) {
+        const uploadedUrls = await uploadImages(imageFiles);
+        imageUrls = [...imageUrls, ...uploadedUrls];
+      }
+
+      const updatedData = { ...editProduct, images: imageUrls };
+
+      await axiosPublic.put(
+        `/products/${editProduct._id}`,
+        updatedData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      Swal.fire("Success", "Product updated successfully!", "success");
+      fetchProducts();
+      closeModals();
+    } catch (err) {
+      console.error("Update Error:", err);
+      Swal.fire("Error", "Failed to update product", "error");
+    } finally {
+      setLoading(false);
     }
-
-    const updatedData = { ...editProduct, images: imageUrls };
-
-    await axios.put(
-      `https://api.sports.bangladeshiit.com/products/${editProduct._id}`,
-      updatedData,
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-    Swal.fire("Success", "Product updated successfully!", "success");
-    fetchProducts();
-    closeModals();
-  } catch (err) {
-    console.error("Update Error:", err);
-    Swal.fire("Error", "Failed to update product", "error");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const handleDeleteExistingImage = (urlToDelete) => {
     setEditProduct((prev) => ({
@@ -233,11 +220,10 @@ const AllProducts = () => {
     }));
   };
 
-  
-  const filteredProducts = products.filter((p) =>
-    (p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.barcode?.toLowerCase().includes(searchTerm.toLowerCase()))
-
+  const filteredProducts = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.barcode?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // pagination on filtered products
@@ -248,7 +234,6 @@ const AllProducts = () => {
     indexOfLastProduct
   );
 
-  // total pages (search এর উপর ভিত্তি করে)
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   const handlePageChange = (page) => {

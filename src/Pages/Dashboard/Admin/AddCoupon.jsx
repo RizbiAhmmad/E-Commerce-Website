@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddCoupon = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const axiosPublic = useAxiosPublic();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,7 +38,7 @@ const AddCoupon = () => {
       uploadData.append("file", imageFile);
       uploadData.append("upload_preset", "eCommerce");
 
-      const uploadRes = await axios.post(
+      const uploadRes = await axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
         uploadData
       );
@@ -45,8 +46,8 @@ const AddCoupon = () => {
       const imageUrl = uploadRes.data.secure_url;
       const couponData = { ...formData, image: imageUrl };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/coupons",
+      const res = await axiosPublic.post(
+        "/coupons",
         couponData,
         {
           headers: { "Content-Type": "application/json" },

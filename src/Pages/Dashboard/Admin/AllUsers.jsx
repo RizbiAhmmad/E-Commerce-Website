@@ -1,7 +1,7 @@
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
 import { FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
-import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 
 const AllUsers = () => {
   const axiosPublic = useAxiosPublic();

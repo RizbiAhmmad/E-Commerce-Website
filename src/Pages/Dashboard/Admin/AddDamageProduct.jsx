@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../../../provider/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
 import Select from "react-select";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddDamageProduct = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     productId: "",
@@ -22,8 +23,8 @@ const AddDamageProduct = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("https://api.sports.bangladeshiit.com/products")
+    axiosPublic
+      .get("/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error("Error fetching products", err));
   }, []);
@@ -72,7 +73,7 @@ const AddDamageProduct = () => {
       cloudinaryData.append("file", imageFile);
       cloudinaryData.append("upload_preset", "eCommerce");
 
-      const cloudinaryRes = await axios.post(
+      const cloudinaryRes = await axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
         cloudinaryData
       );
@@ -88,8 +89,8 @@ const AddDamageProduct = () => {
         quantity: Number(formData.quantity),
       };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/damage-products",
+      const res = await axiosPublic.post(
+        "/damage-products",
         damageProductData
       );
 

@@ -3,7 +3,6 @@ import { FaStar } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
 import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { motion } from "framer-motion";
 import Loading from "@/Shared/Loading";
 import { useNavigate } from "react-router-dom";
@@ -11,29 +10,25 @@ import Swal from "sweetalert2";
 import { Typewriter } from "react-simple-typewriter";
 import { AuthContext } from "@/provider/AuthProvider";
 import { GrView } from "react-icons/gr";
-
-const fetchProducts = async () => {
-  const { data } = await axios.get(
-    "https://api.sports.bangladeshiit.com/products"
-  );
-  return data;
-};
-
-const fetchBrands = async () => {
-  const { data } = await axios.get(
-    "https://api.sports.bangladeshiit.com/brands"
-  );
-  return data;
-};
-
-const fetchReviews = async () => {
-  const { data } = await axios.get(
-    "https://api.sports.bangladeshiit.com/reviews"
-  );
-  return data;
-};
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const ProductCard = () => {
+  const axiosPublic = useAxiosPublic();
+  const fetchProducts = async () => {
+    const { data } = await axiosPublic.get("/products");
+    return data;
+  };
+
+  const fetchBrands = async () => {
+    const { data } = await axiosPublic.get("/brands");
+    return data;
+  };
+
+  const fetchReviews = async () => {
+    const { data } = await axiosPublic.get("/reviews");
+    return data;
+  };
+
   const {
     data: products,
     isLoading,
@@ -146,6 +141,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
 
   const oldPriceNum = Number(product.oldPrice);
   const newPriceNum = Number(product.newPrice);
@@ -179,10 +175,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         quantity: 1,
       };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/cart",
-        cartData
-      );
+      const res = await axiosPublic.post("/cart", cartData);
       if (res.data.insertedId) {
         Swal.fire({
           icon: "success",
@@ -223,10 +216,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         price: product.newPrice,
       };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/whisper",
-        whisperData
-      );
+      const res = await axiosPublic.post("/whisper", whisperData);
       if (res.data.insertedId) {
         setIsFavorite(true);
         Swal.fire({
@@ -248,16 +238,10 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
   useEffect(() => {
     if (user) {
-      axios
-        .get(
-          `https://api.sports.bangladeshiit.com/whisper?email=${user.email}`
-        )
-        .then((res) => {
-          const favExists = res.data.some(
-            (fav) => fav.productId === product._id
-          );
-          setIsFavorite(favExists);
-        });
+      axiosPublic.get(`/whisper?email=${user.email}`).then((res) => {
+        const favExists = res.data.some((fav) => fav.productId === product._id);
+        setIsFavorite(favExists);
+      });
     }
   }, [user, product._id]);
 

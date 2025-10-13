@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaSearch, FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllDamageProducts = () => {
   const { data: damageProducts = [], refetch } = useQuery({
     queryKey: ["damageProducts"],
     queryFn: async () => {
-      const res = await axios.get(
-        "https://api.sports.bangladeshiit.com/damage-products"
+      const res = await axiosPublic.get(
+        "/damage-products"
       );
       return res.data;
     },
@@ -19,6 +19,7 @@ const AllDamageProducts = () => {
 
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [formData, setFormData] = useState({
@@ -41,8 +42,8 @@ const AllDamageProducts = () => {
 
   // Fetch all products for dropdown
   useEffect(() => {
-    axios
-      .get("https://api.sports.bangladeshiit.com/products")
+    axiosPublic
+      .get("/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
   }, []);
@@ -116,7 +117,7 @@ const AllDamageProducts = () => {
         const fd = new FormData();
         fd.append("file", newImageFile);
         fd.append("upload_preset", "eCommerce");
-        const uploadRes = await axios.post(
+        const uploadRes = await axiosPublic.post(
           "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
           fd
         );
@@ -124,8 +125,8 @@ const AllDamageProducts = () => {
         setUploading(false);
       }
 
-      await axios.put(
-        `https://api.sports.bangladeshiit.com/damage-products/${selectedProduct._id}`,
+      await axiosPublic.put(
+        `/damage-products/${selectedProduct._id}`,
         { ...formData, image: imageUrl }
       );
 
@@ -151,9 +152,9 @@ const AllDamageProducts = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
+        axiosPublic
           .delete(
-            `https://api.sports.bangladeshiit.com/damage-products/${id}`
+            `/damage-products/${id}`
           )
           .then((res) => {
             if (res.data.deletedCount > 0) {

@@ -1,11 +1,12 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../../provider/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddReturnProduct = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -14,7 +15,7 @@ const AddReturnProduct = () => {
     referenceNo: "",
     customerName: "",
     customerEmail: "",
-    date: "", // added date
+    date: "",
   });
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ const AddReturnProduct = () => {
       cloudinaryData.append("file", imageFile);
       cloudinaryData.append("upload_preset", "eCommerce");
 
-      const cloudinaryRes = await axios.post(
+      const cloudinaryRes = await axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
         cloudinaryData
       );
@@ -53,13 +54,13 @@ const AddReturnProduct = () => {
       const returnProductData = {
         ...formData,
         image: imageUrl,
-        email: user?.email, // logged-in staff/admin email
+        email: user?.email,
         price: Number(formData.price),
         referenceNo: Number(formData.referenceNo),
       };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/return-products",
+      const res = await axiosPublic.post(
+        "/return-products",
         JSON.stringify(returnProductData),
         {
           headers: {
@@ -77,7 +78,7 @@ const AddReturnProduct = () => {
           reason: "",
           customerName: "",
           customerEmail: "",
-          date: "", // reset date
+          date: "",
         });
         setImageFile(null);
         navigate("/dashboard/allReturnProducts");

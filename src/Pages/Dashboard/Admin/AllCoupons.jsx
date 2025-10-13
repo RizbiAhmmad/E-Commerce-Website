@@ -2,19 +2,20 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllCoupons = () => {
   const { data: coupons = [], refetch } = useQuery({
     queryKey: ["coupons"],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/coupons");
+      const res = await axiosPublic.get("/coupons");
       return res.data;
     },
   });
 
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [formData, setFormData] = useState({
@@ -67,8 +68,8 @@ const AllCoupons = () => {
         setUploading(true);
         const fd = new FormData();
         fd.append("file", newImageFile);
-        fd.append("upload_preset", "eCommerce"); // তোমার Cloudinary preset
-        const uploadRes = await axios.post(
+        fd.append("upload_preset", "eCommerce");
+        const uploadRes = await axiosPublic.post(
           "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
           fd
         );
@@ -76,8 +77,8 @@ const AllCoupons = () => {
         setUploading(false);
       }
 
-      await axios.put(
-        `https://api.sports.bangladeshiit.com/coupons/${selectedCoupon._id}`,
+      await axiosPublic.put(
+        `/coupons/${selectedCoupon._id}`,
         {
           ...formData,
           image: imageUrl,
@@ -105,7 +106,7 @@ const AllCoupons = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://api.sports.bangladeshiit.com/coupons/${id}`).then((res) => {
+        axiosPublic.delete(`/coupons/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Coupon removed.", "success");

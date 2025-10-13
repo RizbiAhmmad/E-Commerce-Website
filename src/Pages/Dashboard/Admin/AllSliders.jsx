@@ -2,14 +2,15 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllSliders = () => {
+  const axiosPublic = useAxiosPublic();
   const { data: sliders = [], refetch } = useQuery({
     queryKey: ["sliders"],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/slider");
+      const res = await axiosPublic.get("/slider");
       return res.data;
     },
   });
@@ -46,8 +47,8 @@ const AllSliders = () => {
         setUploading(true);
         const fd = new FormData();
         fd.append("file", newImageFile);
-        fd.append("upload_preset", "eCommerce"); // তোমার Cloudinary preset
-        const uploadRes = await axios.post(
+        fd.append("upload_preset", "eCommerce");
+        const uploadRes = await axiosPublic.post(
           "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
           fd
         );
@@ -55,8 +56,8 @@ const AllSliders = () => {
         setUploading(false);
       }
 
-      await axios.put(
-        `https://api.sports.bangladeshiit.com/slider/${selectedSlider._id}`,
+      await axiosPublic.put(
+        `/slider/${selectedSlider._id}`,
         { status: formData.status, image: imageUrl }
       );
 
@@ -81,7 +82,7 @@ const AllSliders = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://api.sports.bangladeshiit.com/slider/${id}`).then((res) => {
+        axiosPublic.delete(`/slider/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Slider removed.", "success");

@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import axios from "axios";
 import { AuthContext } from "@/provider/AuthProvider";
 import { FaMoneyBillWave, FaCreditCard } from "react-icons/fa";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const CheckoutPage = () => {
   const { user } = useContext(AuthContext);
@@ -22,6 +22,7 @@ const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
     if (user) {
@@ -43,8 +44,8 @@ const CheckoutPage = () => {
       return Swal.fire("Error!", "Please enter a coupon code", "error");
     }
     try {
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/apply-coupon",
+      const res = await axiosPublic.post(
+        "/apply-coupon",
         {
           code,
           totalAmount: subtotal,
@@ -129,14 +130,14 @@ const CheckoutPage = () => {
     };
 
     try {
-      await axios.post(
-        "https://api.sports.bangladeshiit.com/orders",
+      await axiosPublic.post(
+        "/orders",
         orderData
       );
 
       if (payment === "online") {
-        const { data } = await axios.post(
-          "https://api.sports.bangladeshiit.com/sslcommerz/init",
+        const { data } = await axiosPublic.post(
+          "/sslcommerz/init",
           {
             orderId: orderData.tran_id,
             totalAmount: total,

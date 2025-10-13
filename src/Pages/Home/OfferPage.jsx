@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import { Typewriter } from "react-simple-typewriter";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const OfferPage = () => {
   const [offers, setOffers] = useState([]);
+  const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-        const res = await axios.get("https://api.sports.bangladeshiit.com/offers");
+        const res = await axiosPublic.get("/offers");
         setOffers(res.data.filter((o) => o.status === "active").slice(0, 2)); // only 2
       } catch (err) {
         console.error(err);

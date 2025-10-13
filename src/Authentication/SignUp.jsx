@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import SocialLogin from "./SocialLogin";
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { AuthContext } from "@/provider/AuthProvider";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const SignUp = () => {
   const {
@@ -17,54 +18,44 @@ const SignUp = () => {
   const { createUser, updateUserProfile } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/"; 
-
+  const from = location.state?.from?.pathname || "/";
   const [showPassword, setShowPassword] = useState(false);
+  const axiosPublic = useAxiosPublic();
 
-  const onSubmit = (data) => {
-    createUser(data.email, data.password)
-      .then((result) => {
-        const loggedUser = result.user;
-        updateUserProfile(data.name, data.photoURL)
-          .then(() => {
-            const userInfo = {
-              name: data.name,
-              email: data.email,
-              photoURL: data.photoURL,
-              role: "user",
-              createdAt: new Date(),
-            };
-            fetch("https://api.sports.bangladeshiit.com/users", {
-              method: "POST",
-              headers: {
-                "content-type": "application/json",
-              },
-              body: JSON.stringify(userInfo),
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                if (
-                  data.insertedId ||
-                  data.message === "User already exists"
-                ) {
-                  reset();
-                  Swal.fire({
-                    title: "User created successfully",
-                    icon: "success",
-                    draggable: true,
-                  });
-                  navigate(from, { replace: true });
-                }
-              })
-              .catch((error) =>
-                console.log("Error saving user to MongoDB:", error)
-              );
-          })
-          .catch((error) =>
-            console.log("Error updating user profile:", error)
-          );
-      })
-      .catch((error) => console.log("Error creating user:", error));
+  const onSubmit = async (data) => {
+    try {
+      const result = await createUser(data.email, data.password);
+      const loggedUser = result.user;
+
+      await updateUserProfile(data.name, data.photoURL);
+
+      const userInfo = {
+        name: data.name,
+        email: data.email,
+        photoURL: data.photoURL,
+        role: "user",
+        createdAt: new Date(),
+      };
+
+      const res = await axiosPublic.post("/users", userInfo);
+
+      if (res.data.insertedId || res.data.message === "User already exists") {
+        reset();
+        Swal.fire({
+          title: "User created successfully",
+          icon: "success",
+          draggable: true,
+        });
+        navigate(from, { replace: true });
+      }
+    } catch (error) {
+      console.error("❌ Error during sign up:", error);
+      Swal.fire({
+        title: "Something went wrong!",
+        text: error.message || "Please try again later.",
+        icon: "error",
+      });
+    }
   };
 
   return (
@@ -149,13 +140,11 @@ const SignUp = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <FaEye /> : <FaEyeSlash /> }
+                {showPassword ? <FaEye /> : <FaEyeSlash />}
               </span>
             </div>
             {errors.password?.type === "required" && (
-              <span className="text-sm text-red-400">
-                Password is required
-              </span>
+              <span className="text-sm text-red-400">Password is required</span>
             )}
             {errors.password?.type === "minLength" && (
               <span className="text-sm text-red-400">
@@ -163,9 +152,7 @@ const SignUp = () => {
               </span>
             )}
             {errors.password?.type === "maxLength" && (
-              <span className="text-sm text-red-400">
-                Max 20 characters
-              </span>
+              <span className="text-sm text-red-400">Max 20 characters</span>
             )}
             {errors.password?.type === "pattern" && (
               <span className="text-sm text-red-400">

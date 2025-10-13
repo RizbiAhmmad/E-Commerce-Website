@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import {
   PieChart, Pie, Cell, Tooltip, Legend,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   ResponsiveContainer
 } from "recharts";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function ExpenseReport() {
+  const axiosPublic = useAxiosPublic();
   const [dateFilter, setDateFilter] = useState({
     startDate: "",
     endDate: "",
@@ -18,7 +19,7 @@ export default function ExpenseReport() {
   const { data: report = {}, isLoading, refetch } = useQuery({
     queryKey: ["expenseReport", dateFilter],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/expenses/report", {
+      const res = await axiosPublic.get("/expenses/report", {
         params: dateFilter.startDate && dateFilter.endDate ? dateFilter : {},
       });
       return res.data;

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import Loading from "@/Shared/Loading";
@@ -9,17 +8,19 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const ExplorePopularCategory = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("https://api.sports.bangladeshiit.com/categories");
+        const res = await axiosPublic.get("/categories");
         setCategories(res.data.filter((cat) => cat.status === "active"));
       } catch (err) {
         console.error("❌ Error fetching categories:", err);
@@ -30,9 +31,9 @@ const ExplorePopularCategory = () => {
     };
     fetchCategories();
 
-    // ✅ detect mobile screen
+    // detect mobile screen
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint এর নিচে হলে mobile ধরছি
+      setIsMobile(window.innerWidth < 768);
     };
     handleResize();
     window.addEventListener("resize", handleResize);

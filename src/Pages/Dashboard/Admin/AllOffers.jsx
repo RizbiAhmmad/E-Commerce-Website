@@ -2,19 +2,20 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllOffers = () => {
   const { data: offers = [], refetch } = useQuery({
     queryKey: ["offers"],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/offers");
+      const res = await axiosPublic.get("/offers");
       return res.data;
     },
   });
 
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [formData, setFormData] = useState({
@@ -53,7 +54,7 @@ const AllOffers = () => {
         const fd = new FormData();
         fd.append("file", newImageFile);
         fd.append("upload_preset", "eCommerce"); // তোমার Cloudinary preset
-        const uploadRes = await axios.post(
+        const uploadRes = await axiosPublic.post(
           "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
           fd
         );
@@ -61,8 +62,8 @@ const AllOffers = () => {
         setUploading(false);
       }
 
-      await axios.put(
-        `https://api.sports.bangladeshiit.com/offers/${selectedOffer._id}`,
+      await axiosPublic.put(
+        `/offers/${selectedOffer._id}`,
         {
           status: formData.status,
           image: imageUrl,
@@ -90,7 +91,7 @@ const AllOffers = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://api.sports.bangladeshiit.com/offers/${id}`).then((res) => {
+        axiosPublic.delete(`/offers/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Offer removed.", "success");

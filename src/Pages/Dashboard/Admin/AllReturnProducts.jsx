@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 // import { FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { FaSearch } from "react-icons/fa";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllReturnProducts = () => {
   const [returnOrders, setReturnOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+  const axiosPublic = useAxiosPublic();
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,9 +22,7 @@ const AllReturnProducts = () => {
   // Fetch orders with status === "returned"
   const fetchReturnOrders = async () => {
     try {
-      const res = await axios.get(
-        "https://api.sports.bangladeshiit.com/orders"
-      );
+      const res = await axiosPublic.get("/orders");
       const returned = res.data.filter(
         (order) => order.status?.toLowerCase() === "returned"
       );
@@ -50,14 +49,12 @@ const AllReturnProducts = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`https://api.sports.bangladeshiit.com/orders/${id}`)
-          .then((res) => {
-            if (res.data.deletedCount > 0) {
-              fetchReturnOrders();
-              Swal.fire("Deleted!", "Order removed.", "success");
-            }
-          });
+        axiosPublic.delete(`/orders/${id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            fetchReturnOrders();
+            Swal.fire("Deleted!", "Order removed.", "success");
+          }
+        });
       }
     });
   };
@@ -243,8 +240,8 @@ const AllReturnProducts = () => {
               onSubmit={async (e) => {
                 e.preventDefault();
                 try {
-                  await axios.patch(
-                    `https://api.sports.bangladeshiit.com/orders/${selectedOrder._id}/return`,
+                  await axiosPublic.patch(
+                    `/orders/${selectedOrder._id}/return`,
                     returnData
                   );
                   Swal.fire("Saved!", "Return info updated.", "success");

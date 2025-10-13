@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import {
   BarChart,
   Bar,
@@ -15,6 +14,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const SalesReport = () => {
   const [report, setReport] = useState({
@@ -30,6 +30,7 @@ const SalesReport = () => {
   const [filter, setFilter] = useState("today"); // all | today | week | month
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+  const axiosPublic = useAxiosPublic();
 
   const chartData = [
     { name: "All Time", value: report.allTime },
@@ -47,8 +48,8 @@ const SalesReport = () => {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const res = await axios.get(
-          "https://api.sports.bangladeshiit.com/sales-report"
+        const res = await axiosPublic.get(
+          "/sales-report"
         );
         // console.log("Sales report data:", res.data);
         setReport(res.data);

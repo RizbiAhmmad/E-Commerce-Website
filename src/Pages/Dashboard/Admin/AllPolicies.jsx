@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllPolicies = () => {
+  const axiosPublic = useAxiosPublic();
   const { data: policies = [], refetch } = useQuery({
     queryKey: ["policies"],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/policies");
+      const res = await axiosPublic.get("/policies");
       return res.data;
     },
   });
@@ -49,8 +50,8 @@ const AllPolicies = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(
-        `https://api.sports.bangladeshiit.com/policies/${selectedPolicy._id}`,
+      await axiosPublic.put(
+        `/policies/${selectedPolicy._id}`,
         formData
       );
 
@@ -73,7 +74,7 @@ const AllPolicies = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://api.sports.bangladeshiit.com/policies/${id}`).then((res) => {
+        axiosPublic.delete(`/policies/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Policy removed.", "success");

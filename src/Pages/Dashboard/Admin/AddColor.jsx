@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddColor = () => {
   const [colorData, setColorData] = useState({
@@ -11,6 +11,7 @@ const AddColor = () => {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,7 +26,7 @@ const AddColor = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("https://api.sports.bangladeshiit.com/colors", colorData);
+      const res = await axiosPublic.post("/colors", colorData);
       if (res.data.insertedId) {
         Swal.fire("Success!", "Color added successfully", "success");
         setColorData({ name: "", hex: "#000000", status: "active" });

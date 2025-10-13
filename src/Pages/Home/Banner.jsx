@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 export default function Banner() {
   const [slides, setSlides] = useState([]);
   const [current, setCurrent] = useState(0);
+  const axiosPublic = useAxiosPublic();
 
   // Fetch active sliders from backend
   useEffect(() => {
     const fetchSliders = async () => {
       try {
-        const res = await axios.get("https://api.sports.bangladeshiit.com/slider");
+        const res = await axiosPublic.get("/slider");
         const activeSlides = res.data.filter((s) => s.status === "active");
         setSlides(activeSlides);
       } catch (err) {

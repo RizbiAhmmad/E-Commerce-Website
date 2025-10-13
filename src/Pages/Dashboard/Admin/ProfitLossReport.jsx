@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const ProfitLossReport = () => {
+  const axiosPublic = useAxiosPublic();
   const [report, setReport] = useState({});
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState("today");
@@ -9,8 +10,8 @@ const ProfitLossReport = () => {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const res = await axios.get(
-          "https://api.sports.bangladeshiit.com/profit-loss-report"
+        const res = await axiosPublic.get(
+          "/profit-loss-report"
         );
         setReport(res.data);
         setOrders(res.data.allOrders || []);

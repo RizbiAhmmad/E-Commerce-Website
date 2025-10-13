@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllCustomersWithSegments = () => {
+  const axiosPublic = useAxiosPublic();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,8 +12,8 @@ const AllCustomersWithSegments = () => {
 
   const fetchCustomers = async () => {
     try {
-      const res = await axios.get(
-        "https://api.sports.bangladeshiit.com/customer-segments"
+      const res = await axiosPublic.get(
+        "/customer-segments"
       );
       setCustomers(res.data);
     } catch (error) {

@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllBrands = () => {
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
   const { data: brands = [], refetch } = useQuery({
     queryKey: ["brands"],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/brands");
+      const res = await axiosPublic.get("/brands");
       return res.data;
     },
   });
@@ -46,7 +47,7 @@ const AllBrands = () => {
         const fd = new FormData();
         fd.append("file", newLogoFile);
         fd.append("upload_preset", "eCommerce");
-        const uploadRes = await axios.post(
+        const uploadRes = await axiosPublic.post(
           "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
           fd
         );
@@ -54,7 +55,7 @@ const AllBrands = () => {
         setUploading(false);
       }
 
-      await axios.put(`https://api.sports.bangladeshiit.com/brands/${selectedBrand._id}`, {
+      await axiosPublic.put(`/brands/${selectedBrand._id}`, {
         name: formData.name,
         status: formData.status,
         logo: logoUrl,
@@ -82,7 +83,7 @@ const AllBrands = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const res = await axios.delete(`https://api.sports.bangladeshiit.com/brands/${id}`);
+        const res = await axiosPublic.delete(`/brands/${id}`);
         if (res.data.deletedCount > 0) {
           refetch();
           Swal.fire("Deleted!", "Brand removed.", "success");

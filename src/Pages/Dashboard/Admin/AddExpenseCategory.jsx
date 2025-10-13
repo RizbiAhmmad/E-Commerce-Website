@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState  } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddExpenseCategory = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +9,7 @@ const AddExpenseCategory = () => {
     status: "active",
   });
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,7 +18,7 @@ const AddExpenseCategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://api.sports.bangladeshiit.com/expense-categories", formData);
+      const res = await axiosPublic.post("/expense-categories", formData);
       if (res.data.insertedId) {
         Swal.fire("Success", "Expense category added!", "success");
         setFormData({ name: "", status: "active" });

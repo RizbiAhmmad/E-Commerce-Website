@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { FaTrashAlt } from "react-icons/fa";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllReviews = () => {
+  const axiosPublic = useAxiosPublic();
   // Fetch all reviews
   const { data: reviews = [], refetch: refetchReviews } = useQuery({
     queryKey: ["reviews"],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/reviews");
+      const res = await axiosPublic.get("/reviews");
       return res.data;
     },
   });
@@ -17,7 +18,7 @@ const AllReviews = () => {
   const { data: products = [] } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/products");
+      const res = await axiosPublic.get("/products");
       return res.data;
     },
   });
@@ -38,7 +39,7 @@ const AllReviews = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://api.sports.bangladeshiit.com/reviews/${id}`).then((res) => {
+        axiosPublic.delete(`/reviews/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             Swal.fire("Deleted!", "Review has been deleted.", "success");
             refetchReviews();

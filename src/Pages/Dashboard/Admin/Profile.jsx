@@ -22,7 +22,7 @@ const Profile = () => {
 
       <div className="flex flex-col items-center gap-4">
         <img
-          src={user?.photoURL || "https://i.ibb.co/2FsfXqM/user.png"}
+          src={user?.photoURL || "https://www.shutterstock.com/image-vector/user-circle-isolated-icon-round-600nw-2459622791.jpg"}
           alt="Profile"
           className="w-24 h-24 rounded-full border-4 border-green-400 object-cover"
         />

@@ -1,12 +1,13 @@
 import React, { useContext, useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@/provider/AuthProvider";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddBrand = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -32,7 +33,7 @@ const AddBrand = () => {
       const fd = new FormData();
       fd.append("file", logoFile);
       fd.append("upload_preset", "eCommerce");
-      const uploadRes = await axios.post(
+      const uploadRes = await axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
         fd
       );
@@ -46,7 +47,7 @@ const AddBrand = () => {
         createdAt: new Date().toISOString(),
       };
 
-      const res = await axios.post("https://api.sports.bangladeshiit.com/brands", payload, {
+      const res = await axiosPublic.post("/brands", payload, {
         headers: { "Content-Type": "application/json" },
       });
 

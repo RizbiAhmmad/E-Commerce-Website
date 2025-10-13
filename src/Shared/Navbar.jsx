@@ -12,8 +12,8 @@ import {
 import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
 import { AuthContext } from "@/provider/AuthProvider";
-import axios from "axios";
 import { IoIosArrowForward, IoMdHeartEmpty } from "react-icons/io";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -26,6 +26,8 @@ const Navbar = () => {
   const [menuData, setMenuData] = useState([]);
   const [openCategory, setOpenCategory] = useState(null);
   const [footerInfo, setFooterInfo] = useState(null);
+  const axiosPublic = useAxiosPublic();
+
 
   const navigate = useNavigate();
 
@@ -35,9 +37,9 @@ const Navbar = () => {
       setWhisperCount(0);
       return;
     }
-    axios
+    axiosPublic
       .get(
-        `https://api.sports.bangladeshiit.com/whisper?email=${user.email}`
+        `/whisper?email=${user.email}`
       )
       .then((res) => setWhisperCount(res.data.length))
       .catch(() => setWhisperCount(0));
@@ -49,9 +51,9 @@ const Navbar = () => {
       setCartCount(0);
       return;
     }
-    axios
+    axiosPublic
       .get(
-        `https://api.sports.bangladeshiit.com/cart?email=${user.email}`
+        `/cart?email=${user.email}`
       )
       .then((res) => {
         const totalCount = res.data.reduce(
@@ -82,8 +84,8 @@ const Navbar = () => {
   // Live search
   useEffect(() => {
     if (searchText.trim()) {
-      axios
-        .get("https://api.sports.bangladeshiit.com/products")
+      axiosPublic
+        .get("/products")
         .then((res) => {
           const filtered = res.data.filter(
             (p) =>
@@ -110,9 +112,9 @@ const Navbar = () => {
 
   // Menu data
   useEffect(() => {
-    axios
+    axiosPublic
       .get(
-        "https://api.sports.bangladeshiit.com/categories-with-subcategories"
+        "/categories-with-subcategories"
       )
       .then((res) => setMenuData(res.data))
       .catch(() => setMenuData([]));
@@ -120,8 +122,8 @@ const Navbar = () => {
 
   // Footer info (logo, name)
   useEffect(() => {
-    axios
-      .get("https://api.sports.bangladeshiit.com/footer")
+    axiosPublic
+      .get("/footer")
       .then((res) => {
         if (res.data.length > 0) setFooterInfo(res.data[0]);
       })

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaLinkedin, FaYoutube, FaTiktok, FaInstagram } from "react-icons/fa";
-import axios from "axios";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const Contact = () => {
   const [footerInfo, setFooterInfo] = useState(null);
+  const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
     const fetchFooterInfo = async () => {
       try {
-        const res = await axios.get("https://api.sports.bangladeshiit.com/footer");
+        const res = await axiosPublic.get("/footer");
         setFooterInfo(res.data[0]);
       } catch (err) {
         console.error("❌ Footer Info Fetch Error:", err.message);

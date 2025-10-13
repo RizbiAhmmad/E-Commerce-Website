@@ -1,11 +1,8 @@
-import Axios  from "axios";
+import axios from "axios";
 
-const axiosPublic=Axios.create({
-    baseURL: "https://api.sports.bangladeshiit.com",
-   
-})
-const useAxiosPublic = () => {
-    return axiosPublic;
-};
+const axiosPublic = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+});
 
+const useAxiosPublic = () => axiosPublic;
 export default useAxiosPublic;

@@ -2,17 +2,18 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt, FaSearch } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllExpense = () => {
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   // Fetch expenses
   const { data: expenses = [], refetch } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/expenses");
+      const res = await axiosPublic.get("/expenses");
       return res.data;
     },
   });
@@ -83,7 +84,7 @@ const AllExpense = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://api.sports.bangladeshiit.com/expenses/${selectedExpense._id}`, {
+      await axiosPublic.put(`/expenses/${selectedExpense._id}`, {
         ...formData,
         price: Number(formData.price),
       });
@@ -106,7 +107,7 @@ const AllExpense = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`https://api.sports.bangladeshiit.com/expenses/${id}`).then((res) => {
+        axiosPublic.delete(`/expenses/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
             Swal.fire("Deleted!", "Expense removed.", "success");

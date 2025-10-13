@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import Loading from "@/Shared/Loading";
 import { motion } from "framer-motion";
 import { AuthContext } from "@/provider/AuthProvider";
@@ -8,13 +7,15 @@ import Swal from "sweetalert2";
 import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { GrView } from "react-icons/gr";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const SubcategoryProducts = () => {
-  const { subId } = useParams(); // subcategory ID
+  const { subId } = useParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000]);
+  const axiosPublic = useAxiosPublic();
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,8 +27,8 @@ const SubcategoryProducts = () => {
   useEffect(() => {
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(
-        `https://api.sports.bangladeshiit.com/products?subcategoryId=${subId}`
+      const res = await axiosPublic.get(
+        `/products?subcategoryId=${subId}`
       );
       const activeProducts = res.data.filter((p) => p.status === "active");
       setProducts(activeProducts);
@@ -104,7 +105,7 @@ const SubcategoryProducts = () => {
           productId: product._id,
           quantity: 1,
         };
-        const res = await axios.post("https://api.sports.bangladeshiit.com/cart", cartData);
+        const res = await axiosPublic.post("/cart", cartData);
         if (res.data.insertedId) {
           Swal.fire({
             icon: "success",

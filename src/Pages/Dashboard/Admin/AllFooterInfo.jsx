@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { FaEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
-import axios from "axios";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllFooterInfo = () => {
+  const axiosPublic = useAxiosPublic();
   const [footers, setFooters] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFooter, setSelectedFooter] = useState(null);
@@ -25,7 +26,7 @@ const AllFooterInfo = () => {
 
   const fetchFooters = async () => {
     try {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/footer");
+      const res = await axiosPublic.get("/footer");
       setFooters(res.data);
     } catch (err) {
       console.error("Error fetching footers:", err);
@@ -73,14 +74,14 @@ const AllFooterInfo = () => {
         cloudinaryData.append("file", logoFile);
         cloudinaryData.append("upload_preset", "eCommerce");
 
-        const cloudRes = await axios.post(
+        const cloudRes = await axiosPublic.post(
           "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
           cloudinaryData
         );
         logoUrl = cloudRes.data.secure_url;
       }
 
-      await axios.put(`https://api.sports.bangladeshiit.com/footer/${selectedFooter._id}`, {
+      await axiosPublic.put(`/footer/${selectedFooter._id}`, {
         ...formData,
         logo: logoUrl,
       });
@@ -109,7 +110,7 @@ const AllFooterInfo = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axios.delete(`https://api.sports.bangladeshiit.com/footer/${id}`);
+          const res = await axiosPublic.delete(`/footer/${id}`);
           if (res.data.deletedCount > 0) {
             Swal.fire("Deleted!", "Footer info removed.", "success");
             fetchFooters();

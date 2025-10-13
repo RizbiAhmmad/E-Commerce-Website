@@ -1,11 +1,12 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../../provider/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddOffer = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ status: "active" });
   const [imageFile, setImageFile] = useState(null);
@@ -25,14 +26,14 @@ const AddOffer = () => {
       cloudinaryData.append("file", imageFile);
       cloudinaryData.append("upload_preset", "eCommerce");
 
-      const cloudRes = await axios.post(
+      const cloudRes = await axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
         cloudinaryData
       );
 
       const offerData = { ...formData, image: cloudRes.data.secure_url, email: user?.email };
 
-      const res = await axios.post("https://api.sports.bangladeshiit.com/offers", offerData, {
+      const res = await axiosPublic.post("/offers", offerData, {
         headers: { "Content-Type": "application/json" },
       });
 

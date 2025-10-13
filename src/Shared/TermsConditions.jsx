@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const TermsConditions = () => {
   const [policy, setPolicy] = useState(null);
+  const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
-    axios
-      .get("https://api.sports.bangladeshiit.com/policies")
+    axiosPublic
+      .get("/policies")
       .then((res) => {
         const activePolicy = res.data.find(
           (p) => p.title === "Terms & Conditions" && p.status === "active"

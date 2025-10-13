@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../../provider/AuthProvider";
 import Select from "react-select";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddProduct = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,28 +38,28 @@ const AddProduct = () => {
   const [colors, setColors] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("https://api.sports.bangladeshiit.com/categories")
+    axiosPublic
+      .get("/categories")
       .then((res) =>
         setCategories(res.data.filter((cat) => cat.status === "active"))
       );
 
-    axios
-      .get("https://api.sports.bangladeshiit.com/subcategories")
+    axiosPublic
+      .get("/subcategories")
       .then((res) =>
         setSubcategories(res.data.filter((sub) => sub.status === "active"))
       );
 
-    axios
-      .get("https://api.sports.bangladeshiit.com/brands")
+    axiosPublic
+      .get("/brands")
       .then((res) => setBrands(res.data.filter((b) => b.status === "active")));
 
-    axios
-      .get("https://api.sports.bangladeshiit.com/sizes")
+    axiosPublic
+      .get("/sizes")
       .then((res) => setSizes(res.data.filter((s) => s.status === "active")));
 
-    axios
-      .get("https://api.sports.bangladeshiit.com/colors")
+    axiosPublic
+      .get("/colors")
       .then((res) => setColors(res.data.filter((c) => c.status === "active")));
   }, []);
 
@@ -90,7 +91,7 @@ const AddProduct = () => {
         const cloudinaryData = new FormData();
         cloudinaryData.append("file", file);
         cloudinaryData.append("upload_preset", "eCommerce");
-        return axios.post(
+        return axiosPublic.post(
           "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
           cloudinaryData
         );
@@ -109,8 +110,8 @@ const AddProduct = () => {
         email: user?.email,
       };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/products",
+      const res = await axiosPublic.post(
+        "/products",
         productData,
         {
           headers: { "Content-Type": "application/json" },

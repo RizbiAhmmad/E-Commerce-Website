@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddFooterInfo = () => {
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -44,7 +45,7 @@ const AddFooterInfo = () => {
       cloudinaryData.append("file", logoFile);
       cloudinaryData.append("upload_preset", "eCommerce");
 
-      const cloudRes = await axios.post(
+      const cloudRes = await axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
         cloudinaryData
       );
@@ -57,8 +58,8 @@ const AddFooterInfo = () => {
         logo: logoUrl,
       };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/footer",
+      const res = await axiosPublic.post(
+        "/footer",
         JSON.stringify(footerData),
         {
           headers: { "Content-Type": "application/json" },

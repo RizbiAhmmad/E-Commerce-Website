@@ -1,11 +1,12 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../../provider/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddSlider = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     status: "active",
@@ -36,7 +37,7 @@ const AddSlider = () => {
       cloudinaryData.append("file", imageFile);
       cloudinaryData.append("upload_preset", "eCommerce");
 
-      const cloudinaryRes = await axios.post(
+      const cloudinaryRes = await axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
         cloudinaryData
       );
@@ -50,8 +51,8 @@ const AddSlider = () => {
         email: user?.email,
       };
 
-      const res = await axios.post(
-        "https://api.sports.bangladeshiit.com/slider",
+      const res = await axiosPublic.post(
+        "/slider",
         JSON.stringify(bannerData),
         {
           headers: {

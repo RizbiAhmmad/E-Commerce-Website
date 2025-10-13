@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddExpense = () => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
   const [formData, setFormData] = useState({
     category: "",
     name: "",
@@ -18,7 +19,7 @@ const AddExpense = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("https://api.sports.bangladeshiit.com/expense-categories");
+        const res = await axiosPublic.get("/expense-categories");
         setCategories(res.data);
       } catch (error) {
         console.error("Failed to load categories", error);
@@ -39,7 +40,7 @@ const AddExpense = () => {
       price: Number(formData.price),
     };
 
-    const res = await axios.post("https://api.sports.bangladeshiit.com/expenses", payload);
+    const res = await axiosPublic.post("/expenses", payload);
 
     if (res.data.insertedId) {
       Swal.fire("Success", "Expense added successfully!", "success");

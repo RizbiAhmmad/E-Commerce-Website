@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AddSubcategory = () => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
   const [formData, setFormData] = useState({
     name: "",
     categoryId: "",
@@ -13,7 +14,7 @@ const AddSubcategory = () => {
   });
 
   useEffect(() => {
-    axios.get("https://api.sports.bangladeshiit.com/categories").then((res) => {
+    axiosPublic.get("/categories").then((res) => {
       setCategories(res.data);
     });
   }, []);
@@ -25,7 +26,7 @@ const AddSubcategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://api.sports.bangladeshiit.com/subcategories", formData);
+      const res = await axiosPublic.post("/subcategories", formData);
       if (res.data.insertedId) {
         Swal.fire("Success", "Subcategory added!", "success");
         setFormData({ name: "", categoryId: "", status: "active" });

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
   FaUsers,
   FaBoxOpen,
@@ -45,9 +44,9 @@ const DashboardHome = () => {
     const fetchStats = async () => {
       try {
         const [usersRes, productsRes, ordersRes] = await Promise.all([
-          axios.get("https://api.sports.bangladeshiit.com/users"),
-          axios.get("https://api.sports.bangladeshiit.com/products"),
-          axios.get("https://api.sports.bangladeshiit.com/orders"),
+          axiosPublic.get("/users"),
+          axiosPublic.get("/products"),
+          axiosPublic.get("/orders"),
         ]);
 
         const orders = ordersRes.data;

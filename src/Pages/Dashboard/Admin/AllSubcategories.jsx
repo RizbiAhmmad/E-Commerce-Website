@@ -2,18 +2,19 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllSubcategories = () => {
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   // Fetch subcategories
   const { data: subcategories = [], refetch } = useQuery({
     queryKey: ["subcategories"],
     queryFn: async () => {
-      const res = await axios.get(
-        "https://api.sports.bangladeshiit.com/subcategories"
+      const res = await axiosPublic.get(
+        "/subcategories"
       );
       return res.data;
     },
@@ -23,8 +24,8 @@ const AllSubcategories = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await axios.get(
-        "https://api.sports.bangladeshiit.com/categories"
+      const res = await axiosPublic.get(
+        "/categories"
       );
       return res.data;
     },
@@ -38,7 +39,6 @@ const AllSubcategories = () => {
     status: "active",
   });
 
-  // 🔹 Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(subcategories.length / itemsPerPage);
@@ -65,8 +65,8 @@ const AllSubcategories = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(
-        `https://api.sports.bangladeshiit.com/subcategories/${selectedSub._id}`,
+      await axiosPublic.put(
+        `/subcategories/${selectedSub._id}`,
         formData
       );
       Swal.fire("Updated!", "Subcategory has been updated.", "success");
@@ -88,9 +88,9 @@ const AllSubcategories = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
+        axiosPublic
           .delete(
-            `https://api.sports.bangladeshiit.com/subcategories/${id}`
+            `/subcategories/${id}`
           )
           .then((res) => {
             if (res.data.deletedCount > 0) {

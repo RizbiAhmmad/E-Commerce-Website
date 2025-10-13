@@ -1,17 +1,18 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "@/provider/AuthProvider";
 import { FaCircle } from "react-icons/fa";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const MyOrders = () => {
   const { user } = useContext(AuthContext);
+  const axiosPublic = useAxiosPublic();
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     if (user?.email) {
-      axios
+      axiosPublic
         .get(
-          `https://api.sports.bangladeshiit.com/orders?email=${user.email}`
+          `/orders?email=${user.email}`
         )
         .then((res) => setOrders(res.data))
         .catch((err) => console.error(err));

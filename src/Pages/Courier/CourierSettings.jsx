@@ -1,9 +1,10 @@
 // src/pages/Dashboard/CourierSettings.jsx
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const CourierSettings = () => {
+  const axiosPublic = useAxiosPublic();
   const [couriers, setCouriers] = useState([]);
   const [formData, setFormData] = useState({
     courierName: "",
@@ -19,7 +20,7 @@ const CourierSettings = () => {
 
   const fetchCouriers = async () => {
     try {
-      const res = await axios.get("https://api.sports.bangladeshiit.com/courier/settings");
+      const res = await axiosPublic.get("/courier/settings");
       setCouriers(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error(err);
@@ -34,7 +35,7 @@ const CourierSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://api.sports.bangladeshiit.com/courier/settings", formData);
+      await axiosPublic.post("/courier/settings", formData);
       Swal.fire("Saved!", "Courier settings updated", "success");
       setFormData({
         courierName: "",

@@ -11,30 +11,32 @@ import {
   FaInstagram,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 export default function Footer() {
   const [footerInfo, setFooterInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
-  const fetchFooterInfo = async () => {
-    try {
-      const res = await fetch("https://api.sports.bangladeshiit.com/footer");
-      const data = await res.json();
-      if (data.length > 0) {
-        setFooterInfo(data[0]);
+    const fetchFooterInfo = async () => {
+      try {
+        const res = await axiosPublic.get("/footer");
+        const data = res.data;
+        if (data.length > 0) {
+          setFooterInfo(data[0]);
+        }
+      } catch (err) {
+        console.error("Error fetching footer info:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching footer info:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchFooterInfo();
-}, []);
+    };
+    fetchFooterInfo();
+  }, [axiosPublic]);
 
-
-  if (loading) return <p className="text-center text-gray-400">Loading footer...</p>;
+  if (loading)
+    return <p className="text-center text-gray-400">Loading footer...</p>;
   if (!footerInfo || Object.keys(footerInfo).length === 0)
     return <p className="text-center text-gray-400">No footer data found.</p>;
 
@@ -53,7 +55,11 @@ export default function Footer() {
           transition={{ duration: 0.6 }}
         >
           <div className="flex items-center gap-3">
-            <img src={footerInfo.logo} alt={footerInfo.name || "Logo"} className="h-12 w-auto rounded-lg shadow-lg" />
+            <img
+              src={footerInfo.logo}
+              alt={footerInfo.name || "Logo"}
+              className="h-12 w-auto rounded-lg shadow-lg"
+            />
             <h1 className="text-3xl font-bold">{footerInfo.name}</h1>
           </div>
           <p className="text-gray-200">{footerInfo.description}</p>
@@ -109,7 +115,10 @@ export default function Footer() {
               </a>
             )}
             {footerInfo.email && (
-              <a href={`mailto:${footerInfo.email}`} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition">
+              <a
+                href={`mailto:${footerInfo.email}`}
+                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition"
+              >
                 <FaEnvelope />
               </a>
             )}
@@ -125,12 +134,45 @@ export default function Footer() {
         >
           <h3 className="text-xl font-semibold mb-2">Quick Links</h3>
           <ul className="space-y-2">
-            <li><Link to="/" className="hover:text-orange-400 transition">Home</Link></li>
-            <li><Link to="/about" className="hover:text-orange-400 transition">About Us</Link></li>
-            <li><Link to="/contact" className="hover:text-orange-400 transition">Contact</Link></li>
-            <li><Link to="/privacyPolicy" className="hover:text-orange-400 transition">Privacy Policy</Link></li>
-            <li><Link to="/ReturnAndRefundPolicy" className="hover:text-orange-400 transition">Return & Refund Policy</Link></li>
-            <li><Link to="/TermsAndConditions" className="hover:text-orange-400 transition">Terms & Conditions</Link></li>
+            <li>
+              <Link to="/" className="hover:text-orange-400 transition">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/about" className="hover:text-orange-400 transition">
+                About Us
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact" className="hover:text-orange-400 transition">
+                Contact
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/privacyPolicy"
+                className="hover:text-orange-400 transition"
+              >
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/ReturnAndRefundPolicy"
+                className="hover:text-orange-400 transition"
+              >
+                Return & Refund Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/TermsAndConditions"
+                className="hover:text-orange-400 transition"
+              >
+                Terms & Conditions
+              </Link>
+            </li>
           </ul>
         </motion.div>
 

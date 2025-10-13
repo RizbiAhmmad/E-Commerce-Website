@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import Loading from "@/Shared/Loading";
 import { motion } from "framer-motion";
 import { AuthContext } from "@/provider/AuthProvider";
@@ -8,6 +7,7 @@ import Swal from "sweetalert2";
 import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { GrView } from "react-icons/gr";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const CategoryProducts = () => {
   const { id } = useParams();
@@ -22,6 +22,7 @@ const CategoryProducts = () => {
 
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const [subcategories, setSubcategories] = useState([]);
   const [selectedSubs, setSelectedSubs] = useState([]); 
@@ -30,14 +31,14 @@ const CategoryProducts = () => {
     const fetchProductsAndSubs = async () => {
       try {
         // Get products by category
-        const res = await axios.get(
-          `https://api.sports.bangladeshiit.com/products?categoryId=${id}`
+        const res = await axiosPublic.get(
+          `/products?categoryId=${id}`
         );
         setProducts(res.data);
 
         // Use categories-with-subcategories API
-        const subRes = await axios.get(
-          "https://api.sports.bangladeshiit.com/categories-with-subcategories"
+        const subRes = await axiosPublic.get(
+          "/categories-with-subcategories"
         );
         const category = subRes.data.find((c) => c._id === id);
         setSubcategories(category ? category.subcategories : []);
@@ -67,7 +68,7 @@ const CategoryProducts = () => {
 
   // Filtering (only active products)
 const filteredProducts = sortedProducts.filter((p) => {
-  const isActive = p.status === "active"; // ✅ check status
+  const isActive = p.status === "active";
   const inPrice = p.newPrice >= priceRange[0] && p.newPrice <= priceRange[1];
   const inSub =
     selectedSubs.length > 0 ? selectedSubs.includes(p.subcategoryId) : true;
@@ -125,7 +126,7 @@ const filteredProducts = sortedProducts.filter((p) => {
           productId: product._id,
           quantity: 1,
         };
-        const res = await axios.post("https://api.sports.bangladeshiit.com/cart", cartData);
+        const res = await axiosPublic.post("/cart", cartData);
         if (res.data.insertedId) {
           Swal.fire({
             icon: "success",
