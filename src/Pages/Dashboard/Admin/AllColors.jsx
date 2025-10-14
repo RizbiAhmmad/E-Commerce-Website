@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllColors = () => {
+  const axiosPublic = useAxiosPublic();
+  const isDemo = import.meta.env.VITE_DEMO_MODE === "true"; // ✅ Demo Mode Check
+
   const { data: colors = [], refetch } = useQuery({
     queryKey: ["colors"],
     queryFn: async () => {
@@ -15,7 +18,9 @@ const AllColors = () => {
   });
 
   const navigate = useNavigate();
-  const axiosPublic = useAxiosPublic();
+  const [localColors, setLocalColors] = useState([]); // ✅ Local state for demo updates
+  const currentData = isDemo && localColors.length ? localColors : colors;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
   const [formData, setFormData] = useState({
@@ -41,7 +46,21 @@ const AllColors = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
     try {
+      if (isDemo) {
+        // ✅ Demo update without real API call
+        const updated = currentData.map((c) =>
+          c._id === selectedColor._id
+            ? { ...c, name: formData.name, hex: formData.hex, status: formData.status }
+            : c
+        );
+        setLocalColors(updated);
+        setIsModalOpen(false);
+        Swal.fire("Demo Mode", "Color updated temporarily!", "info");
+        return;
+      }
+
       await axiosPublic.put(`/colors/${selectedColor._id}`, formData);
       Swal.fire("Updated!", "Color has been updated.", "success");
       setIsModalOpen(false);
@@ -62,6 +81,14 @@ const AllColors = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
+        if (isDemo) {
+          // ✅ Demo delete without affecting backend
+          const filtered = currentData.filter((c) => c._id !== id);
+          setLocalColors(filtered);
+          Swal.fire("Demo Mode", "Color deleted temporarily!", "info");
+          return;
+        }
+
         axiosPublic.delete(`/colors/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
@@ -77,6 +104,12 @@ const AllColors = () => {
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
         All Colors
       </h2>
+
+      {isDemo && (
+        <p className="mb-4 text-sm text-orange-500 font-semibold text-center">
+          🧩 Demo Mode Active — Changes are temporary only.
+        </p>
+      )}
 
       {/* Add Color Button */}
       <div className="flex justify-end mb-4">
@@ -101,7 +134,7 @@ const AllColors = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {colors.map((color, index) => (
+            {currentData.map((color, index) => (
               <tr key={color._id} className="hover:bg-gray-50 transition">
                 <td className="px-6 py-4">{index + 1}</td>
                 <td className="px-6 py-4 font-semibold">{color.name}</td>
@@ -124,17 +157,16 @@ const AllColors = () => {
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                  <h1>Edit & delete option hidden for demo show</h1>
-                  {/* <button onClick={() => openEditModal(color)}>
+                  <button onClick={() => openEditModal(color)}>
                     <FaEdit className="text-xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(color._id)}>
                     <FaTrashAlt className="text-xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}
-            {colors.length === 0 && (
+            {currentData.length === 0 && (
               <tr>
                 <td colSpan="5" className="py-6 text-center text-gray-500">
                   No colors found.

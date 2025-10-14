@@ -155,7 +155,6 @@ useEffect(() => {
       setOrders(res.data);
       setOrderCount(res.data.length);
 
-      // নতুন অর্ডার আসলে SweetAlert দেখাও
       if (lastOrderCount && res.data.length > lastOrderCount) {
         Swal.fire({
           icon: "info",
@@ -173,7 +172,7 @@ useEffect(() => {
   };
 
   fetchOrders();
-  const interval = setInterval(fetchOrders, 10000); // প্রতি 10 সেকেন্ডে চেক করবে
+  const interval = setInterval(fetchOrders, 1000);
   return () => clearInterval(interval);
 }, []);
 

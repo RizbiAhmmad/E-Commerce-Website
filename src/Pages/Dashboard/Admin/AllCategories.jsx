@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllCategories = () => {
+  const axiosPublic = useAxiosPublic();
+  const isDemo = import.meta.env.VITE_DEMO_MODE === "true";
+
   const { data: categories = [], refetch } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -15,7 +18,9 @@ const AllCategories = () => {
   });
 
   const navigate = useNavigate();
-  const axiosPublic = useAxiosPublic();
+  const [localCategories, setLocalCategories] = useState([]);
+  const currentData = isDemo && localCategories.length ? localCategories : categories;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [formData, setFormData] = useState({
@@ -26,13 +31,13 @@ const AllCategories = () => {
   const [newImageFile, setNewImageFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  //  Pagination states
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const totalPages = Math.ceil(currentData.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentCategories = categories.slice(indexOfFirst, indexOfLast);
+  const currentCategories = currentData.slice(indexOfFirst, indexOfLast);
 
   const openEditModal = (cat) => {
     setSelectedCategory(cat);
@@ -56,8 +61,21 @@ const AllCategories = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
     try {
       let imageUrl = formData.image;
+
+      if (isDemo) {
+        const updated = currentData.map((cat) =>
+          cat._id === selectedCategory._id
+            ? { ...cat, name: formData.name, status: formData.status, image: imageUrl }
+            : cat
+        );
+        setLocalCategories(updated);
+        setIsModalOpen(false);
+        Swal.fire("Demo Mode", "Category updated temporarily!", "info");
+        return;
+      }
 
       if (newImageFile) {
         setUploading(true);
@@ -72,14 +90,11 @@ const AllCategories = () => {
         setUploading(false);
       }
 
-      await axiosPublic.put(
-        `/categories/${selectedCategory._id}`,
-        {
-          name: formData.name,
-          status: formData.status,
-          image: imageUrl,
-        }
-      );
+      await axiosPublic.put(`/categories/${selectedCategory._id}`, {
+        name: formData.name,
+        status: formData.status,
+        image: imageUrl,
+      });
 
       Swal.fire("Updated!", "Category has been updated.", "success");
       setIsModalOpen(false);
@@ -100,25 +115,36 @@ const AllCategories = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axiosPublic.delete(`/categories/${id}`).then((res) => {
-          if (res.data.deletedCount > 0) {
-            refetch();
-            Swal.fire("Deleted!", "Category removed.", "success");
-          }
-        });
+        if (isDemo) {
+          const filtered = currentData.filter((cat) => cat._id !== id);
+          setLocalCategories(filtered);
+          Swal.fire("Demo Mode", "Category deleted temporarily!", "info");
+          return;
+        }
+
+        const res = await axiosPublic.delete(`/categories/${id}`);
+        if (res.data.deletedCount > 0) {
+          refetch();
+          Swal.fire("Deleted!", "Category removed.", "success");
+        }
       }
     });
   };
 
   return (
     <div className="max-w-4xl p-6 mx-auto">
-      <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
+      <h2 className="pb-4 mb-4 text-4xl font-bold text-center border-b-2 border-gray-200">
         All Categories
       </h2>
 
-      {/* Add Category Button */}
+      {isDemo && (
+        <p className="mb-4 text-sm text-orange-500 font-semibold text-center">
+          🧩 Demo Mode Active — Changes are temporary only.
+        </p>
+      )}
+
       <div className="flex justify-end mb-4">
         <button
           onClick={() => navigate("/dashboard/addCategory")}
@@ -128,7 +154,6 @@ const AllCategories = () => {
         </button>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
@@ -142,7 +167,10 @@ const AllCategories = () => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {currentCategories.map((cat, index) => (
-              <tr key={cat._id} className="transition duration-200 hover:bg-gray-50">
+              <tr
+                key={cat._id}
+                className="transition duration-200 hover:bg-gray-50"
+              >
                 <td className="px-6 py-4">{indexOfFirst + index + 1}</td>
                 <td className="px-6 py-4">
                   <img
@@ -151,7 +179,9 @@ const AllCategories = () => {
                     className="object-cover w-10 h-10 border rounded"
                   />
                 </td>
-                <td className="px-6 py-4 font-semibold text-gray-800">{cat.name}</td>
+                <td className="px-6 py-4 font-semibold text-gray-800">
+                  {cat.name}
+                </td>
                 <td className="px-6 py-4">
                   {cat.status === "active" ? (
                     <span className="px-2 py-1 text-xs text-green-800 bg-green-100 rounded">
@@ -164,19 +194,21 @@ const AllCategories = () => {
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                 <h1>Edit & delete option hidden for demo show</h1>
-                  {/* <button onClick={() => openEditModal(cat)}>
+                  <button onClick={() => openEditModal(cat)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(cat._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}
-            {categories.length === 0 && (
+            {currentData.length === 0 && (
               <tr>
-                <td colSpan="5" className="py-6 text-center text-gray-500">
+                <td
+                  colSpan="5"
+                  className="py-6 text-center text-gray-500"
+                >
                   No categories found.
                 </td>
               </tr>
@@ -185,8 +217,7 @@ const AllCategories = () => {
         </table>
       </div>
 
-      {/*  Pagination */}
-      {categories.length > itemsPerPage && (
+      {currentData.length > itemsPerPage && (
         <div className="flex justify-center items-center gap-2 mt-6">
           <button
             onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
@@ -271,7 +302,9 @@ const AllCategories = () => {
                     className="w-16 h-16 mt-2 rounded object-cover border"
                   />
                 )}
-                {uploading && <p className="text-sm text-gray-500 mt-1">Uploading...</p>}
+                {uploading && (
+                  <p className="text-sm text-gray-500 mt-1">Uploading...</p>
+                )}
               </div>
 
               <div>

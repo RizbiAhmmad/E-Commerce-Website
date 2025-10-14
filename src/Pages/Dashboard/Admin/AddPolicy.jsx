@@ -11,7 +11,7 @@ const AddPolicy = () => {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    status: "active",
+    status: "inactive",
   });
   const [loading, setLoading] = useState(false);
 
@@ -94,7 +94,7 @@ const AddPolicy = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded"
           >
-            <option value="active">Active</option>
+            {/* <option value="active">Active</option> */}
             <option value="inactive">Inactive</option>
           </select>
         </div>

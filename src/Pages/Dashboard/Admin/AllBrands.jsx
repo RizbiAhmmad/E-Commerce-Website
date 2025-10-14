@@ -8,6 +8,8 @@ import useAxiosPublic from "@/Hooks/useAxiosPublic";
 const AllBrands = () => {
   const navigate = useNavigate();
   const axiosPublic = useAxiosPublic();
+  const isDemo = import.meta.env.VITE_DEMO_MODE === "true";
+
   const { data: brands = [], refetch } = useQuery({
     queryKey: ["brands"],
     queryFn: async () => {
@@ -15,6 +17,9 @@ const AllBrands = () => {
       return res.data;
     },
   });
+
+  const [localBrands, setLocalBrands] = useState([]);
+  const currentData = isDemo && localBrands.length ? localBrands : brands;
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
@@ -32,16 +37,28 @@ const AllBrands = () => {
   const handleChange = (e) =>
     setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
 
-  const handleLogoChange = (e) => {
-    setNewLogoFile(e.target.files[0]);
-  };
+  const handleLogoChange = (e) => setNewLogoFile(e.target.files[0]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
     try {
       let logoUrl = formData.logo;
 
-      // If new logo selected, upload to Cloudinary
+      // DEMO MODE logic
+      if (isDemo) {
+        const updated = currentData.map((b) =>
+          b._id === selectedBrand._id
+            ? { ...b, name: formData.name, status: formData.status, logo: logoUrl }
+            : b
+        );
+        setLocalBrands(updated);
+        setIsOpen(false);
+        Swal.fire("Demo Mode", "Brand updated temporarily!", "info");
+        return;
+      }
+
+      // Upload logo if new one is selected
       if (newLogoFile) {
         setUploading(true);
         const fd = new FormData();
@@ -83,6 +100,13 @@ const AllBrands = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
+        if (isDemo) {
+          const filtered = currentData.filter((b) => b._id !== id);
+          setLocalBrands(filtered);
+          Swal.fire("Demo Mode", "Brand deleted temporarily!", "info");
+          return;
+        }
+
         const res = await axiosPublic.delete(`/brands/${id}`);
         if (res.data.deletedCount > 0) {
           refetch();
@@ -97,6 +121,12 @@ const AllBrands = () => {
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
         All Brands
       </h2>
+
+      {isDemo && (
+        <p className="mb-4 text-sm font-semibold text-orange-500 text-center">
+          🧩 Demo Mode Active — Changes are temporary only.
+        </p>
+      )}
 
       <div className="flex justify-end mb-4">
         <button
@@ -119,32 +149,39 @@ const AllBrands = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {brands.map((b, i) => (
+            {currentData.map((b, i) => (
               <tr key={b._id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">{i + 1}</td>
                 <td className="px-6 py-4">
-                  <img src={b.logo} alt={b.name} className="w-10 h-10 rounded object-cover border" />
+                  <img
+                    src={b.logo}
+                    alt={b.name}
+                    className="w-10 h-10 rounded object-cover border"
+                  />
                 </td>
                 <td className="px-6 py-4 font-semibold">{b.name}</td>
                 <td className="px-6 py-4">
                   {b.status === "active" ? (
-                    <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Active</span>
+                    <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                      Active
+                    </span>
                   ) : (
-                    <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded">Inactive</span>
+                    <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded">
+                      Inactive
+                    </span>
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                  <h1>Edit & delete option hidden for demo show</h1>
-                  {/* <button onClick={() => openEdit(b)}>
+                  <button onClick={() => openEdit(b)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(b._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}
-            {brands.length === 0 && (
+            {currentData.length === 0 && (
               <tr>
                 <td colSpan="5" className="py-6 text-center text-gray-500">
                   No brands found.
@@ -202,7 +239,11 @@ const AllBrands = () => {
                   className="hidden"
                 />
                 {formData.logo && (
-                  <img src={formData.logo} alt="current" className="w-16 h-16 mt-2 rounded object-cover border" />
+                  <img
+                    src={formData.logo}
+                    alt="current"
+                    className="w-16 h-16 mt-2 rounded object-cover border"
+                  />
                 )}
                 {uploading && <p className="text-sm text-gray-500 mt-1">Uploading...</p>}
               </div>

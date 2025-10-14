@@ -2,11 +2,15 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllSizes = () => {
   const axiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
+
+  const isDemo = import.meta.env.VITE_DEMO_MODE === "true";
+
   const { data: sizes = [], refetch } = useQuery({
     queryKey: ["sizes"],
     queryFn: async () => {
@@ -15,7 +19,9 @@ const AllSizes = () => {
     },
   });
 
-  const navigate = useNavigate();
+  const [localSizes, setLocalSizes] = useState([]);
+  const currentData = isDemo && localSizes.length ? localSizes : sizes;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
   const [formData, setFormData] = useState({
@@ -39,6 +45,19 @@ const AllSizes = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    
+    if (isDemo) {
+      const updated = currentData.map((s) =>
+        s._id === selectedSize._id
+          ? { ...s, name: formData.name, status: formData.status }
+          : s
+      );
+      setLocalSizes(updated);
+      setIsModalOpen(false);
+      Swal.fire("Demo Mode", "Size updated temporarily!", "info");
+      return;
+    }
+
     try {
       await axiosPublic.put(`/sizes/${selectedSize._id}`, formData);
       Swal.fire("Updated!", "Size has been updated.", "success");
@@ -58,14 +77,20 @@ const AllSizes = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axiosPublic.delete(`/sizes/${id}`).then((res) => {
-          if (res.data.deletedCount > 0) {
-            refetch();
-            Swal.fire("Deleted!", "Size removed.", "success");
-          }
-        });
+        if (isDemo) {
+          const filtered = currentData.filter((s) => s._id !== id);
+          setLocalSizes(filtered);
+          Swal.fire("Demo Mode", "Size deleted temporarily!", "info");
+          return;
+        }
+
+        const res = await axiosPublic.delete(`/sizes/${id}`);
+        if (res.data.deletedCount > 0) {
+          refetch();
+          Swal.fire("Deleted!", "Size removed.", "success");
+        }
       }
     });
   };
@@ -75,6 +100,12 @@ const AllSizes = () => {
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
         All Sizes
       </h2>
+
+      {isDemo && (
+        <p className="mb-4 text-sm font-semibold text-orange-500 text-center">
+          🧩 Demo Mode Active — Changes are temporary only.
+        </p>
+      )}
 
       {/* Add Size Button */}
       <div className="flex justify-end mb-4">
@@ -98,7 +129,7 @@ const AllSizes = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {sizes.map((size, index) => (
+            {currentData.map((size, index) => (
               <tr key={size._id} className="hover:bg-gray-50 transition">
                 <td className="px-6 py-4">{index + 1}</td>
                 <td className="px-6 py-4 font-semibold">{size.name}</td>
@@ -114,17 +145,16 @@ const AllSizes = () => {
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                  <h1>Edit & delete option hidden for demo show</h1>
-                  {/* <button onClick={() => openEditModal(size)}>
+                  <button onClick={() => openEditModal(size)}>
                     <FaEdit className="text-xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(size._id)}>
                     <FaTrashAlt className="text-xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}
-            {sizes.length === 0 && (
+            {currentData.length === 0 && (
               <tr>
                 <td colSpan="4" className="py-6 text-center text-gray-500">
                   No sizes found.

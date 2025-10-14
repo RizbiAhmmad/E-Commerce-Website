@@ -6,7 +6,7 @@ import useAxiosPublic from "@/Hooks/useAxiosPublic";
 const AddSize = () => {
   const [formData, setFormData] = useState({
     name: "",
-    status: "active",
+    status: "inactive",
   });
 
   const navigate = useNavigate();
@@ -67,7 +67,7 @@ const AddSize = () => {
             onChange={handleChange}
             className="w-full p-2 border rounded"
           >
-            <option value="active">Active</option>
+            {/* <option value="active">Active</option> */}
             <option value="inactive">Inactive</option>
           </select>
         </div>

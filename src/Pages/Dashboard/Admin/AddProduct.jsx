@@ -23,7 +23,7 @@ const AddProduct = () => {
     oldPrice: "",
     newPrice: "",
     stock: "",
-    status: "active",
+    status: "inactive",
     variant: "",
     barcode: "",
   });
@@ -359,7 +359,7 @@ const AddProduct = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded"
           >
-            <option value="active">Active</option>
+            {/* <option value="active">Active</option> */}
             <option value="inactive">Inactive</option>
           </select>
         </div>

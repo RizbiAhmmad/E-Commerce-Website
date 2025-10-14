@@ -6,16 +6,16 @@ import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllSubcategories = () => {
-  const navigate = useNavigate();
   const axiosPublic = useAxiosPublic();
+  const isDemo = import.meta.env.VITE_DEMO_MODE === "true";
+
+  const navigate = useNavigate();
 
   // Fetch subcategories
   const { data: subcategories = [], refetch } = useQuery({
     queryKey: ["subcategories"],
     queryFn: async () => {
-      const res = await axiosPublic.get(
-        "/subcategories"
-      );
+      const res = await axiosPublic.get("/subcategories");
       return res.data;
     },
   });
@@ -24,12 +24,13 @@ const AllSubcategories = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await axiosPublic.get(
-        "/categories"
-      );
+      const res = await axiosPublic.get("/categories");
       return res.data;
     },
   });
+
+  const [localSubs, setLocalSubs] = useState([]);
+  const currentData = isDemo && localSubs.length ? localSubs : subcategories;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSub, setSelectedSub] = useState(null);
@@ -39,20 +40,26 @@ const AllSubcategories = () => {
     status: "active",
   });
 
+  // Pagination setup
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(subcategories.length / itemsPerPage);
-
+  const totalPages = Math.ceil(currentData.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentItems = subcategories.slice(indexOfFirst, indexOfLast);
+  const currentItems = currentData.slice(indexOfFirst, indexOfLast);
+
+  // Get category name
+  const getCategoryName = (id) => {
+    const cat = categories.find((c) => c._id === id);
+    return cat?.name || "Unknown";
+  };
 
   const openEditModal = (sub) => {
     setSelectedSub(sub);
     setFormData({
       name: sub.name,
-      status: sub.status,
       categoryId: sub.categoryId,
+      status: sub.status,
     });
     setIsModalOpen(true);
   };
@@ -64,11 +71,21 @@ const AllSubcategories = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
     try {
-      await axiosPublic.put(
-        `/subcategories/${selectedSub._id}`,
-        formData
-      );
+      if (isDemo) {
+        const updated = currentData.map((sub) =>
+          sub._id === selectedSub._id
+            ? { ...sub, ...formData }
+            : sub
+        );
+        setLocalSubs(updated);
+        setIsModalOpen(false);
+        Swal.fire("Demo Mode", "Subcategory updated temporarily!", "info");
+        return;
+      }
+
+      await axiosPublic.put(`/subcategories/${selectedSub._id}`, formData);
       Swal.fire("Updated!", "Subcategory has been updated.", "success");
       setIsModalOpen(false);
       refetch();
@@ -86,35 +103,37 @@ const AllSubcategories = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axiosPublic
-          .delete(
-            `/subcategories/${id}`
-          )
-          .then((res) => {
-            if (res.data.deletedCount > 0) {
-              refetch();
-              Swal.fire("Deleted!", "Subcategory removed.", "success");
-            }
-          });
+        if (isDemo) {
+          const filtered = currentData.filter((sub) => sub._id !== id);
+          setLocalSubs(filtered);
+          Swal.fire("Demo Mode", "Subcategory deleted temporarily!", "info");
+          return;
+        }
+
+        const res = await axiosPublic.delete(`/subcategories/${id}`);
+        if (res.data.deletedCount > 0) {
+          refetch();
+          Swal.fire("Deleted!", "Subcategory removed.", "success");
+        }
       }
     });
   };
 
-  // Helper to get category name from categoryId
-  const getCategoryName = (id) => {
-    const category = categories.find((cat) => cat._id === id);
-    return category?.name || "Unknown";
-  };
-
   return (
     <div className="max-w-4xl p-6 mx-auto">
-      <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
+      <h2 className="pb-4 mb-4 text-4xl font-bold text-center border-b-2 border-gray-200">
         All Subcategories
       </h2>
 
-      {/* Add Subcategory Button */}
+      {isDemo && (
+        <p className="mb-4 text-sm text-orange-500 font-semibold text-center">
+          🧩 Demo Mode Active — Changes are temporary only.
+        </p>
+      )}
+
+      {/* Add Button */}
       <div className="flex justify-end mb-4">
         <button
           onClick={() => navigate("/dashboard/addSubCategories")}
@@ -142,9 +161,7 @@ const AllSubcategories = () => {
                 key={sub._id}
                 className="transition duration-200 hover:bg-gray-50"
               >
-                <td className="px-6 py-4">
-                  {indexOfFirst + index + 1}
-                </td>
+                <td className="px-6 py-4">{indexOfFirst + index + 1}</td>
                 <td className="px-6 py-4 font-semibold text-gray-800">
                   {sub.name}
                 </td>
@@ -161,17 +178,16 @@ const AllSubcategories = () => {
                   )}
                 </td>
                 <td className="flex gap-4 px-6 py-4">
-                  <h1>Edit & delete option hidden for demo show</h1>
-                  {/* <button onClick={() => openEditModal(sub)}>
+                  <button onClick={() => openEditModal(sub)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
                   <button onClick={() => handleDelete(sub._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}
-            {subcategories.length === 0 && (
+            {currentData.length === 0 && (
               <tr>
                 <td colSpan="5" className="py-6 text-center text-gray-500">
                   No subcategories found.

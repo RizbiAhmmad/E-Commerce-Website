@@ -17,7 +17,7 @@ const AddCoupon = () => {
     minOrderAmount: "",
     startDate: "",
     expiryDate: "",
-    status: "active",
+    status: "inactive",
     image: "",
   });
 
@@ -175,7 +175,7 @@ const AddCoupon = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded"
           >
-            <option value="active">Active</option>
+            {/* <option value="active">Active</option> */}
             <option value="inactive">Inactive</option>
           </select>
         </div>

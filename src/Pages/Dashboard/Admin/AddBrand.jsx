@@ -11,7 +11,7 @@ const AddBrand = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    status: "active",
+    status: "inactive",
   });
   const [logoFile, setLogoFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -115,7 +115,7 @@ const AddBrand = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded"
           >
-            <option value="active">Active</option>
+            {/* <option value="active">Active</option> */}
             <option value="inactive">Inactive</option>
           </select>
         </div>
