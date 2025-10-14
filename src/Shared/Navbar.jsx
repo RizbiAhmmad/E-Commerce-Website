@@ -14,6 +14,8 @@ import ThemeChange from "@/components/ThemeChange";
 import { AuthContext } from "@/provider/AuthProvider";
 import { IoIosArrowForward, IoMdHeartEmpty } from "react-icons/io";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import Swal from "sweetalert2";
+import { FaBell } from "react-icons/fa";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -27,9 +29,23 @@ const Navbar = () => {
   const [openCategory, setOpenCategory] = useState(null);
   const [footerInfo, setFooterInfo] = useState(null);
   const axiosPublic = useAxiosPublic();
-
+  const [orders, setOrders] = useState([]);
+const [orderCount, setOrderCount] = useState(0);
 
   const navigate = useNavigate();
+  const [role, setRole] = useState(null);
+useEffect(() => {
+  if (user?.email) {
+    axiosPublic.get("/users")
+      .then((res) => {
+        const currentUser = res.data.find(u => u.email === user.email);
+        setRole(currentUser?.role || "user");
+      })
+      .catch(() => setRole("user"));
+  }
+}, [user]);
+
+
 
   // Fetch whisper count
   const fetchWhisperCount = () => {
@@ -129,6 +145,37 @@ const Navbar = () => {
       })
       .catch(() => setFooterInfo(null));
   }, []);
+
+  useEffect(() => {
+  let lastOrderCount = 0;
+
+  const fetchOrders = async () => {
+    try {
+      const res = await axiosPublic.get("/orders");
+      setOrders(res.data);
+      setOrderCount(res.data.length);
+
+      // নতুন অর্ডার আসলে SweetAlert দেখাও
+      if (lastOrderCount && res.data.length > lastOrderCount) {
+        Swal.fire({
+          icon: "info",
+          title: "🎉 New Order Received!",
+          text: "A new customer order has been placed.",
+          showConfirmButton: false,
+          timer: 3000,
+        });
+      }
+
+      lastOrderCount = res.data.length;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchOrders();
+  const interval = setInterval(fetchOrders, 10000); // প্রতি 10 সেকেন্ডে চেক করবে
+  return () => clearInterval(interval);
+}, []);
 
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
@@ -276,6 +323,40 @@ const Navbar = () => {
               </span>
             )}
           </Link>
+{user && role === "admin" ? (
+  <div className="relative group">
+    <FaBell
+      className="text-xl cursor-pointer hover:text-cyan-500 transition-colors"
+      onClick={() => navigate("/dashboard/allorders")}
+    />
+    {orderCount > 0 && (
+      <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">
+        {orderCount}
+      </span>
+    )}
+
+    <div className="absolute right-0 w-64 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 hidden group-hover:block z-50">
+      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-2">
+        Recent Orders
+      </h3>
+      {orders?.slice(0, 5).map((order) => (
+        <div
+          key={order._id}
+          className="border-b border-gray-200 dark:border-gray-700 py-1 text-sm text-gray-600 dark:text-gray-300"
+        >
+          #{order._id.slice(-5)} - {order.status}
+        </div>
+      ))}
+      <Link
+        to="/dashboard/allorders"
+        className="text-cyan-600 text-sm font-semibold mt-2 inline-block hover:underline"
+      >
+        View All Orders →
+      </Link>
+    </div>
+  </div>
+) : null}
+
 
           {/* Dashboard (Desktop only) */}
           {user && (

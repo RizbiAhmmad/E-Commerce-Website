@@ -10,7 +10,7 @@ const AllOrders = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const ordersPerPage = 20;
-    const axiosPublic = useAxiosPublic();
+  const axiosPublic = useAxiosPublic();
 
   // Fetch orders
   const fetchOrders = async () => {
@@ -26,9 +26,7 @@ const AllOrders = () => {
   // Fetch active couriers
   const fetchCouriers = async () => {
     try {
-      const res = await axiosPublic.get(
-        "/courier/settings"
-      );
+      const res = await axiosPublic.get("/courier/settings");
       setCouriers(res.data);
     } catch (error) {
       console.error(error);
@@ -53,14 +51,12 @@ const AllOrders = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axiosPublic
-          .delete(`/orders/${id}`)
-          .then((res) => {
-            if (res.data.deletedCount > 0) {
-              fetchOrders();
-              Swal.fire("Deleted!", "Order removed.", "success");
-            }
-          });
+        axiosPublic.delete(`/orders/${id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            fetchOrders();
+            Swal.fire("Deleted!", "Order removed.", "success");
+          }
+        });
       }
     });
   };
@@ -68,10 +64,9 @@ const AllOrders = () => {
   // Update order status
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await axiosPublic.patch(
-        `/orders/${id}/status`,
-        { status: newStatus }
-      );
+      const res = await axiosPublic.patch(`/orders/${id}/status`, {
+        status: newStatus,
+      });
       if (res.data.success) {
         Swal.fire("Updated!", "Order status updated.", "success");
         fetchOrders();
@@ -88,10 +83,9 @@ const AllOrders = () => {
     if (!courierName) return;
 
     try {
-      const res = await axiosPublic.patch(
-        `/orders/${orderId}/courier`,
-        { courierName }
-      );
+      const res = await axiosPublic.patch(`/orders/${orderId}/courier`, {
+        courierName,
+      });
       if (res.data.success) {
         Swal.fire("Updated!", "Courier assigned successfully.", "success");
         fetchOrders();

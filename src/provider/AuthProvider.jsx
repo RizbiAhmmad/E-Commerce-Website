@@ -51,19 +51,18 @@ const AuthProvider = ({ children }) => {
   };
 
   const fetchUserRole = async (email) => {
-    if (email) {
-      try {
-        const response = await axiosPublic.get(`/users/${email}`); // ✅ এখন baseURL .env থেকে আসবে
-        const userData = response.data;
-        setUserRole(userData?.role || "user");
-      } catch (error) {
-        console.log("Error fetching user role:", error);
-        setUserRole("user");
-      }
-    } else {
-      setUserRole(null);
-    }
-  };
+  if (!email) return setUserRole(null);
+
+  try {
+    const res = await axiosPublic.get("/users");
+    const userData = res.data.find((u) => u.email === email);
+    setUserRole(userData?.role || "user");
+  } catch (error) {
+    console.log("Error fetching user role:", error);
+    setUserRole("user");
+  }
+};
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
