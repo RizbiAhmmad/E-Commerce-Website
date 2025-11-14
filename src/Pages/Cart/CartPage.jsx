@@ -12,41 +12,40 @@ const CartPage = () => {
   const navigate = useNavigate();
   const axiosPublic = useAxiosPublic();
 
-  // Fetch cart items
   useEffect(() => {
-    if (!user?.email) return;
+  if (!user?.email) {
+    setLoading(false);
+    return;
+  }
 
-    setLoading(true);
-    axiosPublic
-      .get(
-        `/cart?email=${user.email}`
-      )
-      .then(async (res) => {
-        const items = res.data;
-        const productIds = items.map((item) => item.productId);
+  setLoading(true);
+  axiosPublic
+    .get(`/cart?email=${user.email}`)
+    .then(async (res) => {
+      const items = res.data;
+      const productIds = items.map((item) => item.productId);
 
-        const productDetails = await Promise.all(
-          productIds.map((id) =>
-            axiosPublic
-              .get(`/products/${id}`)
-              .then((res) => res.data)
-          )
-        );
+      const productDetails = await Promise.all(
+        productIds.map((id) =>
+          axiosPublic.get(`/products/${id}`).then((res) => res.data)
+        )
+      );
 
-        const map = {};
-        productDetails.forEach((product) => {
-          map[product._id] = product;
-        });
-
-        setProductsMap(map);
-        setCartItems(items);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch cart items:", error);
-        setLoading(false);
+      const map = {};
+      productDetails.forEach((product) => {
+        map[product._id] = product;
       });
-  }, [user]);
+
+      setProductsMap(map);
+      setCartItems(items);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.error("Failed to fetch cart items:", error);
+      setLoading(false);
+    });
+}, [user]);
+
 
   const totalPrice = cartItems.reduce((total, item) => {
     if (!item.selected) return total;
@@ -118,7 +117,23 @@ const CartPage = () => {
 
   if (loading) return <p className="p-6 text-center">Loading cart...</p>;
   if (!cartItems.length)
-    return <p className="p-6 text-center">Your cart is empty.</p>;
+  return (
+    <div className="min-h-[70vh] flex flex-col items-center justify-center text-center">
+      <h2 className="text-3xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600">
+        🛒 Your Cart is Empty
+      </h2>
+      <p className="text-gray-500 dark:text-gray-400 mb-6">
+        Looks like you haven't added anything to your cart yet.
+      </p>
+      <button
+        onClick={() => navigate("/")}
+        className="px-6 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 transition"
+      >
+        Continue Shopping
+      </button>
+    </div>
+  );
+
 
   return (
     <div className="min-h-screen dark:bg-black dark:text-white px-4 sm:px-6 lg:px-8 py-24">

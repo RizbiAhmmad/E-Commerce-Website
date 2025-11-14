@@ -32,7 +32,7 @@ export default function FloatingChatMenu() {
   ];
 
   return (
-    <div className="fixed bottom-8 right-8 md:bottom-12 md:right-16 z-[9999] flex flex-col items-end space-y-3">
+    <div className="fixed bottom-16 right-8 md:bottom-12 md:right-16 z-[9999] flex flex-col items-end space-y-3">
       {/* Action buttons */}
       <div
         className={`flex flex-col items-end space-y-3 transform transition-all duration-300 ${

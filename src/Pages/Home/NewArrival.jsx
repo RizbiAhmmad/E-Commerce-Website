@@ -96,12 +96,7 @@ const NewArrival = () => {
             key={product._id}
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{
-              duration: 0.4,
-              delay: index * 0.1,
-              type: "spring",
-              stiffness: 100,
-            }}
+           transition={{ duration: 0.12, ease: "easeOut" }}
             whileHover={{
               scale: 1.03,
               y: -5,
@@ -254,7 +249,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
       <div className="relative overflow-hidden rounded-md">
         <motion.img
           whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.1, ease: "linear" }}
           alt={product.name}
           src={product.images?.[0] || "https://via.placeholder.com/300"}
           className="w-full aspect-square object-cover rounded-md"
@@ -289,89 +284,92 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         </div>
       </div>
 
-      <div className="mt-2 p-1 min-w-0">
-        {/* <h3 className="text-[1.1rem] dark:text-white font-medium">
-          {product.name}
-        </h3> */}
-        <div className="min-h-[2.5rem] max-h-[5rem] overflow-auto">
-          <h3 className="text-[1rem] md:text-[1.1rem] leading-tight line-clamp-2 dark:text-white font-medium">
-            {product.name}
-          </h3>
-        </div>
-
-        {/* Brand & Review responsive */}
-        <div className="mt-1 md:flex md:items-center md:justify-between">
-          <p className="text-gray-400 text-[0.9rem] truncate">
-            Brand:{" "}
-            <span className="text-black dark:text-gray-100">{brandName}</span>
-          </p>
-
-          <div className="flex items-center gap-1 mt-1 md:mt-0">
-            {[...Array(5)].map((_, index) => {
-              const starNumber = index + 1;
-              return (
-                <FaStar
-                  key={starNumber}
-                  className={`${
-                    starNumber <= Math.round(averageRating)
-                      ? "text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                  size={14}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="flex items-end justify-between my-2 flex-wrap gap-2">
-          <div>
-            <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
-              {!product.stock || Number(product.stock) === 0 ? (
-                <span className="text-red-500 font-semibold">Out of stock</span>
-              ) : (
-                <span className="text-green-500 font-semibold">In Stock</span>
-              )}
-            </span>
-
-            <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
-              {hasDiscount ? (
-                <>
-                  <span className="text-red-500 line-through">
-                    {formatPrice(oldPriceNum)}
+      <div className="mt-1 p-1 min-w-0">
+              {/* <h3 className="text-[1.1rem] dark:text-white font-medium">
+                {product.name}
+              </h3> */}
+              <div className="mt-1 mb-1">
+                <h3
+                  className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
+                       leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
+                >
+                  {product.name}
+                </h3>
+              </div>
+      
+              {/* Brand & Review responsive */}
+              <div className="mt-1 md:flex md:items-center md:justify-between">
+                <p className="text-gray-400 text-[0.9rem] truncate">
+                  Brand:{" "}
+                  <span className="text-black dark:text-gray-100">{brandName}</span>
+                </p>
+      
+                <div className="flex items-center gap-1 mt-1 md:mt-0">
+                  {[...Array(5)].map((_, index) => {
+                    const starNumber = index + 1;
+                    return (
+                      <FaStar
+                        key={starNumber}
+                        className={`${
+                          starNumber <= Math.round(averageRating)
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                        size={14}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+      
+              <div className="flex items-end justify-between my-1 flex-wrap gap-2">
+                <div>
+                  <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
+                    {!product.stock || Number(product.stock) === 0 ? (
+                      <span className="text-red-500 font-semibold">Out of stock</span>
+                    ) : (
+                      <span className="text-green-500 font-semibold">In Stock</span>
+                    )}
                   </span>
-                  <span className="font-bold text-black dark:text-white">
-                    {formatPrice(newPriceNum)}
-                  </span>
-                </>
-              ) : (
-                <span className="font-bold dark:text-white text-black">
-                  {formatPrice(newPriceNum)}
-                </span>
-              )}
+      
+                  <div className="mt-1 min-h-[30px] flex items-center gap-2 flex-wrap">
+                    {hasDiscount ? (
+                      <>
+                        <span className="text-red-500 line-through">
+                          {formatPrice(oldPriceNum)}
+                        </span>
+                        <span className="font-bold text-black dark:text-white">
+                          {formatPrice(newPriceNum)}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="font-bold dark:text-white text-black">
+                        {formatPrice(newPriceNum)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+      
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-6 flex-shrink-0"
+                >
+                  <button
+                    onClick={handleAddToCart}
+                    className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                  >
+                    <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
+                  </button>
+      
+                  <button
+                    onClick={() => navigate(`/product/${product._id}`)}
+                    className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                  >
+                    <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-6 flex-shrink-0"
-          >
-            <button
-              onClick={handleAddToCart}
-              className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-            >
-              <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
-            </button>
-
-            <button
-              onClick={() => navigate(`/product/${product._id}`)}
-              className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-            >
-              <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

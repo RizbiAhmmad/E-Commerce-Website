@@ -167,6 +167,7 @@ const ProductDetailsPage = () => {
       quantity,
       selectedColor,
       selectedSize,
+      selected: true,
     };
 
     try {
@@ -188,6 +189,28 @@ const ProductDetailsPage = () => {
         title: "Failed to add to cart",
       });
     }
+  };
+
+  const getEmbedUrl = (url) => {
+    if (!url) return "";
+
+    // YouTube
+    if (url.includes("youtube") || url.includes("youtu.be")) {
+      if (url.includes("youtu.be")) {
+        const id = url.split("youtu.be/")[1].split("?")[0];
+        return `https://www.youtube.com/embed/${id}`;
+      }
+      return url.replace("watch?v=", "embed/");
+    }
+
+    // Facebook
+    if (url.includes("facebook.com")) {
+      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
+        url
+      )}&show_text=0&width=560&height=315`;
+    }
+
+    return url;
   };
 
   return (
@@ -461,6 +484,22 @@ const ProductDetailsPage = () => {
                 <p className="text-gray-600 dark:text-gray-200 whitespace-pre-line">
                   {product.description}
                 </p>
+                {product.videoUrl && (
+                  <div className="mt-8">
+                    <h2 className="text-2xl font-semibold mb-4">
+                      Product Video
+                    </h2>
+
+                    <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
+                      <iframe
+                        src={getEmbedUrl(product.videoUrl)}
+                        title="Product Video"
+                        allowFullScreen
+                        className="w-full h-full"
+                      ></iframe>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

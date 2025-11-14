@@ -23,9 +23,10 @@ const AddProduct = () => {
     oldPrice: "",
     newPrice: "",
     stock: "",
-    status: "inactive",
+    status: "active",
     variant: "",
     barcode: "",
+    videoUrl: "",
   });
 
   const [imageFiles, setImageFiles] = useState([]);
@@ -108,15 +109,12 @@ const AddProduct = () => {
         stock: Number(formData.stock),
         images: imageUrls,
         email: user?.email,
+        videoUrl: formData.videoUrl,
       };
 
-      const res = await axiosPublic.post(
-        "/products",
-        productData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const res = await axiosPublic.post("/products", productData, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (res.data.insertedId) {
         Swal.fire("Success", "Product added successfully!", "success");
@@ -260,6 +258,13 @@ const AddProduct = () => {
           rows="3"
           className="border p-2 rounded md:col-span-2"
         />
+        <input
+          name="videoUrl"
+          placeholder="Video URL (YouTube or Facebook)"
+          value={formData.videoUrl}
+          onChange={handleChange}
+          className="border p-2 rounded md:col-span-2"
+        />
 
         <div className="md:col-span-2">
           <label className="block mb-2 font-semibold">
@@ -351,7 +356,7 @@ const AddProduct = () => {
           className="border p-2 rounded"
         />
 
-        <div>
+        <div className="">
           <label className="block mb-1 font-semibold">Status</label>
           <select
             name="status"
@@ -359,7 +364,7 @@ const AddProduct = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded"
           >
-            {/* <option value="active">Active</option> */}
+            <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
         </div>

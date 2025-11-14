@@ -95,12 +95,7 @@ const ProductCard = () => {
             key={product._id}
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{
-              duration: 0.4,
-              delay: index * 0.1,
-              type: "spring",
-              stiffness: 100,
-            }}
+            transition={{ duration: 0.12, ease: "easeOut" }}
             whileHover={{
               scale: 1.03,
               y: -5,
@@ -173,6 +168,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         email: user.email,
         productId: product._id,
         quantity: 1,
+        selected: true,
       };
 
       const res = await axiosPublic.post("/cart", cartData);
@@ -253,7 +249,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
       <div className="relative overflow-hidden rounded-md">
         <motion.img
           whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.1, ease: "linear" }}
           alt={product.name}
           src={product.images?.[0] || "https://via.placeholder.com/300"}
           className="w-full aspect-square object-cover rounded-md"
@@ -288,12 +284,15 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         </div>
       </div>
 
-      <div className="mt-2 p-1 min-w-0">
+      <div className="mt-1 p-1 min-w-0">
         {/* <h3 className="text-[1.1rem] dark:text-white font-medium">
           {product.name}
         </h3> */}
-        <div className="min-h-[2.5rem] max-h-[5rem] overflow-auto">
-          <h3 className="text-[1rem] md:text-[1.1rem] leading-tight line-clamp-2 dark:text-white font-medium">
+        <div className="mt-1 mb-1">
+          <h3
+            className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
+                 leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
+          >
             {product.name}
           </h3>
         </div>
@@ -323,7 +322,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           </div>
         </div>
 
-        <div className="flex items-end justify-between my-2 flex-wrap gap-2">
+        <div className="flex items-end justify-between my-1 flex-wrap gap-2">
           <div>
             <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
               {!product.stock || Number(product.stock) === 0 ? (
@@ -333,7 +332,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
               )}
             </span>
 
-            <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
+            <div className="mt-1 min-h-[30px] flex items-center gap-2 flex-wrap">
               {hasDiscount ? (
                 <>
                   <span className="text-red-500 line-through">
@@ -357,14 +356,14 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           >
             <button
               onClick={handleAddToCart}
-              className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+              className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
             >
               <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
             </button>
 
             <button
               onClick={() => navigate(`/product/${product._id}`)}
-              className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+              className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
             >
               <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
             </button>

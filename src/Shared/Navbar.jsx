@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -8,6 +8,7 @@ import {
   FaBars,
   FaTimes,
   FaChevronDown,
+  FaHome,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
@@ -30,22 +31,21 @@ const Navbar = () => {
   const [footerInfo, setFooterInfo] = useState(null);
   const axiosPublic = useAxiosPublic();
   const [orders, setOrders] = useState([]);
-const [orderCount, setOrderCount] = useState(0);
+  const [orderCount, setOrderCount] = useState(0);
 
   const navigate = useNavigate();
   const [role, setRole] = useState(null);
-useEffect(() => {
-  if (user?.email) {
-    axiosPublic.get("/users")
-      .then((res) => {
-        const currentUser = res.data.find(u => u.email === user.email);
-        setRole(currentUser?.role || "user");
-      })
-      .catch(() => setRole("user"));
-  }
-}, [user]);
-
-
+  useEffect(() => {
+    if (user?.email) {
+      axiosPublic
+        .get("/users")
+        .then((res) => {
+          const currentUser = res.data.find((u) => u.email === user.email);
+          setRole(currentUser?.role || "user");
+        })
+        .catch(() => setRole("user"));
+    }
+  }, [user]);
 
   // Fetch whisper count
   const fetchWhisperCount = () => {
@@ -54,9 +54,7 @@ useEffect(() => {
       return;
     }
     axiosPublic
-      .get(
-        `/whisper?email=${user.email}`
-      )
+      .get(`/whisper?email=${user.email}`)
       .then((res) => setWhisperCount(res.data.length))
       .catch(() => setWhisperCount(0));
   };
@@ -68,9 +66,7 @@ useEffect(() => {
       return;
     }
     axiosPublic
-      .get(
-        `/cart?email=${user.email}`
-      )
+      .get(`/cart?email=${user.email}`)
       .then((res) => {
         const totalCount = res.data.reduce(
           (acc, item) => acc + (item.quantity || 1),
@@ -129,9 +125,7 @@ useEffect(() => {
   // Menu data
   useEffect(() => {
     axiosPublic
-      .get(
-        "/categories-with-subcategories"
-      )
+      .get("/categories-with-subcategories")
       .then((res) => setMenuData(res.data))
       .catch(() => setMenuData([]));
   }, []);
@@ -146,35 +140,39 @@ useEffect(() => {
       .catch(() => setFooterInfo(null));
   }, []);
 
+    const lastOrderCountRef = useRef(0);
+
   useEffect(() => {
-  let lastOrderCount = 0;
+    const fetchOrders = async () => {
+      try {
+        const res = await axiosPublic.get("/orders");
+        setOrders(res.data);
+        setOrderCount(res.data.length);
 
-  const fetchOrders = async () => {
-    try {
-      const res = await axiosPublic.get("/orders");
-      setOrders(res.data);
-      setOrderCount(res.data.length);
+        if (
+          lastOrderCountRef.current !== 0 &&
+          res.data.length > lastOrderCountRef.current
+        ) {
+          Swal.fire({
+            icon: "info",
+            title: "🎉 New Order Received!",
+            text: "A new customer order has been placed.",
+            showConfirmButton: false,
+            timer: 3000,
+          });
+        }
 
-      if (lastOrderCount && res.data.length > lastOrderCount) {
-        Swal.fire({
-          icon: "info",
-          title: "🎉 New Order Received!",
-          text: "A new customer order has been placed.",
-          showConfirmButton: false,
-          timer: 3000,
-        });
+        lastOrderCountRef.current = res.data.length;
+      } catch (error) {
+        console.error(error);
       }
+    };
 
-      lastOrderCount = res.data.length;
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    fetchOrders();
+    const interval = setInterval(fetchOrders, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
-  fetchOrders();
-  const interval = setInterval(fetchOrders, 1000);
-  return () => clearInterval(interval);
-}, []);
 
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
@@ -183,7 +181,7 @@ useEffect(() => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="leading-tight text-lg md:text-2xl items-center flex gap-2 font-bold text-cyan-500 dark:text-cyan-300"
+          className="leading-tight text-lg md:text-2xl items-center flex gap-1 md:gap-2 font-bold text-cyan-500 dark:text-cyan-300"
         >
           {footerInfo?.logo && (
             <img
@@ -265,7 +263,7 @@ useEffect(() => {
           </div>
 
           {/* Search */}
-          <div className="flex items-center w-full relative">
+          <div className="flex items-center w-2/3 relative">
             <FaSearch className="absolute left-3 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
@@ -304,7 +302,10 @@ useEffect(() => {
           </button>
 
           {/* Cart */}
-          <Link to="/cart" className="hover:text-cyan-500 relative">
+          <Link
+            to="/cart"
+            className="hover:text-cyan-500 hidden md:flex relative"
+          >
             <FaShoppingCart />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">
@@ -314,7 +315,10 @@ useEffect(() => {
           </Link>
 
           {/* Favourites */}
-          <Link to="/favourites" className="hover:text-cyan-500 relative">
+          <Link
+            to="/favourites"
+            className="hover:text-cyan-500 hidden md:flex relative"
+          >
             <IoMdHeartEmpty />
             {whisperCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">
@@ -322,40 +326,39 @@ useEffect(() => {
               </span>
             )}
           </Link>
-{user && role === "admin" ? (
-  <div className="relative group">
-    <FaBell
-      className="text-xl cursor-pointer hover:text-cyan-500 transition-colors"
-      onClick={() => navigate("/dashboard/allorders")}
-    />
-    {orderCount > 0 && (
-      <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">
-        {orderCount}
-      </span>
-    )}
+          {user && role === "admin" ? (
+            <div className="relative group">
+              <FaBell
+                className="text-xl cursor-pointer hover:text-cyan-500 transition-colors"
+                onClick={() => navigate("/dashboard/allorders")}
+              />
+              {orderCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">
+                  {orderCount}
+                </span>
+              )}
 
-    <div className="absolute right-0 w-64 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 hidden group-hover:block z-50">
-      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-2">
-        Recent Orders
-      </h3>
-      {orders?.slice(0, 5).map((order) => (
-        <div
-          key={order._id}
-          className="border-b border-gray-200 dark:border-gray-700 py-1 text-sm text-gray-600 dark:text-gray-300"
-        >
-          #{order._id.slice(-5)} - {order.status}
-        </div>
-      ))}
-      <Link
-        to="/dashboard/allorders"
-        className="text-cyan-600 text-sm font-semibold mt-2 inline-block hover:underline"
-      >
-        View All Orders →
-      </Link>
-    </div>
-  </div>
-) : null}
-
+              <div className="absolute right-0 w-64 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 hidden group-hover:block z-50">
+                <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                  Recent Orders
+                </h3>
+                {orders?.slice(0, 5).map((order) => (
+                  <div
+                    key={order._id}
+                    className="border-b border-gray-200 dark:border-gray-700 py-1 text-sm text-gray-600 dark:text-gray-300"
+                  >
+                    #{order._id.slice(-5)} - {order.status}
+                  </div>
+                ))}
+                <Link
+                  to="/dashboard/allorders"
+                  className="text-cyan-600 text-sm font-semibold mt-2 inline-block hover:underline"
+                >
+                  View All Orders →
+                </Link>
+              </div>
+            </div>
+          ) : null}
 
           {/* Dashboard (Desktop only) */}
           {user && (
@@ -553,6 +556,79 @@ useEffect(() => {
           </motion.div>
         )}
       </AnimatePresence>
+      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-inner flex justify-around items-center py-2 z-50">
+        {/* Home */}
+        <Link
+          to="/"
+          className={`flex flex-col items-center text-xs mt-1 ${
+            location.pathname === "/"
+              ? "text-cyan-500"
+              : "text-gray-600 dark:text-gray-300 hover:text-cyan-500"
+          }`}
+        >
+          <FaHome className="text-xl" />
+          <span>Home</span>
+        </Link>
+
+        {/* Cart */}
+        <Link
+          to="/cart"
+          className={`relative flex flex-col items-center text-xs mt-1 ${
+            location.pathname === "/cart"
+              ? "text-cyan-500"
+              : "text-gray-600 dark:text-gray-300 hover:text-cyan-500"
+          }`}
+        >
+          <FaShoppingCart className="text-xl" />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">
+              {cartCount}
+            </span>
+          )}
+          <span>Cart</span>
+        </Link>
+
+        {/* Wishlist */}
+        <Link
+          to="/favourites"
+          className={`relative flex flex-col items-center text-xs mt-1 ${
+            location.pathname === "/favourites"
+              ? "text-cyan-500"
+              : "text-gray-600 dark:text-gray-300 hover:text-cyan-500"
+          }`}
+        >
+          <IoMdHeartEmpty className="text-xl" />
+          {whisperCount > 0 && (
+            <span className="absolute -top-1 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">
+              {whisperCount}
+            </span>
+          )}
+          <span>Wishlist</span>
+        </Link>
+
+        {/* Profile/Login */}
+        {user ? (
+          <Link
+            to="/dashboard"
+            className={`flex flex-col items-center text-xs mt-1 ${
+              location.pathname === "/dashboard"
+                ? "text-cyan-500"
+                : "text-gray-600 dark:text-gray-300 hover:text-cyan-500"
+            }`}
+          >
+            <FaUser className="text-xl" />
+            <span>Profile</span>
+          </Link>
+        ) : (
+          <button
+            onClick={handleLogin}
+            className="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-cyan-500 text-xs mt-1"
+          >
+            <FaUser className="text-xl" />
+            <span>Login</span>
+          </button>
+        )}
+      </div>
     </nav>
   );
 };

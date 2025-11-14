@@ -37,6 +37,7 @@ const AllProducts = () => {
     barcode: "",
     description: "",
     specification: "",
+    videoUrl:"",
     categoryId: "",
     subcategoryId: "",
     brandId: "",
@@ -501,6 +502,13 @@ const AllProducts = () => {
                 onChange={handleChange}
                 rows="3"
                 className="border p-2 rounded md:col-span-2"
+              />
+               <input
+                name="videoUrl"
+                value={editProduct.videoUrl}
+                onChange={handleChange}
+                placeholder="Video URL (YouTube or Facebook)"
+                className="border p-2 rounded"
               />
 
               <div className="md:col-span-2">

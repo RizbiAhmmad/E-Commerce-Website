@@ -36,6 +36,22 @@ import { IoIosCash } from "react-icons/io";
 import { FaSliders, FaUsersViewfinder } from "react-icons/fa6";
 import { SiBrandfolder } from "react-icons/si";
 
+<style>
+  {`
+    .scrollWhite::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollWhite::-webkit-scrollbar-thumb {
+      background: white;
+      border-radius: 10px;
+    }
+    .scrollWhite::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  `}
+</style>
+
+
 const Dashboard = () => {
   const { user } = useAuth();
   const axiosPublic = useAxiosPublic();
@@ -92,7 +108,7 @@ const Dashboard = () => {
         >
           <ul
             onClick={toggleSidebar}
-            className="p-6 space-y-2 text-md h-[calc(100vh-4rem)] overflow-y-auto scroll-smooth"
+            className="scrollWhite p-6 space-y-2 text-md h-[calc(100vh-4rem)] overflow-y-auto scroll-smooth"
           >
             {/* Admin Menu */}
             {userRole === "admin" && (
@@ -117,7 +133,7 @@ const Dashboard = () => {
                 </li> */}
 
                 {/* Product & Stock */}
-                <li className=" pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   PRODUCT & STOCK
                 </li>
                 <li>
@@ -178,7 +194,7 @@ const Dashboard = () => {
                 </li>
 
                 {/* POS & Orders */}
-                <li className=" pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   POS & ORDERS
                 </li>
                 <li>
@@ -223,7 +239,7 @@ const Dashboard = () => {
                 </li>
 
                 {/* Reports */}
-                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                <li className="pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   REPORTS
                 </li>
                 <li>
@@ -252,7 +268,7 @@ const Dashboard = () => {
                   </NavLink>
                 </li>
                 {/* Expense */}
-                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                <li className="pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   EXPENSE
                 </li>
                 <li>
@@ -273,7 +289,7 @@ const Dashboard = () => {
                 </li>
 
                 {/* Customers */}
-                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                <li className="pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   CUSTOMERS
                 </li>
                 <li>
@@ -294,7 +310,7 @@ const Dashboard = () => {
                 </li>
 
                 {/* Promo */}
-                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                <li className="pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   PROMO
                 </li>
                 <li>
@@ -307,7 +323,7 @@ const Dashboard = () => {
                 </li>
 
                 {/* Others */}
-                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                <li className="pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   OTHERS
                 </li>
                 <li>
@@ -352,7 +368,7 @@ const Dashboard = () => {
                 </li>
 
                 {/* Profile */}
-                <li className="pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase">
+                <li className="pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   ACCOUNT
                 </li>
                 <li>

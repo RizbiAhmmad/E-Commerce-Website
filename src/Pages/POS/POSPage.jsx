@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { FaSearch, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
@@ -13,6 +12,7 @@ const POSPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const searchInputRef = useRef(null);
   const axiosPublic = useAxiosPublic();
+  const [footerInfo, setFooterInfo] = useState(null);
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,6 +32,9 @@ const POSPage = () => {
 
   const [manualDiscountValue, setManualDiscountValue] = useState("");
   const [manualDiscountType, setManualDiscountType] = useState("flat");
+
+  const [manualTax, setManualTax] = useState(0);
+  const [shippingCharge, setShippingCharge] = useState(0);
 
   // NEW: Receipt modal state
   const [receiptData, setReceiptData] = useState(null);
@@ -57,6 +60,15 @@ const POSPage = () => {
 
     fetchPosCart();
   }, []);
+   // Footer info (logo, name)
+  useEffect(() => {
+    axiosPublic
+      .get("/footer")
+      .then((res) => {
+        if (res.data.length > 0) setFooterInfo(res.data[0]);
+      })
+      .catch(() => setFooterInfo(null));
+  }, []);
 
   // Fetch POS cart
   const fetchPosCart = () => {
@@ -65,14 +77,6 @@ const POSPage = () => {
       .then((res) => setPosCart(res.data))
       .catch((err) => console.error(err));
   };
-
-  // Reset coupon if cart is empty
-  // useEffect(() => {
-  //   if (posCart.length === 0) {
-  //     setAppliedCoupon(null);
-  //     setCouponCode("");
-  //   }
-  // }, [posCart]);
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -193,10 +197,11 @@ const POSPage = () => {
 
   // Tax (10% on subtotal - discount)
   const taxableAmount = Math.max(0, subtotal - totalDiscount);
-  const tax = taxableAmount * 0.1;
+  // Tax (manual percentage)
+  const tax = taxableAmount * (Number(manualTax) / 100);
 
   // Final total
-  const total = taxableAmount + tax;
+  const total = taxableAmount + tax + Number(shippingCharge || 0);
 
   // Paid & Change
   const paid = parseFloat(inputAmount || "0");
@@ -218,7 +223,8 @@ const POSPage = () => {
       cartItems: posCart,
       subtotal,
       discount: totalDiscount,
-      tax,
+      tax: tax,
+      shippingCharge: shippingCharge,
       total,
       coupon: appliedCoupon ? appliedCoupon.code : null,
       orderType: "pos",
@@ -329,8 +335,8 @@ const POSPage = () => {
           />
         </div>
 
-        <div className="h-[450px] overflow-y-auto pr-2">
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="h-[500px] overflow-y-auto pr-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {filteredProducts.map((p) => (
               <button
                 key={p._id}
@@ -435,43 +441,8 @@ const POSPage = () => {
           )}
         </div>
 
-        {/* Coupon input */}
-        {/* {posCart.length > 0 && (
-          <div className="my-2">
-            <input
-              type="text"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              placeholder="Enter coupon code"
-              className="border p-2 w-full rounded mb-2"
-            />
-            <button
-              onClick={handleApplyCoupon}
-              className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 mb-2"
-            >
-              Apply Coupon
-            </button>
-          </div>
-        )} */}
-
         {posCart.length > 0 && (
           <>
-            {/* <hr className="my-2" /> */}
-            {/* <div className="flex justify-between font-bold text-lg mb-2">
-              <span>Subtotal:</span>
-              <span>৳{fmt(subtotal)}</span>
-            </div>
-            {appliedCoupon && (
-              <div className="flex justify-between font-bold text-lg mb-2 text-green-600">
-                <span>Discount ({appliedCoupon.code}):</span>
-                <span>-৳{fmt(subtotal - total)}</span>
-              </div>
-            )}
-            <div className="flex justify-between font-bold text-xl mb-2">
-              <span>Total:</span>
-              <span>৳{fmt(total)}</span>
-            </div> */}
-
             {/* Manual Discount */}
             <div className="my-2 flex gap-2">
               <h1 className="mt-2 font-bold text-lg">Discount:</h1>
@@ -504,9 +475,28 @@ const POSPage = () => {
               </div>
             )}
 
-            <div className="flex justify-between font-bold text-lg mb-2 text-blue-600">
-              <span>Tax (10%):</span>
-              <span>৳{fmt(tax)}</span>
+            {/* Manual TAX */}
+            <div className="my-2 flex gap-2">
+              <span className="mt-2 font-semibold text-lg">Tax:</span>
+              <input
+                type="number"
+                value={manualTax}
+                onChange={(e) => setManualTax(e.target.value)}
+                placeholder="Enter TAX %"
+                className="border p-2 w-full rounded"
+              />
+            </div>
+
+            {/* Shipping Charge */}
+            <div className="my-2 flex gap-2">
+              <span className="mt-2 font-semibold text-lg">Shipping:</span>
+              <input
+                type="number"
+                value={shippingCharge}
+                onChange={(e) => setShippingCharge(e.target.value)}
+                placeholder="Enter Shipping Charge"
+                className="border p-2 w-full rounded"
+              />
             </div>
 
             <div className="flex justify-between font-bold text-xl mb-2">
@@ -807,15 +797,15 @@ const POSPage = () => {
 
             {/* Receipt content */}
             <div className="text-center mt-4">
-              <h2 className="text-xl font-bold">Sostay Kini</h2>
+              <h2 className="text-xl font-bold">{footerInfo?.name}</h2>
               <p className="text-sm">
                 eCommerce CMS with POS & WhatsApp Ordering | Inventory
                 Management
               </p>
               <p className="text-xs mt-1">
-                House : 35, Road No: 15, Uttora 14, Dhaka
+                {footerInfo?.address}
               </p>
-              <p className="text-xs mb-3">Tel: +880 1815109616</p>
+              <p className="text-xs mb-3">Tel: {footerInfo?.phone}</p>
             </div>
 
             <hr className="border-t-2 border-dashed border-gray-400 my-3" />
@@ -860,7 +850,7 @@ const POSPage = () => {
               <span>৳{fmt(receiptData.discount || 0)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>TAX (10%):</span>
+              <span>TAX:</span>
               <span>৳{fmt(receiptData.tax || 0)}</span>
             </div>
             <div className="flex justify-between font-semibold text-base mt-1">
@@ -916,7 +906,7 @@ const POSPage = () => {
             </div>
 
             <div className="text-[10px] text-center text-gray-500 mt-4">
-              Sostay Kini eCommerce CMS with POS & WhatsApp Ordering | Inventory
+              {footerInfo?.name} eCommerce CMS with POS & WhatsApp Ordering | Inventory
               Management
             </div>
           </div>
