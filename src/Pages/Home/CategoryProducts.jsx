@@ -25,21 +25,17 @@ const CategoryProducts = () => {
   const axiosPublic = useAxiosPublic();
 
   const [subcategories, setSubcategories] = useState([]);
-  const [selectedSubs, setSelectedSubs] = useState([]); 
+  const [selectedSubs, setSelectedSubs] = useState([]);
 
   useEffect(() => {
     const fetchProductsAndSubs = async () => {
       try {
         // Get products by category
-        const res = await axiosPublic.get(
-          `/products?categoryId=${id}`
-        );
+        const res = await axiosPublic.get(`/products?categoryId=${id}`);
         setProducts(res.data);
 
         // Use categories-with-subcategories API
-        const subRes = await axiosPublic.get(
-          "/categories-with-subcategories"
-        );
+        const subRes = await axiosPublic.get("/categories-with-subcategories");
         const category = subRes.data.find((c) => c._id === id);
         setSubcategories(category ? category.subcategories : []);
 
@@ -67,14 +63,13 @@ const CategoryProducts = () => {
   });
 
   // Filtering (only active products)
-const filteredProducts = sortedProducts.filter((p) => {
-  const isActive = p.status === "active";
-  const inPrice = p.newPrice >= priceRange[0] && p.newPrice <= priceRange[1];
-  const inSub =
-    selectedSubs.length > 0 ? selectedSubs.includes(p.subcategoryId) : true;
-  return isActive && inPrice && inSub;
-});
-
+  const filteredProducts = sortedProducts.filter((p) => {
+    const isActive = p.status === "active";
+    const inPrice = p.newPrice >= priceRange[0] && p.newPrice <= priceRange[1];
+    const inSub =
+      selectedSubs.length > 0 ? selectedSubs.includes(p.subcategoryId) : true;
+    return isActive && inPrice && inSub;
+  });
 
   // Pagination logic
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -196,59 +191,64 @@ const filteredProducts = sortedProducts.filter((p) => {
           {/* <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
             {product.name}
           </h3> */}
-          <div className="min-h-[2.5rem] max-h-[5rem] overflow-auto">
-          <h3 className="text-[1rem] md:text-[1.1rem] leading-tight line-clamp-2 dark:text-white font-medium">
-            {product.name}
-          </h3>
-        </div>
+          <div className="mt-1 mb-1">
+            <h3
+              className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
+                 leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
+            >
+              {product.name}
+            </h3>
+          </div>
 
-          <div className="flex items-end justify-between my-2 flex-wrap gap-2">
-                    <div>
-                      <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
-                        {!product.stock || Number(product.stock) === 0 ? (
-                          <span className="text-red-500 font-semibold">Out of stock</span>
-                        ) : (
-                          <span className="text-green-500 font-semibold">In Stock</span>
-                        )}
-                      </span>
-          
-                      <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
-                        {hasDiscount ? (
-                          <>
-                            <span className="text-red-500 line-through">
-                              {formatPrice(oldPriceNum)}
-                            </span>
-                            <span className="font-bold text-black dark:text-white">
-                              {formatPrice(newPriceNum)}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="font-bold dark:text-white text-black">
-                            {formatPrice(newPriceNum)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-          
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-6 flex-shrink-0"
-                    >
-                      <button
-                        onClick={handleAddToCart}
-                        className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-                      >
-                        <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
-                      </button>
-          
-                      <button
-                        onClick={() => navigate(`/product/${product._id}`)}
-                        className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-                      >
-                        <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
-                      </button>
-                    </div>
-                  </div>
+          <div className="flex items-end justify-between my-1 flex-wrap gap-2">
+            <div>
+              <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
+                {!product.stock || Number(product.stock) === 0 ? (
+                  <span className="text-red-500 font-semibold">
+                    Out of stock
+                  </span>
+                ) : (
+                  <span className="text-green-500 font-semibold">In Stock</span>
+                )}
+              </span>
+
+              <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
+                {hasDiscount ? (
+                  <>
+                    <span className="text-red-500 line-through">
+                      {formatPrice(oldPriceNum)}
+                    </span>
+                    <span className="font-bold text-black dark:text-white">
+                      {formatPrice(newPriceNum)}
+                    </span>
+                  </>
+                ) : (
+                  <span className="font-bold dark:text-white text-black">
+                    {formatPrice(newPriceNum)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-6 flex-shrink-0"
+            >
+              <button
+                onClick={handleAddToCart}
+                className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+              >
+                <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
+              </button>
+
+              <button
+                onClick={() => navigate(`/product/${product._id}`)}
+                className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+              >
+                <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );

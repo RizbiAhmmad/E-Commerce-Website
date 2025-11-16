@@ -172,13 +172,16 @@ const SubcategoryProducts = () => {
           {/* <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
             {product.name}
           </h3> */}
-          <div className="min-h-[2.5rem] max-h-[5rem] overflow-auto">
-          <h3 className="text-[1rem] md:text-[1.1rem] leading-tight line-clamp-2 dark:text-white font-medium">
+         <div className="mt-1 mb-1">
+          <h3
+            className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
+                 leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
+          >
             {product.name}
           </h3>
         </div>
 
-          <div className="flex items-end justify-between my-2 flex-wrap gap-2">
+          <div className="flex items-end justify-between my-1 flex-wrap gap-2">
                     <div>
                       <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
                         {!product.stock || Number(product.stock) === 0 ? (

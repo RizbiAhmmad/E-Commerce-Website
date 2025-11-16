@@ -17,6 +17,7 @@ const AllProducts = () => {
   const [brands, setBrands] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
+  const [selectedBarcode, setSelectedBarcode] = useState("");
 
   const isDemo = import.meta.env.VITE_DEMO_MODE === "true";
   const [localProducts, setLocalProducts] = useState([]);
@@ -37,7 +38,7 @@ const AllProducts = () => {
     barcode: "",
     description: "",
     specification: "",
-    videoUrl:"",
+    videoUrl: "",
     categoryId: "",
     subcategoryId: "",
     brandId: "",
@@ -224,6 +225,66 @@ const AllProducts = () => {
     }
   };
 
+  const handleWindowPrint = (barcodeData) => {
+       
+        const content = `
+            <html>
+            <head>
+                <title>Barcode Print</title>
+                <style>
+                   
+                    @media print {
+                        @page { margin: 10mm; } 
+                    }
+                    body {
+                        font-family: Arial, sans-serif;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 20px;
+                    }
+                   
+                    #barcode-print-area {
+                        padding: 10px;
+                        border: 1px solid #ccc; /* ঐচ্ছিক */
+                    }
+                </style>
+            </head>
+            <body>
+                <div id="barcode-container" data-barcode="${barcodeData}"></div>
+                
+                <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+                <script>
+                    const container = document.getElementById('barcode-container');
+                    const code = container.getAttribute('data-barcode');
+                    if (code) {
+                        // SVG Element তৈরি করে Barcode জেনারেট করা
+                        const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                        container.appendChild(svgElement);
+                        
+                        JsBarcode(svgElement, code, {
+                            format: "CODE128",
+                            width: 2,
+                            height: 60,
+                            displayValue: true,
+                        });
+                    }
+                    window.print();
+                </script>
+            </body>
+            </html>
+        `;
+
+        const printWindow = window.open("", "_blank");
+        if (printWindow) {
+            printWindow.document.write(content);
+            printWindow.document.close();
+            
+        } else {
+            Swal.fire("Error", "Please allow pop-ups for printing.", "error");
+        }
+    };
+
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
@@ -316,8 +377,14 @@ const AllProducts = () => {
                   {p.name}
                 </td>
                 <td className="px-4 py-4 font-semibold text-gray-800">
-                  {p.barcode || "-"}
-                </td>
+        {p.barcode || "-"}
+        <button
+            onClick={() => handleWindowPrint(p.barcode)}
+            className="px-2 py-1 bg-gray-700 text-white rounded ml-2"
+        >
+            Print
+        </button>
+    </td>
                 <td className="px-4 py-4">
                   {categories.find((c) => c._id === p.categoryId)?.name || "-"}
                 </td>
@@ -503,7 +570,7 @@ const AllProducts = () => {
                 rows="3"
                 className="border p-2 rounded md:col-span-2"
               />
-               <input
+              <input
                 name="videoUrl"
                 value={editProduct.videoUrl}
                 onChange={handleChange}

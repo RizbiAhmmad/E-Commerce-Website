@@ -191,6 +191,33 @@ const ProductDetailsPage = () => {
     }
   };
 
+  const handleBuyNow = () => {
+    if (!user) {
+      Swal.fire({
+        icon: "error",
+        title: "You must be logged in to continue",
+      });
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+
+    const buyItem = {
+      productId: product._id,
+      quantity,
+      selectedColor,
+      selectedSize,
+    };
+
+    navigate("/checkout", {
+      state: {
+        cartItems: [buyItem],
+        productsMap: {
+          [product._id]: product,
+        },
+      },
+    });
+  };
+
   const getEmbedUrl = (url) => {
     if (!url) return "";
 
@@ -397,9 +424,10 @@ const ProductDetailsPage = () => {
               </div>
             )}
 
-            {/* Quantity + Wishlist */}
-            <div className="flex gap-4 items-center pt-6">
-              <div className="flex items-center dark:bg-black dark:text-white bg-gray-100 border border-cyan-500 rounded-md p-2">
+            {/* Quantity + Buy */}
+            <div className="flex flex-col md:flex-row gap-4 pt-6">
+              {/* Quantity Selector */}
+              <div className="flex items-center dark:bg-black dark:text-white bg-gray-100 border-2 border-cyan-500 rounded-md p-2 md:w-auto w-full justify-between">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-4"
@@ -421,33 +449,22 @@ const ProductDetailsPage = () => {
                   +
                 </button>
               </div>
-              {/* <button
-                onClick={() => setIsFavorite(!isFavorite)}
-                className="py-3 border rounded-md flex items-center justify-center gap-2 grow "
-              >
-                {isFavorite ? (
-                  <FaHeart className="w-5 h-5 text-purple-500" />
-                ) : (
-                  <FaRegHeart className="w-5 h-5" />
-                )}
-                Wishlist
-              </button> */}
-
+              {/* Add to Cart */}
               <button
                 onClick={handleAddToCart}
-                className="w-full px-6 py-3 bg-[#0FABCA] text-white rounded-md hover:bg-[#0FABCA]/90"
+                className="w-full md:w-auto px-6 py-3 bg-[#0FABCA] text-white rounded-md hover:bg-[#0FABCA]/90"
               >
                 Add to Cart
               </button>
-            </div>
 
-            {/* Add to Cart Button */}
-            {/* <button
-              onClick={handleAddToCart}
-              className="w-full px-6 py-3 bg-[#0FABCA] text-white rounded-md hover:bg-[#0FABCA]/90"
-            >
-              Add to Cart
-            </button> */}
+              {/* Buy Now */}
+              <button
+                onClick={handleBuyNow}
+                className="w-full md:w-auto px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600"
+              >
+                Buy Now
+              </button>
+            </div>
           </div>
         </div>
 
@@ -675,13 +692,16 @@ const ProductDetailsPage = () => {
 
                     {/* Info */}
                     <div className="mt-2 p-1">
-                      <div className="min-h-[2.5rem] max-h-[5rem] overflow-auto">
-                        <h3 className="text-[1rem] md:text-[1.1rem] leading-tight line-clamp-2 dark:text-white font-medium">
+                      <div className="">
+                        <h3
+                          className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
+                 leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
+                        >
                           {product.name}
                         </h3>
                       </div>
 
-                      <div className="flex items-end justify-between my-2 flex-wrap gap-2">
+                      <div className="flex items-end justify-between my-1 flex-wrap gap-2">
                         <div>
                           <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
                             {!product.stock || Number(product.stock) === 0 ? (
@@ -695,7 +715,7 @@ const ProductDetailsPage = () => {
                             )}
                           </span>
 
-                          <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
+                          <div className="mt-1 min-h-[30px] flex items-center gap-2 flex-wrap">
                             {hasDiscount ? (
                               <>
                                 <span className="text-red-500 line-through">

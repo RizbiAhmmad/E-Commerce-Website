@@ -181,7 +181,7 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="leading-tight text-lg md:text-2xl items-center flex gap-1 md:gap-2 font-bold text-cyan-500 dark:text-cyan-300"
+          className="leading-tight text-lg md:text-xl items-center flex gap-1 md:gap-2 font-bold text-cyan-500 dark:text-cyan-300"
         >
           {footerInfo?.logo && (
             <img

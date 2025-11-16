@@ -18,7 +18,6 @@ const CheckoutPage = () => {
   const [shipping, setShipping] = useState("outside");
   const [payment, setPayment] = useState("cash on delivery");
 
-  // Coupon states
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -32,10 +31,12 @@ const CheckoutPage = () => {
   }, [user]);
 
   const shippingCost = shipping === "inside" ? 60 : 120;
+
   const subtotal = cartItems.reduce((total, item) => {
     const product = productsMap[item.productId];
     return total + (product?.newPrice || 0) * item.quantity;
   }, 0);
+
   const total = subtotal + shippingCost - discount;
 
   const handleApplyCoupon = async () => {
@@ -44,13 +45,10 @@ const CheckoutPage = () => {
       return Swal.fire("Error!", "Please enter a coupon code", "error");
     }
     try {
-      const res = await axiosPublic.post(
-        "/apply-coupon",
-        {
-          code,
-          totalAmount: subtotal,
-        }
-      );
+      const res = await axiosPublic.post("/apply-coupon", {
+        code,
+        totalAmount: subtotal,
+      });
 
       const { discount: serverDiscount, code: applied } = res.data || {};
       setDiscount(serverDiscount || 0);
@@ -106,7 +104,6 @@ const CheckoutPage = () => {
         color: item.selectedColor || product?.colors?.[0] || "-",
         size: item.selectedSize || product?.sizes?.[0] || "-",
         quantity: item.quantity,
-
       };
     });
 
@@ -130,23 +127,17 @@ const CheckoutPage = () => {
     };
 
     try {
-      await axiosPublic.post(
-        "/orders",
-        orderData
-      );
+      await axiosPublic.post("/orders", orderData);
 
       if (payment === "online") {
-        const { data } = await axiosPublic.post(
-          "/sslcommerz/init",
-          {
-            orderId: orderData.tran_id,
-            totalAmount: total,
-            fullName,
-            email,
-            phone,
-            address,
-          }
-        );
+        const { data } = await axiosPublic.post("/sslcommerz/init", {
+          orderId: orderData.tran_id,
+          totalAmount: total,
+          fullName,
+          email,
+          phone,
+          address,
+        });
 
         if (data?.GatewayPageURL) {
           window.location.href = data.GatewayPageURL;
@@ -165,104 +156,106 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="min-h-screen dark:bg-black dark:text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-24 sm:py-16 md:py-24 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-        {/* Left */}
-        <div className="md:col-span-2 space-y-6">
-          {/* Customer Information */}
-          <div className="border rounded p-4 sm:p-6">
-            <h2 className="font-semibold text-lg mb-4">Customer Information</h2>
+    <div className="min-h-screen dark:bg-black bg-gray-50 dark:text-white py-24">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+
+        {/* LEFT SIDE */}
+        <div className="md:col-span-2 space-y-8">
+
+          {/* CUSTOMER INFO */}
+          <div className="bg-white dark:bg-neutral-900 shadow-lg rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
+            <h2 className="text-xl font-bold mb-6 bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
+              Customer Information
+            </h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
                 placeholder="Full Name *"
-                className="border p-2 rounded w-full"
+                className="input-field"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                required
               />
+
               <input
                 type="number"
                 placeholder="Phone Number *"
-                className="border p-2 rounded w-full"
+                className="input-field"
                 value={phone}
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (/^\d{0,11}$/.test(value)) {
-                    setPhone(value);
-                  }
+                  if (/^\d{0,11}$/.test(value)) setPhone(value);
                 }}
-                required
               />
 
               <input
                 type="email"
                 placeholder="Email Address"
-                className="border p-2 rounded w-full md:col-span-2"
+                className="input-field md:col-span-2"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
+
               <textarea
                 placeholder="Delivery Address *"
-                className="border p-2 rounded w-full md:col-span-2"
+                className="input-field md:col-span-2 h-24"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                required
               ></textarea>
             </div>
           </div>
 
-          {/* Shipping */}
-          <div className="border rounded p-4 sm:p-6">
-            <h2 className="font-semibold text-lg mb-4">Shipping Information</h2>
-            <label className="flex flex-col sm:flex-row justify-between items-start sm:items-center border p-3 rounded mb-3 cursor-pointer gap-2">
-              <div>
+          {/* SHIPPING */}
+          <div className="bg-white dark:bg-neutral-900 shadow-lg rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
+            <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
+              Shipping Information
+            </h2>
+                <div className="grid gap-4">
+            {/* Option */}
+            {["inside", "outside"].map((type) => (
+              <label
+                key={type}
+                className={`shipping-card ${
+                  shipping === type ? "selected" : ""
+                }`}
+              >
                 <input
                   type="radio"
                   name="shipping"
-                  value="inside"
-                  checked={shipping === "inside"}
-                  onChange={() => setShipping("inside")}
-                />{" "}
-                Inside Dhaka
-                <div className="text-sm text-gray-500">
-                  Delivery within 1-2 business days
+                  checked={shipping === type}
+                  onChange={() => setShipping(type)}
+                  className="hidden"
+                />
+                <div>
+                  <p className="font-semibold">
+                    {type === "inside" ? "Inside Dhaka" : "Outside Dhaka"}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {type === "inside"
+                      ? "Delivery within 1-2 business days"
+                      : "Delivery within 3-5 business days"}
+                  </p>
                 </div>
-              </div>
-              <span className="font-medium">৳60</span>
-            </label>
-            <label className="flex flex-col sm:flex-row justify-between items-start sm:items-center border p-3 rounded cursor-pointer gap-2">
-              <div>
-                <input
-                  type="radio"
-                  name="shipping"
-                  value="outside"
-                  checked={shipping === "outside"}
-                  onChange={() => setShipping("outside")}
-                />{" "}
-                Outside Dhaka
-                <div className="text-sm text-gray-500">
-                  Delivery within 3-5 business days
-                </div>
-              </div>
-              <span className="font-medium">৳120</span>
-            </label>
+                <span className="font-semibold">
+                  ৳{type === "inside" ? 60 : 120}
+                </span>
+              </label>
+
+              
+            ))}
+            </div>
           </div>
 
-          {/* Payment */}
-          <div className="border rounded-2xl p-4 sm:p-6 shadow-md dark:bg-black dark:text-white bg-white">
-            <h2 className="font-semibold text-xl mb-5 text-black dark:text-white">
+          {/* PAYMENT */}
+          <div className="bg-white dark:bg-neutral-900 shadow-xl rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
+            <h2 className="font-semibold text-xl mb-5">
               Select Payment Method
             </h2>
 
             <div className="grid gap-4">
-              {/* Cash on Delivery */}
               <label
-                className={`flex items-center gap-4 border p-4 rounded-xl cursor-pointer transition-all duration-200 ${
-                  payment === "cash on delivery"
-                    ? "border-green-500 bg-green-50 ring-2 ring-green-400"
-                    : "hover:border-green-400 hover:bg-green-50"
+                className={`pay-card ${
+                  payment === "cash on delivery" ? "selected-pay" : ""
                 }`}
               >
                 <input
@@ -273,24 +266,13 @@ const CheckoutPage = () => {
                   onChange={() => setPayment("cash on delivery")}
                   className="hidden"
                 />
-                <FaMoneyBillWave
-                  className={`text-2xl ${
-                    payment === "cash on delivery"
-                      ? "text-green-600"
-                      : "text-gray-400"
-                  }`}
-                />
-                <span className="font-medium text-gray-700">
-                  Cash on Delivery
-                </span>
+                <FaMoneyBillWave className="icon" />
+                <span>Cash on Delivery</span>
               </label>
 
-              {/* Online Payment */}
               <label
-                className={`flex items-center gap-4 border p-4 rounded-xl cursor-pointer transition-all duration-200 ${
-                  payment === "online"
-                    ? "border-cyan-500 bg-cyan-50 ring-2 ring-cyan-400"
-                    : "hover:border-cyan-400 hover:bg-cyan-50"
+                className={`pay-card ${
+                  payment === "online" ? "selected-pay-online" : ""
                 }`}
               >
                 <input
@@ -301,28 +283,23 @@ const CheckoutPage = () => {
                   onChange={() => setPayment("online")}
                   className="hidden"
                 />
-                <FaCreditCard
-                  className={`text-2xl ${
-                    payment === "online" ? "text-cyan-600" : "text-gray-400"
-                  }`}
-                />
-                <span className="font-medium text-gray-700">
-                  Online Payment
-                </span>
+                <FaCreditCard className="icon" />
+                <span>Online Payment</span>
               </label>
             </div>
           </div>
         </div>
 
-        {/* Right: Order Summary */}
-        <div className="border rounded p-4 sm:p-6 h-fit">
-          <h2 className="font-semibold text-xl mb-6">Order Summary</h2>
+        {/* RIGHT SIDE */}
+        <div className="bg-white dark:bg-neutral-900 shadow-xl rounded-2xl p-6 h-fit border border-gray-200 dark:border-neutral-700">
+          <h2 className="text-xl font-bold mb-6">Order Summary</h2>
+
           {cartItems.map((item) => {
             const product = productsMap[item.productId];
             return (
               <div
                 key={item._id}
-                className="flex justify-between mb-3 text-sm sm:text-base"
+                className="flex justify-between mb-3 text-sm"
               >
                 <span>
                   {product?.name} × {item.quantity}
@@ -331,47 +308,52 @@ const CheckoutPage = () => {
               </div>
             );
           })}
+
           <hr className="my-4" />
+
           <div className="flex justify-between mb-2">
             <span>Subtotal</span>
             <span>৳{subtotal}</span>
           </div>
+
           <div className="flex justify-between mb-2">
             <span>Shipping</span>
             <span>৳{shippingCost}</span>
           </div>
+
           {discount > 0 && (
             <div className="flex justify-between mb-2 text-green-600">
               <span>Discount ({appliedCoupon?.code})</span>
               <span>-৳{discount}</span>
             </div>
           )}
+
           <div className="flex justify-between font-bold text-lg">
             <span>Total</span>
             <span>৳{total}</span>
           </div>
 
-          {/* Coupon Input */}
+          {/* COUPON */}
           <div className="mt-4 flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               placeholder="Enter coupon code"
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
-              className="flex-1 border p-2 rounded w-full"
+              className="border p-2 rounded-lg w-full"
             />
             <button
-              type="button"
               onClick={handleApplyCoupon}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
             >
               Apply
             </button>
           </div>
 
+          {/* ORDER BUTTON */}
           <button
             onClick={handlePlaceOrder}
-            className="mt-6 w-full bg-cyan-500 text-white py-3 rounded hover:bg-cyan-600 transition"
+            className="mt-6 w-full bg-cyan-600 text-white py-3 rounded-xl hover:bg-cyan-700 shadow-lg transition"
           >
             Place Order
           </button>
