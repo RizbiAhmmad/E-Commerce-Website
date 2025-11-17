@@ -89,7 +89,7 @@ const ProductCard = () => {
         />
       </motion.h1>
 
-      <div className="grid p-4 gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid p-4 gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {activeProducts.slice(0, visibleCount).map((product, index) => (
           <motion.div
             key={product._id}
@@ -260,7 +260,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
             initial={{ rotateY: 90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
+            className="absolute top-0 left-0 md:top-2 md:left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
           >
             {discountPercent}% OFF
           </motion.div>
@@ -268,7 +268,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
         <div
           onClick={(e) => e.stopPropagation()}
-          className="p-2 rounded-full bg-gray-100 absolute top-2 right-2"
+          className="p-2 rounded-full bg-gray-100 absolute top-1 right-1 md:top-2 md:right-2"
         >
           {isFavorite ? (
             <IoIosHeart
@@ -298,7 +298,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         </div>
 
         {/* Brand & Review responsive */}
-        <div className="mt-1 md:flex md:items-center md:justify-between">
+        <div className="mt-1 hidden md:flex md:items-center md:justify-between">
           <p className="text-gray-400 text-[0.9rem] truncate">
             Brand:{" "}
             <span className="text-black dark:text-gray-100">{brandName}</span>
@@ -322,7 +322,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           </div>
         </div>
 
-        <div className="flex items-end justify-between my-1 flex-wrap gap-2">
+        <div className="flex items-end justify-between flex-wrap gap-2">
           <div>
             <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
               {!product.stock || Number(product.stock) === 0 ? (
@@ -332,7 +332,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
               )}
             </span>
 
-            <div className="mt-1 min-h-[30px] flex items-center gap-2 flex-wrap">
+            <div className="min-h-[30px] flex items-center gap-2 flex-wrap">
               {hasDiscount ? (
                 <>
                   <span className="text-red-500 line-through">

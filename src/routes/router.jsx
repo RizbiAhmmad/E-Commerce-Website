@@ -61,6 +61,7 @@ import AllPolicies from "@/Pages/Dashboard/Admin/AllPolicies";
 import PrivacyPolicy from "@/Shared/PrivacyPolicy";
 import RefundPolicy from "@/Shared/RefundPolicy";
 import TermsConditions from "@/Shared/TermsConditions";
+import IncompleteOrders from "@/Pages/Dashboard/Admin/IncompleteOrders";
 
 export const router = createBrowserRouter([
   {
@@ -234,6 +235,10 @@ export const router = createBrowserRouter([
       {
         path: "posOrders",
         element: <AllPOSOrders />,
+      },
+      {
+        path: "incompleteOrders",
+        element: <IncompleteOrders />,
       },
       {
         path: "addExpenseCategory",

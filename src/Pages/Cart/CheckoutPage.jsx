@@ -17,6 +17,7 @@ const CheckoutPage = () => {
   const [address, setAddress] = useState("");
   const [shipping, setShipping] = useState("outside");
   const [payment, setPayment] = useState("cash on delivery");
+  const [district, setDistrict] = useState("");
 
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -111,6 +112,7 @@ const CheckoutPage = () => {
       fullName,
       phone,
       email,
+      district,
       address,
       shipping,
       payment,
@@ -158,10 +160,8 @@ const CheckoutPage = () => {
   return (
     <div className="min-h-screen dark:bg-black bg-gray-50 dark:text-white py-24">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-
         {/* LEFT SIDE */}
         <div className="md:col-span-2 space-y-8">
-
           {/* CUSTOMER INFO */}
           <div className="bg-white dark:bg-neutral-900 shadow-lg rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
             <h2 className="text-xl font-bold mb-6 bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
@@ -195,6 +195,23 @@ const CheckoutPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              <select
+                className="input-field md:col-span-2"
+                value={district}
+                onChange={(e) => setDistrict(e.target.value)}
+              >
+                <option value="">Select District *</option>
+                <option value="Dhaka">Dhaka</option>
+                <option value="Chattogram">Chattogram</option>
+                <option value="Feni">Feni</option>
+                <option value="Cumilla">Cumilla</option>
+                <option value="Rajshahi">Rajshahi</option>
+                <option value="Sylhet">Sylhet</option>
+                <option value="Barishal">Barishal</option>
+                <option value="Khulna">Khulna</option>
+                <option value="Rangpur">Rangpur</option>
+                <option value="Mymensingh">Mymensingh</option>
+              </select>
 
               <textarea
                 placeholder="Delivery Address *"
@@ -210,39 +227,37 @@ const CheckoutPage = () => {
             <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
               Shipping Information
             </h2>
-                <div className="grid gap-4">
-            {/* Option */}
-            {["inside", "outside"].map((type) => (
-              <label
-                key={type}
-                className={`shipping-card ${
-                  shipping === type ? "selected" : ""
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="shipping"
-                  checked={shipping === type}
-                  onChange={() => setShipping(type)}
-                  className="hidden"
-                />
-                <div>
-                  <p className="font-semibold">
-                    {type === "inside" ? "Inside Dhaka" : "Outside Dhaka"}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {type === "inside"
-                      ? "Delivery within 1-2 business days"
-                      : "Delivery within 3-5 business days"}
-                  </p>
-                </div>
-                <span className="font-semibold">
-                  ৳{type === "inside" ? 60 : 120}
-                </span>
-              </label>
-
-              
-            ))}
+            <div className="grid gap-4">
+              {/* Option */}
+              {["inside", "outside"].map((type) => (
+                <label
+                  key={type}
+                  className={`shipping-card ${
+                    shipping === type ? "selected" : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="shipping"
+                    checked={shipping === type}
+                    onChange={() => setShipping(type)}
+                    className="hidden"
+                  />
+                  <div>
+                    <p className="font-semibold">
+                      {type === "inside" ? "Inside Dhaka" : "Outside Dhaka"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {type === "inside"
+                        ? "Delivery within 1-2 business days"
+                        : "Delivery within 3-5 business days"}
+                    </p>
+                  </div>
+                  <span className="font-semibold">
+                    ৳{type === "inside" ? 60 : 120}
+                  </span>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -297,10 +312,7 @@ const CheckoutPage = () => {
           {cartItems.map((item) => {
             const product = productsMap[item.productId];
             return (
-              <div
-                key={item._id}
-                className="flex justify-between mb-3 text-sm"
-              >
+              <div key={item._id} className="flex justify-between mb-3 text-sm">
                 <span>
                   {product?.name} × {item.quantity}
                 </span>

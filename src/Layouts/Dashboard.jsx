@@ -20,6 +20,7 @@ import {
 } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
 import {
+  MdIncompleteCircle,
   MdInventory,
   MdLocalShipping,
   MdOutlineDashboardCustomize,
@@ -219,6 +220,14 @@ const Dashboard = () => {
                     className="flex items-center px-2 py-2 space-x-3"
                   >
                     <FaReceipt /> <span>Online Orders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/incompleteOrders"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <MdIncompleteCircle /> <span>Incomplete Orders</span>
                   </NavLink>
                 </li>
                 <li>

@@ -225,65 +225,72 @@ const AllProducts = () => {
     }
   };
 
-  const handleWindowPrint = (barcodeData) => {
-       
-        const content = `
-            <html>
-            <head>
-                <title>Barcode Print</title>
-                <style>
-                   
-                    @media print {
-                        @page { margin: 10mm; } 
-                    }
-                    body {
-                        font-family: Arial, sans-serif;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        padding: 20px;
-                    }
-                   
-                    #barcode-print-area {
-                        padding: 10px;
-                        border: 1px solid #ccc; /* ঐচ্ছিক */
-                    }
-                </style>
-            </head>
-            <body>
-                <div id="barcode-container" data-barcode="${barcodeData}"></div>
-                
-                <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-                <script>
-                    const container = document.getElementById('barcode-container');
-                    const code = container.getAttribute('data-barcode');
-                    if (code) {
-                        // SVG Element তৈরি করে Barcode জেনারেট করা
-                        const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                        container.appendChild(svgElement);
-                        
-                        JsBarcode(svgElement, code, {
-                            format: "CODE128",
-                            width: 2,
-                            height: 60,
-                            displayValue: true,
-                        });
-                    }
-                    window.print();
-                </script>
-            </body>
-            </html>
-        `;
+  const handleWindowPrint = (product) => {
+    const barcode = product.barcode;
+    const productName = product.name;
 
-        const printWindow = window.open("", "_blank");
-        if (printWindow) {
-            printWindow.document.write(content);
-            printWindow.document.close();
-            
-        } else {
-            Swal.fire("Error", "Please allow pop-ups for printing.", "error");
-        }
-    };
+    const content = `
+        <html>
+        <head>
+            <title>Barcode Print</title>
+            <style>
+                @media print {
+                    @page { margin: 8mm; }
+                }
+                body {
+                    font-family: Arial, sans-serif;
+                    padding: 10px;
+                    text-align: center;
+                }
+                .label-box {
+                    border: 1px solid #ddd;
+                    padding: 10px;
+                    display: inline-block;
+                }
+                .product-name {
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 4px;
+                }
+            </style>
+        </head>
+        <body>
+
+            <div class="label-box">
+                <div class="product-name">${productName}</div>
+
+                <div id="barcode-container" data-barcode="${barcode}"></div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+            <script>
+                const container = document.getElementById('barcode-container');
+                const code = container.getAttribute('data-barcode');
+
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                container.appendChild(svg);
+
+                JsBarcode(svg, code, {
+                    format: "CODE128",
+                    width: 2,
+                    height: 60,
+                    displayValue: true
+                });
+
+                window.print();
+            </script>
+        </body>
+        </html>
+    `;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(content);
+      printWindow.document.close();
+    } else {
+      Swal.fire("Error", "Please allow pop-ups for printing.", "error");
+    }
+  };
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
@@ -377,14 +384,14 @@ const AllProducts = () => {
                   {p.name}
                 </td>
                 <td className="px-4 py-4 font-semibold text-gray-800">
-        {p.barcode || "-"}
-        <button
-            onClick={() => handleWindowPrint(p.barcode)}
-            className="px-2 py-1 bg-gray-700 text-white rounded ml-2"
-        >
-            Print
-        </button>
-    </td>
+                  {p.barcode || "-"}
+                  <button
+                    onClick={() => handleWindowPrint(p)}
+                    className="px-2 py-1 bg-gray-700 text-white rounded ml-2"
+                  >
+                    Print
+                  </button>
+                </td>
                 <td className="px-4 py-4">
                   {categories.find((c) => c._id === p.categoryId)?.name || "-"}
                 </td>
