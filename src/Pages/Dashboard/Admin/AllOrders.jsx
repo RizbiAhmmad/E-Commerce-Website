@@ -444,9 +444,9 @@ const AllOrders = () => {
                   <button onClick={() => handlePrint(order)}>
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
-                  {/* <button onClick={() => handleDelete(order._id)}>
+                  <button onClick={() => handleDelete(order._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}

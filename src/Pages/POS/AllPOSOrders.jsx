@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { FaTrashAlt, FaSearch } from "react-icons/fa";
+import { FaTrashAlt, FaSearch, FaPrint } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
 const AllPOSOrders = () => {
@@ -48,7 +48,7 @@ const AllPOSOrders = () => {
   };
 
   // filter orders by multiple fields
- const filteredOrders = orders.filter((order) => {
+  const filteredOrders = orders.filter((order) => {
     const term = searchTerm.toLowerCase();
     return (
       order.orderId?.toLowerCase().includes(term) ||
@@ -61,11 +61,111 @@ const AllPOSOrders = () => {
   // pagination logic
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  const handlePrint = (order) => {
+    const printWindow = window.open("", "_blank");
+    const htmlContent = `
+    <html>
+      <head>
+        <title>POS Invoice - ${order.orderId}</title>
+        <style>
+          body { font-family: Arial; padding: 20px; }
+          h2 { text-align: center; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          table, th, td { border: 1px solid #ddd; }
+          th, td { padding: 8px; text-align: left; }
+          .totalBox { width: 300px; float: right; margin-top: 20px; }
+          .totalRow { display: flex; justify-content: space-between; padding: 6px 0; }
+          .footer { text-align:center; margin-top:50px; color:gray; }
+        </style>
+      </head>
+      <body>
+
+        <h2>POS Invoice</h2>
+        
+        <p><strong>Order ID:</strong> ${order.orderId}</p>
+        <p><strong>Customer:</strong> ${order.customer?.name || ""}</p>
+        <p><strong>Phone:</strong> ${order.customer?.phone || ""}</p>
+        <p><strong>Date:</strong> ${new Date(
+          order.createdAt
+        ).toLocaleString()}</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Size</th>
+              <th>Color</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${order.cartItems
+              ?.map(
+                (item) => `
+              <tr>
+                <td>${item.productName}</td>
+                <td>${item.size || "-"}</td>
+                <td>${item.color || "-"}</td>
+                <td>${item.quantity}</td>
+                <td>৳${item.price}</td>
+                <td>৳${item.price * item.quantity}</td>
+              </tr>`
+              )
+              .join("")}
+          </tbody>
+        </table>
+
+        <!-- Summary Section -->
+        <div class="totalBox">
+          <div class="totalRow"><strong>Subtotal:</strong> ৳${
+            order.subtotal
+          }</div>
+
+          ${
+            order.discount > 0
+              ? `<div class="totalRow"><strong>Discount:</strong> -৳${order.discount}</div>`
+              : ""
+          }
+
+          ${
+            order.tax > 0
+              ? `<div class="totalRow"><strong>Tax:</strong> ৳${order.tax}</div>`
+              : ""
+          }
+
+          ${
+            order.shippingCharge > 0
+              ? `<div class="totalRow"><strong>Shipping:</strong> ৳${order.shippingCharge}</div>`
+              : ""
+          }
+
+          <div class="totalRow" style="border-top:1px solid #000; margin-top:10px; padding-top:10px;">
+            <strong>Total:</strong> ৳${order.total}
+          </div>
+        </div>
+
+        <div class="footer">
+          Thank you ❤️
+        </div>
+
+      </body>
+    </html>
+  `;
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.print();
   };
 
   return (
@@ -109,16 +209,23 @@ const AllPOSOrders = () => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {currentOrders.map((order, index) => (
-              <tr key={order._id} className="transition duration-200 hover:bg-gray-50">
+              <tr
+                key={order._id}
+                className="transition duration-200 hover:bg-gray-50"
+              >
                 <td className="px-6 py-4">{indexOfFirstOrder + index + 1}</td>
                 <td className="px-6 py-4 font-semibold">{order.orderId}</td>
 
                 <td className="px-6 py-4">
-                  <div className="font-semibold text-gray-800">{order.customer?.name}</div>
+                  <div className="font-semibold text-gray-800">
+                    {order.customer?.name}
+                  </div>
                   <div className="text-gray-500">{order.customer?.phone}</div>
                 </td>
 
-                <td className="px-6 py-4 capitalize">{order.payment?.method || "-"}</td>
+                <td className="px-6 py-4 capitalize">
+                  {order.payment?.method || "-"}
+                </td>
 
                 <td className="px-6 py-4">
                   {order.cartItems?.map((item, i) => (
@@ -131,7 +238,8 @@ const AllPOSOrders = () => {
                       <div>
                         <div className="font-semibold">{item.productName}</div>
                         <div className="text-sm text-gray-500">
-                          Size: {item.size || "-"}, Color: {item.color || "-"}, Qty: {item.quantity}
+                          Size: {item.size || "-"}, Color: {item.color || "-"},
+                          Qty: {item.quantity}
                         </div>
                       </div>
                     </div>
@@ -143,14 +251,21 @@ const AllPOSOrders = () => {
 
                 <td className="px-6 py-4">
                   {new Date(order.createdAt).toLocaleDateString()}{" "}
-                  {new Date(order.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {new Date(order.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </td>
 
                 <td className="flex gap-4 px-6 py-6">
-                  <h1>Delete option hidden for demo show</h1>
+                  <button onClick={() => handlePrint(order)}>
+                    <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
+                  </button>
+
+                  {/* Delete Button */}
                   {/* <button onClick={() => handleDelete(order._id)}>
-                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button> */}
+    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+  </button> */}
                 </td>
               </tr>
             ))}
@@ -173,7 +288,9 @@ const AllPOSOrders = () => {
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className={`px-4 py-2 rounded-lg font-semibold text-white ${
-              currentPage === 1 ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-600"
+              currentPage === 1
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-cyan-500 hover:bg-cyan-600"
             }`}
           >
             Previous
@@ -187,7 +304,9 @@ const AllPOSOrders = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className={`px-4 py-2 rounded-lg font-semibold text-white ${
-              currentPage === totalPages ? "bg-gray-400 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-600"
+              currentPage === totalPages
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-cyan-500 hover:bg-cyan-600"
             }`}
           >
             Next

@@ -8,13 +8,12 @@ const AllCustomersWithSegments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [segmentFilter, setSegmentFilter] = useState("");
+  const [districtFilter, setDistrictFilter] = useState("");
   const customersPerPage = 20;
 
   const fetchCustomers = async () => {
     try {
-      const res = await axiosPublic.get(
-        "/customer-segments"
-      );
+      const res = await axiosPublic.get("/customer-segments");
       setCustomers(res.data);
     } catch (error) {
       console.error("Failed to fetch customers:", error);
@@ -43,7 +42,6 @@ const AllCustomersWithSegments = () => {
     }
   };
 
-  // Search + Segment filter
   const filteredCustomers = customers.filter((c) => {
     const matchSearch =
       (c.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -53,7 +51,11 @@ const AllCustomersWithSegments = () => {
       segmentFilter === "" ||
       (c.segment || "").toLowerCase() === segmentFilter.toLowerCase();
 
-    return matchSearch && matchSegment;
+    const matchDistrict =
+      districtFilter === "" ||
+      (c.district || "").toLowerCase() === districtFilter.toLowerCase();
+
+    return matchSearch && matchSegment && matchDistrict;
   });
 
   // Pagination logic
@@ -91,10 +93,32 @@ const AllCustomersWithSegments = () => {
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setCurrentPage(1); // reset page on search
+            setCurrentPage(1);
           }}
-          className="border border-gray-300 rounded px-4 py-2 text-sm shadow-sm w-64"
+          className="border border-gray-300 rounded-xl px-4 py-2 text-sm shadow-sm w-64"
         />
+
+        {/* District Filter */}
+        <select
+          value={districtFilter}
+          onChange={(e) => {
+            setDistrictFilter(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="border border-gray-300 rounded-xl px-4 py-2 text-sm shadow-sm"
+        >
+          <option value="">All Districts</option>
+          <option value="Dhaka">Dhaka</option>
+          <option value="Chattogram">Chattogram</option>
+          <option value="Feni">Feni</option>
+          <option value="Cumilla">Cumilla</option>
+          <option value="Rajshahi">Rajshahi</option>
+          <option value="Sylhet">Sylhet</option>
+          <option value="Barishal">Barishal</option>
+          <option value="Khulna">Khulna</option>
+          <option value="Rangpur">Rangpur</option>
+          <option value="Mymensingh">Mymensingh</option>
+        </select>
 
         {/* Segment Filter */}
         <select
@@ -103,7 +127,7 @@ const AllCustomersWithSegments = () => {
             setSegmentFilter(e.target.value);
             setCurrentPage(1);
           }}
-          className="border border-gray-300 rounded px-4 py-2 text-sm shadow-sm"
+          className="border border-gray-300 rounded-xl px-4 py-2 text-sm shadow-sm"
         >
           <option value="">All Segments</option>
           <option value="Loyal">Loyal</option>
@@ -121,6 +145,7 @@ const AllCustomersWithSegments = () => {
               <th className="px-6 py-3">Customer</th>
               <th className="px-6 py-3">Contact</th>
               <th className="px-6 py-3">Total Orders</th>
+              <th className="px-6 py-3">District</th>
               <th className="px-6 py-3">Total Spend</th>
               <th className="px-6 py-3">Last Order</th>
               <th className="px-6 py-3">Segment</th>
@@ -141,12 +166,12 @@ const AllCustomersWithSegments = () => {
                   <div>{c.phone || "-"}</div>
                 </td>
                 <td className="px-6 py-4 font-medium">{c.totalOrders}</td>
+                <td className="px-6 py-4 font-medium">{c.district}</td>
                 <td className="px-6 py-4 font-bold">৳{c.totalSpend}</td>
                 <td className="px-6 py-4">
                   {c.lastOrder ? new Date(c.lastOrder).toLocaleString() : "N/A"}
                 </td>
                 <td className="px-6 py-4">
-                  
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${getSegmentClasses(
                       c.segment
