@@ -9,6 +9,17 @@ const AllPOSOrders = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 20;
   const axiosPublic = useAxiosPublic();
+  const [couriers, setCouriers] = useState([]);
+
+  const fetchCouriers = async () => {
+    try {
+      const res = await axiosPublic.get("/courier/settings");
+      setCouriers(res.data);
+    } catch (error) {
+      console.error(error);
+      setCouriers([]);
+    }
+  };
 
   // fetch POS orders
   const fetchOrders = async () => {
@@ -23,6 +34,7 @@ const AllPOSOrders = () => {
 
   useEffect(() => {
     fetchOrders();
+    fetchCouriers();
   }, []);
 
   // delete POS order
@@ -45,6 +57,24 @@ const AllPOSOrders = () => {
         });
       }
     });
+  };
+  const handleCourierAssign = async (orderId, courierName) => {
+    if (!courierName) return;
+
+    try {
+      const res = await axiosPublic.patch(`/pos/orders/${orderId}/courier`, {
+        courierName,
+      });
+      if (res.data.success) {
+        Swal.fire("Updated!", "Courier assigned successfully.", "success");
+        fetchOrders();
+      } else {
+        Swal.fire("Error!", res.data.message, "error");
+      }
+    } catch (error) {
+      Swal.fire("Error!", "Failed to assign courier", "error");
+      console.error(error);
+    }
   };
 
   // filter orders by multiple fields
@@ -94,6 +124,7 @@ const AllPOSOrders = () => {
         
         <p><strong>Order ID:</strong> ${order.orderId}</p>
         <p><strong>Customer:</strong> ${order.customer?.name || ""}</p>
+        <p><strong>Address:</strong> ${order.customer?.address || ""}</p>
         <p><strong>Phone:</strong> ${order.customer?.phone || ""}</p>
         <p><strong>Date:</strong> ${new Date(
           order.createdAt
@@ -203,6 +234,7 @@ const AllPOSOrders = () => {
               <th className="px-6 py-3">Products</th>
               <th className="px-6 py-3">Discount</th>
               <th className="px-6 py-3">Total</th>
+              <th className="px-6 py-3">Courier</th>
               <th className="px-6 py-3">Date & Time</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
@@ -219,6 +251,9 @@ const AllPOSOrders = () => {
                 <td className="px-6 py-4">
                   <div className="font-semibold text-gray-800">
                     {order.customer?.name}
+                  </div>
+                  <div className="font-semibold text-gray-800">
+                    {order.customer?.address}
                   </div>
                   <div className="text-gray-500">{order.customer?.phone}</div>
                 </td>
@@ -248,6 +283,24 @@ const AllPOSOrders = () => {
 
                 <td className="px-6 py-4 font-bold">৳{order.discount}</td>
                 <td className="px-6 py-4 font-bold">৳{order.total}</td>
+
+                <td className="px-3 py-3">
+                  <select
+                    value={order.courier || ""}
+                    onChange={(e) => {
+                      if (e.target.value)
+                        handleCourierAssign(order._id, e.target.value);
+                    }}
+                    className="border border-gray-300 rounded px-2 py-1 text-xs"
+                  >
+                    <option value="">Assign Courier</option>
+                    {couriers.map((c) => (
+                      <option key={c._id} value={c.courierName}>
+                        {c.courierName} ({c.status})
+                      </option>
+                    ))}
+                  </select>
+                </td>
 
                 <td className="px-6 py-4">
                   {new Date(order.createdAt).toLocaleDateString()}{" "}

@@ -29,6 +29,7 @@ const POSPage = () => {
   // Customer info state
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
 
   const [manualDiscountValue, setManualDiscountValue] = useState("");
   const [manualDiscountType, setManualDiscountType] = useState("flat");
@@ -233,6 +234,7 @@ const POSPage = () => {
       customer: {
         name: customerName,
         phone: customerPhone,
+        address: customerAddress,
       },
       payment: {
         method: selectedPaymentMethod,
@@ -270,6 +272,7 @@ const POSPage = () => {
     setAppliedCoupon(null);
     setCouponCode("");
     setCustomerName("");
+    setCustomerAddress("");
     setCustomerPhone("");
     setInputAmount("");
     setSelectedPaymentMethod("cash");
@@ -381,9 +384,16 @@ const POSPage = () => {
           <input
             type="number"
             placeholder="Number"
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full mb-2"
             value={customerPhone}
             onChange={(e) => setCustomerPhone(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Address"
+            className="border p-2 rounded w-full"
+            value={customerAddress}
+            onChange={(e) => setCustomerAddress(e.target.value)}
           />
         </div>
 

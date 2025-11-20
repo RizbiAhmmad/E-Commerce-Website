@@ -26,8 +26,11 @@ const SalesReport = () => {
     today: 0,
     yesterday: 0,
   });
+
   const [orders, setOrders] = useState([]);
-  const [filter, setFilter] = useState("today"); // all | today | week | month
+  const [filter, setFilter] = useState("today");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
   const axiosPublic = useAxiosPublic();
@@ -48,10 +51,7 @@ const SalesReport = () => {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const res = await axiosPublic.get(
-          "/sales-report"
-        );
-        // console.log("Sales report data:", res.data);
+        const res = await axiosPublic.get("/sales-report");
         setReport(res.data);
         setOrders(res.data.allOrders || []);
       } catch (err) {
@@ -61,60 +61,87 @@ const SalesReport = () => {
     fetchReport();
   }, []);
 
-  // helper for filtering orders
+  // filtering logic
   const getFilteredOrders = () => {
     const now = new Date();
     return orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
-      if (filter === "today") {
-        return orderDate.toDateString() === now.toDateString();
-      }
+
+      if (filter === "today") return orderDate.toDateString() === now.toDateString();
+
       if (filter === "week") {
         const weekAgo = new Date();
         weekAgo.setDate(now.getDate() - 7);
         return orderDate >= weekAgo;
       }
+
       if (filter === "month") {
         return (
           orderDate.getMonth() === now.getMonth() &&
           orderDate.getFullYear() === now.getFullYear()
         );
       }
-      return true; // all
+
+      if (filter === "range" && startDate && endDate) {
+        const sd = new Date(startDate);
+        const ed = new Date(endDate);
+        return orderDate >= sd && orderDate <= ed;
+      }
+
+      return true;
     });
   };
 
+  const getTotalSoldProducts = () => {
+  const filtered = getFilteredOrders();
+
+  const map = {};
+
+  filtered.forEach(order => {
+    (order.cartItems || []).forEach(item => {
+      const name = item.productName || item.name;
+      if (!map[name]) {
+        map[name] = 0;
+      }
+      map[name] += item.quantity;
+    });
+  });
+
+  return Object.entries(map).map(([name, total]) => ({ name, total }));
+};
+
+
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h2 className="pb-4 mb-8 text-3xl font-bold text-center border-b-2 border-gray-200">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
+      <h2 className="pb-4 mb-8 text-2xl md:text-3xl font-bold text-center border-b-2 border-gray-200">
         📊 Product Sales Report
       </h2>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-        <div className="bg-blue-100 p-4 rounded-lg shadow">
-          <h3 className="text-gray-600">All Time</h3>
-          <p className="text-2xl font-bold">৳{report.allTime}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6 mb-10">
+        <div className="bg-blue-100 p-4 rounded-lg shadow text-center">
+          <h3 className="text-gray-600 text-sm md:text-base">All Time</h3>
+          <p className="text-xl md:text-2xl font-bold">৳{report.allTime}</p>
         </div>
-        <div className="bg-green-100 p-4 rounded-lg shadow">
-          <h3 className="text-gray-600">This Month</h3>
-          <p className="text-2xl font-bold">৳{report.thisMonth}</p>
+        <div className="bg-green-100 p-4 rounded-lg shadow text-center">
+          <h3 className="text-gray-600 text-sm md:text-base">This Month</h3>
+          <p className="text-xl md:text-2xl font-bold">৳{report.thisMonth}</p>
         </div>
-        <div className="bg-cyan-100 p-4 rounded-lg shadow">
-          <h3 className="text-gray-600">This Week</h3>
-          <p className="text-2xl font-bold">৳{report.thisWeek}</p>
+        <div className="bg-cyan-100 p-4 rounded-lg shadow text-center">
+          <h3 className="text-gray-600 text-sm md:text-base">This Week</h3>
+          <p className="text-xl md:text-2xl font-bold">৳{report.thisWeek}</p>
         </div>
-        <div className="bg-red-100 p-4 rounded-lg shadow">
-          <h3 className="text-gray-600">Today</h3>
-          <p className="text-2xl font-bold">৳{report.today}</p>
+        <div className="bg-red-100 p-4 rounded-lg shadow text-center">
+          <h3 className="text-gray-600 text-sm md:text-base">Today</h3>
+          <p className="text-xl md:text-2xl font-bold">৳{report.today}</p>
         </div>
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
         {/* Bar Chart */}
         <div className="bg-white shadow rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4 text-center">Bar Chart</h3>
+          <h3 className="text-center font-semibold mb-4">Bar Chart</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -129,16 +156,14 @@ const SalesReport = () => {
 
         {/* Pie Chart */}
         <div className="bg-white shadow rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4 text-center">Pie Chart</h3>
+          <h3 className="text-center font-semibold mb-4">Pie Chart</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                labelLine={false}
                 outerRadius={120}
-                fill="#8884d8"
                 dataKey="value"
                 label
               >
@@ -153,11 +178,14 @@ const SalesReport = () => {
 
         {/* Line Chart */}
         <div className="bg-white shadow rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4 text-center">Line Chart</h3>
+          <h3 className="text-center font-semibold mb-4">Line Chart</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" /> <XAxis dataKey="name" />
-              <YAxis /> <Tooltip /> <Legend />
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
               <Line type="monotone" dataKey="value" stroke="#82ca9d" />
             </LineChart>
           </ResponsiveContainer>
@@ -165,9 +193,7 @@ const SalesReport = () => {
 
         {/* Comparison Chart */}
         <div className="bg-white shadow rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4 text-center">
-            Sales Comparison
-          </h3>
+          <h3 className="text-center font-semibold mb-4">Sales Comparison</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={comparisonData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -182,17 +208,43 @@ const SalesReport = () => {
         </div>
       </div>
 
-      {/* Product Details Table */}
+      {/* Product Table Section */}
       <div className="bg-white shadow rounded-lg p-4 mt-10">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
+          
           <h3 className="text-lg font-semibold">Sold Products</h3>
+
+          {/* Date Filter */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="border px-3 py-1 rounded"
+            />
+
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="border px-3 py-1 rounded"
+            />
+
+            <button
+              onClick={() => setFilter("range")}
+              className="px-3 py-1 bg-blue-600 text-white rounded"
+            >
+              Apply
+            </button>
+          </div>
+
           {/* Filter Buttons */}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {["all", "today", "week", "month"].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3 py-1 rounded ${
+                className={`px-3 py-1 rounded text-sm md:text-base ${
                   filter === f
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 hover:bg-gray-300"
@@ -210,11 +262,11 @@ const SalesReport = () => {
           </div>
         </div>
 
+        {/* TABLE */}
         <div className="overflow-x-auto">
-          <table className="table-auto w-full border border-gray-200 text-sm">
+          <table className="table-auto min-w-[800px] w-full border border-gray-200 text-sm">
             <thead className="bg-gray-100">
               <tr>
-                {/* <th className="px-4 py-2 border">Order ID</th> */}
                 <th className="px-4 py-2 border">Product Name</th>
                 <th className="px-4 py-2 border">Price</th>
                 <th className="px-4 py-2 border">Quantity</th>
@@ -225,6 +277,7 @@ const SalesReport = () => {
                 <th className="px-4 py-2 border">Order Type</th>
               </tr>
             </thead>
+
             <tbody>
               {getFilteredOrders().flatMap((order) =>
                 (order.cartItems || []).map((p, idx) => (
@@ -248,7 +301,9 @@ const SalesReport = () => {
                       ৳{p.price * p.quantity}
                     </td>
                     <td className="px-4 py-2 border">৳{order.discount || 0}</td>
-                    <td className="px-4 py-2 border">৳{Number(order.tax || 0).toFixed(2)}</td>
+                    <td className="px-4 py-2 border">
+                      ৳{Number(order.tax || 0).toFixed(2)}
+                    </td>
                     <td className="px-4 py-2 border">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
@@ -259,6 +314,29 @@ const SalesReport = () => {
             </tbody>
           </table>
         </div>
+
+        <div className="bg-white shadow rounded-lg p-4 mt-10">
+  <h3 className="text-lg font-semibold mb-4">📌 Total Product Sold Summary</h3>
+
+  <table className="table-auto w-full border">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="border px-4 py-2">Product Name</th>
+        <th className="border px-4 py-2">Total Sold</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {getTotalSoldProducts().map((p, idx) => (
+        <tr key={idx}>
+          <td className="border px-4 py-2">{p.name}</td>
+          <td className="border px-4 py-2 font-semibold">{p.total}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
       </div>
     </div>
   );
