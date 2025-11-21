@@ -62,6 +62,7 @@ import PrivacyPolicy from "@/Shared/PrivacyPolicy";
 import RefundPolicy from "@/Shared/RefundPolicy";
 import TermsConditions from "@/Shared/TermsConditions";
 import IncompleteOrders from "@/Pages/Dashboard/Admin/IncompleteOrders";
+import AddLandingPage from "@/Pages/Dashboard/Admin/AddLandingPage";
 
 export const router = createBrowserRouter([
   {
@@ -303,6 +304,10 @@ export const router = createBrowserRouter([
       {
         path: "allPolicies",
         element: <AllPolicies />,
+      },
+      {
+        path: "addLandingPage",
+        element: <AddLandingPage />,
       },
       {
         path: "ExpenseReport",

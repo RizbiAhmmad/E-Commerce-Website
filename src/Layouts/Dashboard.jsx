@@ -353,6 +353,14 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
+                    to="/dashboard/addLandingPage"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaGift /> <span>Add Landing Page</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
                     to="/dashboard/CourierSettings"
                     className="flex items-center px-2 py-2 space-x-3"
                   >

@@ -302,7 +302,7 @@ const AddProduct = () => {
                     <img
                       src={imageURL}
                       alt={`preview-${index}`}
-                      className="w-full h-24 object-cover rounded border"
+                      className="w-full aspect-square object-cover rounded border"
                     />
                     <button
                       type="button"

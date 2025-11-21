@@ -228,6 +228,7 @@ const AllProducts = () => {
   const handleWindowPrint = (product) => {
     const barcode = product.barcode;
     const productName = product.name;
+    const productPrice = product.newPrice;
 
     const content = `
         <html>
@@ -252,12 +253,17 @@ const AllProducts = () => {
                     font-weight: bold;
                     margin-bottom: 4px;
                 }
+                    .product-price {
+                    font-size: 12px;
+                    margin-bottom: 4px;
+                }
             </style>
         </head>
         <body>
 
             <div class="label-box">
                 <div class="product-name">${productName}</div>
+                <div class="product-price">Price: ${productPrice} Tk</div>
 
                 <div id="barcode-container" data-barcode="${barcode}"></div>
             </div>
