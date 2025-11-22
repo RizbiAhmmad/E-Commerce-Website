@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 import {
   BarChart,
   Bar,
@@ -67,7 +68,8 @@ const SalesReport = () => {
     return orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
 
-      if (filter === "today") return orderDate.toDateString() === now.toDateString();
+      if (filter === "today")
+        return orderDate.toDateString() === now.toDateString();
 
       if (filter === "week") {
         const weekAgo = new Date();
@@ -93,23 +95,50 @@ const SalesReport = () => {
   };
 
   const getTotalSoldProducts = () => {
-  const filtered = getFilteredOrders();
+    const filtered = getFilteredOrders();
 
-  const map = {};
+    const map = {};
 
-  filtered.forEach(order => {
-    (order.cartItems || []).forEach(item => {
-      const name = item.productName || item.name;
-      if (!map[name]) {
-        map[name] = 0;
-      }
-      map[name] += item.quantity;
+    filtered.forEach((order) => {
+      (order.cartItems || []).forEach((item) => {
+        const name = item.productName || item.name;
+        if (!map[name]) {
+          map[name] = 0;
+        }
+        map[name] += item.quantity;
+      });
     });
-  });
 
-  return Object.entries(map).map(([name, total]) => ({ name, total }));
-};
+    return Object.entries(map).map(([name, total]) => ({ name, total }));
+  };
+  const exportToExcel = () => {
+    const filteredOrders = getFilteredOrders().flatMap((order) =>
+      (order.cartItems || []).map((p) => ({
+        ProductName: p.productName || p.name || p.title,
+        Price: p.price,
+        Quantity: p.quantity,
+        Total: p.price * p.quantity,
+        Discount: order.discount || 0,
+        Tax: Number(order.tax || 0).toFixed(2),
+        Date: new Date(order.createdAt).toLocaleDateString(),
+        OrderType: order.orderType,
+      }))
+    );
 
+    const worksheet = XLSX.utils.json_to_sheet(filteredOrders);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
+    XLSX.writeFile(workbook, "sales_report.xlsx");
+  };
+
+  const exportSummaryToExcel = () => {
+    const summary = getTotalSoldProducts();
+    const worksheet = XLSX.utils.json_to_sheet(summary);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Summary");
+    XLSX.writeFile(workbook, "product_summary.xlsx");
+  };
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
@@ -211,7 +240,6 @@ const SalesReport = () => {
       {/* Product Table Section */}
       <div className="bg-white shadow rounded-lg p-4 mt-10">
         <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
-          
           <h3 className="text-lg font-semibold">Sold Products</h3>
 
           {/* Date Filter */}
@@ -235,6 +263,12 @@ const SalesReport = () => {
               className="px-3 py-1 bg-blue-600 text-white rounded"
             >
               Apply
+            </button>
+            <button
+              onClick={exportToExcel}
+              className="px-4 py-2 bg-green-600 text-white rounded shadow"
+            >
+              📥 Export to Excel
             </button>
           </div>
 
@@ -316,27 +350,36 @@ const SalesReport = () => {
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 mt-10">
-  <h3 className="text-lg font-semibold mb-4">📌 Total Product Sold Summary</h3>
+          <div className="flex justify-left items-center mb-4">
+            <h3 className="text-lg font-semibold mx-2">
+              📌 Total Product Sold Summary
+            </h3>
+            <button
+              onClick={exportSummaryToExcel}
+              className="px-4 py-2 bg-green-600 text-white rounded"
+            >
+              📥 Export Summary
+            </button>
+          </div>
 
-  <table className="table-auto w-full border">
-    <thead className="bg-gray-100">
-      <tr>
-        <th className="border px-4 py-2">Product Name</th>
-        <th className="border px-4 py-2">Total Sold</th>
-      </tr>
-    </thead>
+          <table className="table-auto w-full border">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border px-4 py-2">Product Name</th>
+                <th className="border px-4 py-2">Total Sold</th>
+              </tr>
+            </thead>
 
-    <tbody>
-      {getTotalSoldProducts().map((p, idx) => (
-        <tr key={idx}>
-          <td className="border px-4 py-2">{p.name}</td>
-          <td className="border px-4 py-2 font-semibold">{p.total}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
+            <tbody>
+              {getTotalSoldProducts().map((p, idx) => (
+                <tr key={idx}>
+                  <td className="border px-4 py-2">{p.name}</td>
+                  <td className="border px-4 py-2 font-semibold">{p.total}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

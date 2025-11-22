@@ -125,7 +125,9 @@ const AllPOSOrders = () => {
         <p><strong>Order ID:</strong> ${order.orderId}</p>
         <p><strong>Customer:</strong> ${order.customer?.name || ""}</p>
         <p><strong>Address:</strong> ${order.customer?.address || ""}</p>
+        <p><strong>District:</strong> ${order.customer?.district || ""}</p>
         <p><strong>Phone:</strong> ${order.customer?.phone || ""}</p>
+        <p><strong>Note:</strong> ${order.customer?.note || ""}</p>
         <p><strong>Date:</strong> ${new Date(
           order.createdAt
         ).toLocaleString()}</p>
@@ -255,7 +257,13 @@ const AllPOSOrders = () => {
                   <div className="font-semibold text-gray-800">
                     {order.customer?.address}
                   </div>
-                  <div className="text-gray-500">{order.customer?.phone}</div>
+                  <div className="font-semibold text-gray-800">
+                    {order.customer?.district}
+                  </div>
+                  <div className="font-semibold text-gray-800">
+                    {order.customer?.note}
+                  </div>
+                  <div className="text-gray-600">{order.customer?.phone}</div>
                 </td>
 
                 <td className="px-6 py-4 capitalize">

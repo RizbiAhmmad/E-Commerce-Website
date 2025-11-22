@@ -30,6 +30,8 @@ const POSPage = () => {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
+  const [customerDistrict, setCustomerDistrict] = useState("");
+  const [customerNote, setCustomerNote] = useState("");
 
   const [manualDiscountValue, setManualDiscountValue] = useState("");
   const [manualDiscountType, setManualDiscountType] = useState("flat");
@@ -61,7 +63,7 @@ const POSPage = () => {
 
     fetchPosCart();
   }, []);
-   // Footer info (logo, name)
+  // Footer info (logo, name)
   useEffect(() => {
     axiosPublic
       .get("/footer")
@@ -87,6 +89,10 @@ const POSPage = () => {
     visibility: hidden !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+    img {
+    max-width: 100% !important;
+    display: block !important;
   }
 
   #printable-receipt, #printable-receipt * {
@@ -235,7 +241,10 @@ const POSPage = () => {
         name: customerName,
         phone: customerPhone,
         address: customerAddress,
+        district: customerDistrict,
+        note: customerNote,
       },
+
       payment: {
         method: selectedPaymentMethod,
         amount: paid,
@@ -273,6 +282,9 @@ const POSPage = () => {
     setCouponCode("");
     setCustomerName("");
     setCustomerAddress("");
+    setCustomerDistrict("");
+    setCustomerNote("");
+
     setCustomerPhone("");
     setInputAmount("");
     setSelectedPaymentMethod("cash");
@@ -310,6 +322,72 @@ const POSPage = () => {
     setSelectedSize(product.sizes?.[0] || "");
     setModalOpen(true);
   };
+  const districts = [
+    "Dhaka",
+    "Chattogram",
+    "Rajshahi",
+    "Khulna",
+    "Barishal",
+    "Sylhet",
+    "Rangpur",
+    "Mymensingh",
+    "Bagerhat",
+    "Bandarban",
+    "Barguna",
+    "Bhola",
+    "Bogura",
+    "Brahmanbaria",
+    "Chandpur",
+    "Chapainawabganj",
+    "Chuadanga",
+    "Cox's Bazar",
+    "Cumilla",
+    "Dinajpur",
+    "Faridpur",
+    "Feni",
+    "Gaibandha",
+    "Gazipur",
+    "Gopalganj",
+    "Habiganj",
+    "Jamalpur",
+    "Jashore",
+    "Jhalokathi",
+    "Jhenaidah",
+    "Joypurhat",
+    "Khagrachhari",
+    "Kishoreganj",
+    "Kurigram",
+    "Kushtia",
+    "Lakshmipur",
+    "Lalmonirhat",
+    "Madaripur",
+    "Magura",
+    "Manikganj",
+    "Meherpur",
+    "Moulvibazar",
+    "Munshiganj",
+    "Naogaon",
+    "Narail",
+    "Narayanganj",
+    "Narsingdi",
+    "Natore",
+    "Netrakona",
+    "Nilphamari",
+    "Noakhali",
+    "Pabna",
+    "Panchagarh",
+    "Patuakhali",
+    "Pirojpur",
+    "Rajbari",
+    "Rangamati",
+    "Satkhira",
+    "Shariatpur",
+    "Sherpur",
+    "Sirajganj",
+    "Sunamganj",
+    "Tangail",
+    "Thakurgaon",
+  ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-8">
@@ -372,7 +450,6 @@ const POSPage = () => {
       <div className="border rounded p-4 flex flex-col">
         <h2 className="font-semibold text-lg mb-4">POS Cart</h2>
 
-        {/* Customer Info */}
         <div className="mb-4">
           <input
             type="text"
@@ -391,9 +468,29 @@ const POSPage = () => {
           <input
             type="text"
             placeholder="Address"
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full mb-2"
             value={customerAddress}
             onChange={(e) => setCustomerAddress(e.target.value)}
+          />
+          {/* NEW DISTRICT SELECT */}
+          <select
+            className="border p-2 rounded w-full mb-2"
+            value={customerDistrict}
+            onChange={(e) => setCustomerDistrict(e.target.value)}
+          >
+            <option value="">Select District</option>
+            {districts.map((dist, idx) => (
+              <option key={idx} value={dist}>
+                {dist}
+              </option>
+            ))}
+          </select>
+          {/* NEW NOTE FIELD */}
+          <textarea
+            placeholder="Additional Notes"
+            className="border p-2 rounded w-full"
+            value={customerNote}
+            onChange={(e) => setCustomerNote(e.target.value)}
           />
         </div>
 
@@ -806,16 +903,43 @@ const POSPage = () => {
             </div>
 
             {/* Receipt content */}
-            <div className="text-center mt-4">
-              <h2 className="text-xl font-bold">{footerInfo?.name}</h2>
-              <p className="text-sm">
-                eCommerce CMS with POS & WhatsApp Ordering | Inventory
-                Management
+            <div className="mt-4">
+              <div className="flex justify-center mb-2">
+                {footerInfo?.logo && (
+                  <img
+                    src={footerInfo.logo}
+                    alt="Company Logo"
+                    className="w-20 h-auto"
+                  />
+                )}
+              </div>
+
+              {/* Company Name & Footer info */}
+              <h2 className="font-bold text-md text-center">
+                {footerInfo?.name}
+              </h2>
+              <p className="text-xs text-center">{footerInfo?.address}</p>
+              <p className="text-xs text-center">{footerInfo?.phone}</p>
+            </div>
+
+            <hr className="border-t-2 border-dashed border-gray-400 my-3" />
+            <div className="text-left text-xs">
+              <p>
+                <strong>Name:</strong> {receiptData.customer?.name}
               </p>
-              <p className="text-xs mt-1">
-                {footerInfo?.address}
+              <p>
+                <strong>Phone:</strong> {receiptData.customer?.phone}
               </p>
-              <p className="text-xs mb-3">Tel: {footerInfo?.phone}</p>
+              {receiptData.customer?.address && (
+                <p>
+                  <strong>Address:</strong> {receiptData.customer.address}
+                </p>
+              )}
+              {receiptData.customer?.district && (
+                <p>
+                  <strong>District:</strong> {receiptData.customer.district}
+                </p>
+              )}
             </div>
 
             <hr className="border-t-2 border-dashed border-gray-400 my-3" />
@@ -913,11 +1037,6 @@ const POSPage = () => {
             <div className="text-center mt-6 text-sm">
               <div>Thank You</div>
               <div>Please Come Again</div>
-            </div>
-
-            <div className="text-[10px] text-center text-gray-500 mt-4">
-              {footerInfo?.name} eCommerce CMS with POS & WhatsApp Ordering | Inventory
-              Management
             </div>
           </div>
         </div>
