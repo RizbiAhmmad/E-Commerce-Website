@@ -353,10 +353,10 @@ const Dashboard = () => {
                 </li>
                 <li>
                   <NavLink
-                    to="/dashboard/addLandingPage"
+                    to="/dashboard/allLandingPages"
                     className="flex items-center px-2 py-2 space-x-3"
                   >
-                    <FaGift /> <span>Add Landing Page</span>
+                    <FaGift /> <span>Landing Pages</span>
                   </NavLink>
                 </li>
                 <li>

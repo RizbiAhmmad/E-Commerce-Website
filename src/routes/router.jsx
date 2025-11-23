@@ -63,6 +63,7 @@ import RefundPolicy from "@/Shared/RefundPolicy";
 import TermsConditions from "@/Shared/TermsConditions";
 import IncompleteOrders from "@/Pages/Dashboard/Admin/IncompleteOrders";
 import AddLandingPage from "@/Pages/Dashboard/Admin/AddLandingPage";
+import AllLandingPages from "@/Pages/Dashboard/Admin/AllLandingPages";
 
 export const router = createBrowserRouter([
   {
@@ -308,6 +309,10 @@ export const router = createBrowserRouter([
       {
         path: "addLandingPage",
         element: <AddLandingPage />,
+      },
+      {
+        path: "allLandingPages",
+        element: <AllLandingPages />,
       },
       {
         path: "ExpenseReport",

@@ -16,15 +16,24 @@ const AddLandingPage = () => {
 
   const [bannerImage, setBannerImage] = useState(null);
   const [reviewImages, setReviewImages] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
 
   const [formData, setFormData] = useState({
     productId: "",
     campaignTitle: "",
+    campaignShortDescription: "",
     shortDescription: "",
+    regularPrice: "",
+    offerPrice: "",
+    galleryHeading: "",
+    galleryDescription: "",
+    aboutHeading: "",
+    aboutDescription: "",
+    orderFormHeading: "",
+    orderButtonText: "",
     videoUrl: "",
     descriptionTitle: "",
     description: "",
-    whyChooseUs: "",
   });
 
   // Load products
@@ -90,10 +99,19 @@ const AddLandingPage = () => {
         }
       }
 
+      // Upload Multiple Gallery Images
+      const uploadedGalleryUrls = [];
+      if (galleryImages.length > 0) {
+        for (let file of galleryImages) {
+          uploadedGalleryUrls.push(await uploadImage(file));
+        }
+      }
+
       const landingData = {
         ...formData,
         bannerImage: bannerUrl,
         reviewImages: uploadedReviewUrls,
+        galleryImages: uploadedGalleryUrls,
         email: user?.email,
       };
 
@@ -126,22 +144,6 @@ const AddLandingPage = () => {
           />
         </div>
 
-        {/* Product Preview + Barcode */}
-        {selectedProduct && (
-          <div className="border p-4 rounded mt-4 flex items-center gap-4 bg-gray-50">
-            <canvas id="preview-barcode"></canvas>
-            <div className="text-sm leading-tight">
-              <p className="font-bold">{selectedProduct.name}</p>
-              <p>
-                <strong>Colors:</strong> {selectedProduct.colors?.join(", ")}
-              </p>
-              <p>
-                <strong>Sizes:</strong> {selectedProduct.sizes?.join(", ")}
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* Campaign Title */}
         <input
           name="campaignTitle"
@@ -151,11 +153,38 @@ const AddLandingPage = () => {
           onChange={handleInput}
         />
 
-        {/* Banner Image */}
+        {/* Campaign Short Description */}
+        <textarea
+          name="campaignShortDescription"
+          placeholder="Campaign Short Description"
+          rows="3"
+          className="w-full border p-2 rounded"
+          onChange={handleInput}
+          required
+        />
+
+        {/* Regular Price & Offer Price side by side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input
+            name="regularPrice"
+            placeholder="Regular Price"
+            type="number"
+            className="w-full border p-2 rounded"
+            onChange={handleInput}
+            required
+          />
+          <input
+            name="offerPrice"
+            placeholder="Offer Price"
+            type="number"
+            className="w-full border p-2 rounded"
+            onChange={handleInput}
+          />
+        </div>
+
         <div className="flex flex-col gap-2">
           <label className="font-semibold">Banner Image *</label>
 
-          {/* Custom Button */}
           <label
             htmlFor="banner-image"
             className="cursor-pointer bg-cyan-500 text-white font-semibold px-4 py-2 rounded-xl shadow-md hover:opacity-90 transition inline-block w-fit"
@@ -163,21 +192,27 @@ const AddLandingPage = () => {
             Choose Image
           </label>
 
-          {/* Hidden File Input */}
           <input
             id="banner-image"
             type="file"
             className="hidden"
+            accept="image/*"
             onChange={(e) => setBannerImage(e.target.files[0])}
-            required
           />
+
+          {bannerImage && (
+            <img
+              src={URL.createObjectURL(bannerImage)}
+              className="w-full h-40 object-cover rounded mt-3 border"
+            />
+          )}
         </div>
 
         {/* Short Description */}
         <textarea
           name="shortDescription"
           placeholder="Short Description"
-          rows="4"
+          rows="3"
           className="w-full border p-2 rounded"
           onChange={handleInput}
           required
@@ -191,7 +226,84 @@ const AddLandingPage = () => {
           onChange={handleInput}
         />
 
+        {/* Gallery Section */}
+        <input
+          name="galleryHeading"
+          placeholder="Gallery Section Heading"
+          className="w-full border p-2 rounded"
+          onChange={handleInput}
+        />
+        <textarea
+          name="galleryDescription"
+          placeholder="Gallery Section Description"
+          rows="3"
+          className="w-full border p-2 rounded"
+          onChange={handleInput}
+        />
         <div>
+          <label className="font-semibold block mb-2">
+            Gallery Images (Multiple)
+          </label>
+
+          <label className="bg-cyan-500 text-white px-4 py-2 rounded-xl cursor-pointer shadow-md hover:opacity-90 inline-block">
+            Choose Images
+            <input
+              type="file"
+              multiple
+              className="hidden"
+              accept="image/*"
+              onChange={(e) =>
+                setGalleryImages([
+                  ...galleryImages,
+                  ...Array.from(e.target.files),
+                ])
+              }
+            />
+          </label>
+
+          {galleryImages.length > 0 && (
+            <div className="grid grid-cols-3 gap-3 mt-3">
+              {galleryImages.map((img, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={URL.createObjectURL(img)}
+                    alt=""
+                    className="w-full h-24 object-cover rounded"
+                  />
+
+                  {/* Remove Button */}
+                  <button
+                    onClick={() =>
+                      setGalleryImages(
+                        galleryImages.filter((_, i) => i !== index)
+                      )
+                    }
+                    className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-80 hover:opacity-100"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* About Section */}
+        <input
+          name="aboutHeading"
+          placeholder="About Section Heading"
+          className="w-full border p-2 rounded"
+          onChange={handleInput}
+        />
+        <textarea
+          name="aboutDescription"
+          placeholder="About Section Description"
+          rows="3"
+          className="w-full border p-2 rounded"
+          onChange={handleInput}
+        />
+
+        <div className="mt-5">
           <label className="font-semibold block mb-2">
             Review Images (Multiple)
           </label>
@@ -202,18 +314,38 @@ const AddLandingPage = () => {
               type="file"
               multiple
               className="hidden"
-              onChange={(e) => setReviewImages([...e.target.files])}
               accept="image/*"
+              onChange={(e) =>
+                setReviewImages([
+                  ...reviewImages,
+                  ...Array.from(e.target.files),
+                ])
+              }
             />
           </label>
 
-          {/* Preview Selected Files */}
           {reviewImages.length > 0 && (
             <div className="grid grid-cols-3 gap-3 mt-3">
-              {reviewImages.map((img, idx) => (
-                <p key={idx} className="text-xs bg-gray-200 p-2 rounded">
-                  {img.name}
-                </p>
+              {reviewImages.map((img, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={URL.createObjectURL(img)}
+                    alt=""
+                    className="w-full h-24 object-cover rounded"
+                  />
+
+                  {/* Delete Button */}
+                  <button
+                    onClick={() =>
+                      setReviewImages(
+                        reviewImages.filter((_, i) => i !== index)
+                      )
+                    }
+                    className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-80 hover:opacity-100"
+                  >
+                    X
+                  </button>
+                </div>
               ))}
             </div>
           )}
@@ -231,19 +363,23 @@ const AddLandingPage = () => {
         <textarea
           name="description"
           placeholder="Description"
-          rows="4"
+          rows="3"
           className="w-full border p-2 rounded"
           onChange={handleInput}
         />
 
-        {/* Why Choose Us */}
-        <textarea
-          name="whyChooseUs"
-          placeholder="Why Choose Us?"
-          rows="4"
+        {/* Order Form Heading */}
+        <input
+          name="orderFormHeading"
+          placeholder="Order Form Heading"
           className="w-full border p-2 rounded"
           onChange={handleInput}
-          required
+        />
+        <input
+          name="orderButtonText"
+          placeholder="Order Button Text"
+          className="w-full border p-2 rounded"
+          onChange={handleInput}
         />
 
         <button
