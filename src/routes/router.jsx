@@ -64,6 +64,7 @@ import TermsConditions from "@/Shared/TermsConditions";
 import IncompleteOrders from "@/Pages/Dashboard/Admin/IncompleteOrders";
 import AddLandingPage from "@/Pages/Dashboard/Admin/AddLandingPage";
 import AllLandingPages from "@/Pages/Dashboard/Admin/AllLandingPages";
+import LandingPage from "@/Pages/LandingPage/LandingPage";
 
 export const router = createBrowserRouter([
   {
@@ -133,6 +134,10 @@ export const router = createBrowserRouter([
       {
         path: "subcategory/:subId",
         element: <SubcategoryProducts />,
+      },
+      {
+        path: "landing-page/:id",
+        element: <LandingPage />,
       },
     ],
   },

@@ -7,7 +7,7 @@ import { Outlet, useLocation } from "react-router-dom";
 const MainLayout = () => {
   const location = useLocation();
   const noHeaderFooter =
-    location.pathname.includes("login") || location.pathname.includes("signup");
+    location.pathname.includes("login") || location.pathname.includes("signup") || location.pathname.includes("landing-page");
   return (
     <div>
       <ScrollToTop />

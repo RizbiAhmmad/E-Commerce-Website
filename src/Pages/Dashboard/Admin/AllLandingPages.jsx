@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaEye, FaPlus, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
-const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload";
+const CLOUDINARY_UPLOAD_URL =
+  "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload";
 const CLOUDINARY_UPLOAD_PRESET = "eCommerce";
 
 const AllLandingPages = () => {
@@ -22,13 +23,12 @@ const AllLandingPages = () => {
 
   const navigate = useNavigate();
   const [localLandingPages, setLocalLandingPages] = useState([]);
-  const currentData = isDemo && localLandingPages.length ? localLandingPages : landingPages;
+  const currentData =
+    isDemo && localLandingPages.length ? localLandingPages : landingPages;
 
-  // Modal + selection
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPage, setSelectedPage] = useState(null);
 
-  // Form data (mirrors AddLandingPage)
   const [formData, setFormData] = useState({
     productId: "",
     campaignTitle: "",
@@ -40,20 +40,18 @@ const AllLandingPages = () => {
     galleryDescription: "",
     aboutHeading: "",
     aboutDescription: "",
+    reviewHeading: "",
     orderFormHeading: "",
     orderButtonText: "",
     videoUrl: "",
     descriptionTitle: "",
     description: "",
     bannerImage: "",
-    reviewImages: [], // can be mix of url strings and File objects
-    galleryImages: [], // same
+    reviewImages: [],
+    galleryImages: [],
   });
 
-  // New banner file if user selects replacement
   const [newBannerFile, setNewBannerFile] = useState(null);
-
-  // For uploading state
   const [uploading, setUploading] = useState(false);
 
   // Pagination
@@ -64,10 +62,16 @@ const AllLandingPages = () => {
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentLandingPages = currentData.slice(indexOfFirst, indexOfLast);
 
-  // ---------- Helpers ----------
+  const { data: products = [] } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const res = await axiosPublic.get("/products");
+      return res.data;
+    },
+  });
+
   const openEditModal = (page) => {
     setSelectedPage(page);
-    // populate formData (copy arrays so we can mutate locally)
     setFormData({
       productId: page.productId || "",
       campaignTitle: page.campaignTitle || "",
@@ -79,16 +83,20 @@ const AllLandingPages = () => {
       galleryDescription: page.galleryDescription || "",
       aboutHeading: page.aboutHeading || "",
       aboutDescription: page.aboutDescription || "",
+      reviewHeading: page.reviewHeading || "",
       orderFormHeading: page.orderFormHeading || "",
       orderButtonText: page.orderButtonText || "",
       videoUrl: page.videoUrl || "",
       descriptionTitle: page.descriptionTitle || "",
       description: page.description || "",
       bannerImage: page.bannerImage || "",
-      reviewImages: Array.isArray(page.reviewImages) ? [...page.reviewImages] : [],
-      galleryImages: Array.isArray(page.galleryImages) ? [...page.galleryImages] : [],
+      reviewImages: Array.isArray(page.reviewImages)
+        ? [...page.reviewImages]
+        : [],
+      galleryImages: Array.isArray(page.galleryImages)
+        ? [...page.galleryImages]
+        : [],
     });
-
     setNewBannerFile(null);
     setIsModalOpen(true);
   };
@@ -105,22 +113,24 @@ const AllLandingPages = () => {
     }
   };
 
-  // When user selects additional gallery files in modal, we append File objects to formData.galleryImages
   const handleAddGalleryFiles = (e) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
-    setFormData((prev) => ({ ...prev, galleryImages: [...prev.galleryImages, ...files] }));
+    setFormData((prev) => ({
+      ...prev,
+      galleryImages: [...prev.galleryImages, ...files],
+    }));
   };
 
-  // Similar for review images
   const handleAddReviewFiles = (e) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
-    setFormData((prev) => ({ ...prev, reviewImages: [...prev.reviewImages, ...files] }));
+    setFormData((prev) => ({
+      ...prev,
+      reviewImages: [...prev.reviewImages, ...files],
+    }));
   };
 
-  // Remove an image from galleryImages by index
-  // note: images can be string(url) or File object
   const removeGalleryImage = (index) => {
     setFormData((prev) => ({
       ...prev,
@@ -135,10 +145,7 @@ const AllLandingPages = () => {
     }));
   };
 
-  // Remove newly selected banner (before upload)
   const clearNewBanner = () => setNewBannerFile(null);
-
-  // Upload helper using axiosPublic (keeps your existing axios instance for CORS/proxy)
   const uploadToCloudinary = async (file) => {
     const fd = new FormData();
     fd.append("file", file);
@@ -148,22 +155,22 @@ const AllLandingPages = () => {
     return res.data.secure_url;
   };
 
-  // ---------- handleUpdate: upload new files, keep old urls ----------
   const handleUpdate = async (e) => {
     e.preventDefault();
 
     try {
       setUploading(true);
       let finalBannerUrl = formData.bannerImage || "";
-
-      // 1) Banner: if user selected a new banner file, upload it and replace
       if (newBannerFile) {
         finalBannerUrl = await uploadToCloudinary(newBannerFile);
       }
 
-      // 2) Gallery images: formData.galleryImages may contain strings (existing urls) and File objects (new)
-      const oldGalleryUrls = (formData.galleryImages || []).filter((i) => typeof i === "string");
-      const newGalleryFiles = (formData.galleryImages || []).filter((i) => typeof i !== "string");
+      const oldGalleryUrls = (formData.galleryImages || []).filter(
+        (i) => typeof i === "string"
+      );
+      const newGalleryFiles = (formData.galleryImages || []).filter(
+        (i) => typeof i !== "string"
+      );
 
       const uploadedGalleryUrls = [];
       for (const f of newGalleryFiles) {
@@ -172,9 +179,12 @@ const AllLandingPages = () => {
       }
       const finalGalleryImages = [...oldGalleryUrls, ...uploadedGalleryUrls];
 
-      // 3) Review images: same logic
-      const oldReviewUrls = (formData.reviewImages || []).filter((i) => typeof i === "string");
-      const newReviewFiles = (formData.reviewImages || []).filter((i) => typeof i !== "string");
+      const oldReviewUrls = (formData.reviewImages || []).filter(
+        (i) => typeof i === "string"
+      );
+      const newReviewFiles = (formData.reviewImages || []).filter(
+        (i) => typeof i !== "string"
+      );
 
       const uploadedReviewUrls = [];
       for (const f of newReviewFiles) {
@@ -183,18 +193,18 @@ const AllLandingPages = () => {
       }
       const finalReviewImages = [...oldReviewUrls, ...uploadedReviewUrls];
 
-      // 4) Build payload
       const payload = {
         productId: formData.productId,
         campaignTitle: formData.campaignTitle,
         campaignShortDescription: formData.campaignShortDescription,
         shortDescription: formData.shortDescription,
-        regularPrice: formData.regularPrice,
-        offerPrice: formData.offerPrice,
+        regularPrice: Number(formData.regularPrice),
+        offerPrice: Number(formData.offerPrice),
         galleryHeading: formData.galleryHeading,
         galleryDescription: formData.galleryDescription,
         aboutHeading: formData.aboutHeading,
         aboutDescription: formData.aboutDescription,
+        reviewHeading: formData.reviewHeading,
         orderFormHeading: formData.orderFormHeading,
         orderButtonText: formData.orderButtonText,
         videoUrl: formData.videoUrl,
@@ -205,7 +215,6 @@ const AllLandingPages = () => {
         reviewImages: finalReviewImages,
       };
 
-      // Demo mode: update only local state
       if (isDemo) {
         const updated = currentData.map((p) =>
           p._id === selectedPage._id ? { ...p, ...payload } : p
@@ -217,7 +226,6 @@ const AllLandingPages = () => {
         return;
       }
 
-      // 5) Send PUT to backend
       await axiosPublic.put(`/landing-pages/${selectedPage._id}`, payload);
 
       setUploading(false);
@@ -260,7 +268,7 @@ const AllLandingPages = () => {
   };
 
   return (
-    <div className="max-w-6xl p-6 mx-auto">
+    <div className="max-w-4xl p-6 mx-auto">
       <h2 className="pb-4 mb-4 text-4xl font-bold text-center border-b-2 border-gray-200">
         All Landing Pages
       </h2>
@@ -313,6 +321,10 @@ const AllLandingPages = () => {
                 </td>
 
                 <td className="flex gap-4 px-6 py-4">
+                  <button onClick={() => navigate(`/landing-page/${lp._id}`)}>
+                    <FaEye className="text-2xl text-green-500 hover:text-green-600" />
+                  </button>
+
                   <button onClick={() => openEditModal(lp)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
@@ -372,7 +384,7 @@ const AllLandingPages = () => {
       {/* Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 overflow-y-auto py-10">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-4xl relative max-h-[90vh] overflow-auto">
+          <div className="bg-white p-6 rounded shadow-lg w-full max-w-2xl relative max-h-[90vh] overflow-auto">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-2 right-2 text-gray-500 text-xl"
@@ -385,19 +397,29 @@ const AllLandingPages = () => {
             <form onSubmit={handleUpdate} className="space-y-4">
               {/* Product ID (optional) */}
               <div>
-                <label className="block text-sm font-medium">Product ID</label>
-                <input
+                <label className="block text-sm font-medium">
+                  Select Product
+                </label>
+                <select
                   name="productId"
                   value={formData.productId}
                   onChange={handleModalChange}
                   className="w-full p-2 border rounded"
-                  placeholder="Product ID"
-                />
+                >
+                  <option value="">-- Select Product --</option>
+                  {products.map((prod) => (
+                    <option key={prod._id} value={prod._id}>
+                      {prod.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Campaign Title */}
               <div>
-                <label className="block text-sm font-medium">Campaign Title</label>
+                <label className="block text-sm font-medium">
+                  Campaign Title
+                </label>
                 <input
                   type="text"
                   name="campaignTitle"
@@ -410,7 +432,9 @@ const AllLandingPages = () => {
 
               {/* Campaign Short Description */}
               <div>
-                <label className="block text-sm font-medium">Campaign Short Description</label>
+                <label className="block text-sm font-medium">
+                  Campaign Short Description
+                </label>
                 <textarea
                   name="campaignShortDescription"
                   value={formData.campaignShortDescription}
@@ -423,7 +447,9 @@ const AllLandingPages = () => {
               {/* Prices */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">Regular Price</label>
+                  <label className="block text-sm font-medium">
+                    Regular Price
+                  </label>
                   <input
                     type="number"
                     name="regularPrice"
@@ -434,7 +460,9 @@ const AllLandingPages = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium">Offer Price</label>
+                  <label className="block text-sm font-medium">
+                    Offer Price
+                  </label>
                   <input
                     type="number"
                     name="offerPrice"
@@ -447,18 +475,28 @@ const AllLandingPages = () => {
 
               {/* Banner */}
               <div>
-                <label className="block text-sm font-medium">Banner Image</label>
+                <label className="block text-sm font-medium">
+                  Banner Image
+                </label>
                 <div className="flex items-start gap-4">
                   <div>
                     <img
-                      src={newBannerFile ? URL.createObjectURL(newBannerFile) : formData.bannerImage}
+                      src={
+                        newBannerFile
+                          ? URL.createObjectURL(newBannerFile)
+                          : formData.bannerImage
+                      }
                       alt="banner"
                       className="w-44 h-28 object-cover rounded border"
                     />
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <input type="file" accept="image/*" onChange={handleBannerChange} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBannerChange}
+                    />
                     {newBannerFile && (
                       <button
                         type="button"
@@ -474,7 +512,9 @@ const AllLandingPages = () => {
 
               {/* Short Description */}
               <div>
-                <label className="block text-sm font-medium">Short Description</label>
+                <label className="block text-sm font-medium">
+                  Short Description
+                </label>
                 <textarea
                   name="shortDescription"
                   value={formData.shortDescription}
@@ -498,7 +538,9 @@ const AllLandingPages = () => {
 
               {/* Gallery Section */}
               <div>
-                <label className="block text-sm font-medium">Gallery Heading</label>
+                <label className="block text-sm font-medium">
+                  Gallery Heading
+                </label>
                 <input
                   name="galleryHeading"
                   value={formData.galleryHeading}
@@ -506,7 +548,9 @@ const AllLandingPages = () => {
                   className="w-full p-2 border rounded"
                   placeholder="Gallery Heading"
                 />
-                <label className="block text-sm font-medium mt-2">Gallery Description</label>
+                <label className="block text-sm font-medium mt-2">
+                  Gallery Description
+                </label>
                 <textarea
                   name="galleryDescription"
                   value={formData.galleryDescription}
@@ -518,14 +562,26 @@ const AllLandingPages = () => {
 
               {/* Gallery Images (preview + delete + add more) */}
               <div>
-                <label className="block text-sm font-medium">Gallery Images</label>
-                <input type="file" accept="image/*" multiple onChange={handleAddGalleryFiles} className="block mt-2" />
+                <label className="block text-sm font-medium">
+                  Gallery Images
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAddGalleryFiles}
+                  className="block mt-2"
+                />
 
                 <div className="grid grid-cols-3 gap-3 mt-3">
                   {(formData.galleryImages || []).map((img, i) => (
                     <div key={i} className="relative">
                       <img
-                        src={typeof img === "string" ? img : URL.createObjectURL(img)}
+                        src={
+                          typeof img === "string"
+                            ? img
+                            : URL.createObjectURL(img)
+                        }
                         alt={`gallery-${i}`}
                         className="w-full h-24 object-cover rounded"
                       />
@@ -543,14 +599,18 @@ const AllLandingPages = () => {
 
               {/* About Section */}
               <div>
-                <label className="block text-sm font-medium">About Heading</label>
+                <label className="block text-sm font-medium">
+                  About Heading
+                </label>
                 <input
                   name="aboutHeading"
                   value={formData.aboutHeading}
                   onChange={handleModalChange}
                   className="w-full p-2 border rounded"
                 />
-                <label className="block text-sm font-medium mt-2">About Description</label>
+                <label className="block text-sm font-medium mt-2">
+                  About Description
+                </label>
                 <textarea
                   name="aboutDescription"
                   value={formData.aboutDescription}
@@ -562,14 +622,40 @@ const AllLandingPages = () => {
 
               {/* Review Images */}
               <div>
-                <label className="block text-sm font-medium">Review Images</label>
-                <input type="file" accept="image/*" multiple onChange={handleAddReviewFiles} className="block mt-2" />
+                <label className="block text-sm font-medium">
+                  Review Heading
+                </label>
+                <input
+                  name="reviewHeading"
+                  value={formData.reviewHeading}
+                  onChange={handleModalChange}
+                  className="w-full p-2 border rounded"
+                  placeholder="Review Section Heading"
+                />
+              </div>
+
+              {/* Review Images */}
+              <div>
+                <label className="block text-sm font-medium">
+                  Review Images
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAddReviewFiles}
+                  className="block mt-2"
+                />
 
                 <div className="grid grid-cols-3 gap-3 mt-3">
                   {(formData.reviewImages || []).map((img, i) => (
                     <div key={i} className="relative">
                       <img
-                        src={typeof img === "string" ? img : URL.createObjectURL(img)}
+                        src={
+                          typeof img === "string"
+                            ? img
+                            : URL.createObjectURL(img)
+                        }
                         alt={`review-${i}`}
                         className="w-full h-24 object-cover rounded"
                       />
@@ -587,14 +673,18 @@ const AllLandingPages = () => {
 
               {/* Description Title + Body */}
               <div>
-                <label className="block text-sm font-medium">Description Title</label>
+                <label className="block text-sm font-medium">
+                  Description Title
+                </label>
                 <input
                   name="descriptionTitle"
                   value={formData.descriptionTitle}
                   onChange={handleModalChange}
                   className="w-full p-2 border rounded"
                 />
-                <label className="block text-sm font-medium mt-2">Description</label>
+                <label className="block text-sm font-medium mt-2">
+                  Description
+                </label>
                 <textarea
                   name="description"
                   value={formData.description}
@@ -606,14 +696,18 @@ const AllLandingPages = () => {
 
               {/* Order Form */}
               <div>
-                <label className="block text-sm font-medium">Order Form Heading</label>
+                <label className="block text-sm font-medium">
+                  Order Form Heading
+                </label>
                 <input
                   name="orderFormHeading"
                   value={formData.orderFormHeading}
                   onChange={handleModalChange}
                   className="w-full p-2 border rounded"
                 />
-                <label className="block text-sm font-medium mt-2">Order Button Text</label>
+                <label className="block text-sm font-medium mt-2">
+                  Order Button Text
+                </label>
                 <input
                   name="orderButtonText"
                   value={formData.orderButtonText}

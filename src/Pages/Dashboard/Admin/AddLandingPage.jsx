@@ -4,7 +4,6 @@ import Select from "react-select";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import JsBarcode from "jsbarcode";
 
 const AddLandingPage = () => {
   const { user } = useContext(AuthContext);
@@ -29,6 +28,7 @@ const AddLandingPage = () => {
     galleryDescription: "",
     aboutHeading: "",
     aboutDescription: "",
+    reviewHeading: "",
     orderFormHeading: "",
     orderButtonText: "",
     videoUrl: "",
@@ -112,6 +112,8 @@ const AddLandingPage = () => {
         bannerImage: bannerUrl,
         reviewImages: uploadedReviewUrls,
         galleryImages: uploadedGalleryUrls,
+        regularPrice: Number(formData.regularPrice),
+        offerPrice: Number(formData.offerPrice),
         email: user?.email,
       };
 
@@ -128,7 +130,7 @@ const AddLandingPage = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow mt-10">
+    <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow mt-10">
       <h2 className="text-2xl font-bold mb-5 text-center">Add Landing Page</h2>
 
       <form className="space-y-4" onSubmit={handleSubmit}>
@@ -157,7 +159,7 @@ const AddLandingPage = () => {
         <textarea
           name="campaignShortDescription"
           placeholder="Campaign Short Description"
-          rows="3"
+          rows="2"
           className="w-full border p-2 rounded"
           onChange={handleInput}
           required
@@ -212,7 +214,7 @@ const AddLandingPage = () => {
         <textarea
           name="shortDescription"
           placeholder="Short Description"
-          rows="3"
+          rows="2"
           className="w-full border p-2 rounded"
           onChange={handleInput}
           required
@@ -303,7 +305,14 @@ const AddLandingPage = () => {
           onChange={handleInput}
         />
 
-        <div className="mt-5">
+        <input
+          name="reviewHeading"
+          placeholder="Review Section Heading"
+          className="w-full border p-2 rounded"
+          onChange={handleInput}
+        />
+
+        <div className="mt-2">
           <label className="font-semibold block mb-2">
             Review Images (Multiple)
           </label>
@@ -354,7 +363,7 @@ const AddLandingPage = () => {
         {/* Description Title */}
         <input
           name="descriptionTitle"
-          placeholder="Description Title"
+          placeholder="Description Title (Optional)"
           className="w-full border p-2 rounded"
           onChange={handleInput}
         />
@@ -362,8 +371,8 @@ const AddLandingPage = () => {
         {/* Description */}
         <textarea
           name="description"
-          placeholder="Description"
-          rows="3"
+          placeholder="Description (Optional)"
+          rows="2"
           className="w-full border p-2 rounded"
           onChange={handleInput}
         />
