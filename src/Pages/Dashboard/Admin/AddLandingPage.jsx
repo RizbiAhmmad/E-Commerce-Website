@@ -112,8 +112,8 @@ const AddLandingPage = () => {
         bannerImage: bannerUrl,
         reviewImages: uploadedReviewUrls,
         galleryImages: uploadedGalleryUrls,
-        regularPrice: Number(formData.regularPrice),
-        offerPrice: Number(formData.offerPrice),
+        // regularPrice: Number(formData.regularPrice),
+        // offerPrice: Number(formData.offerPrice),
         email: user?.email,
       };
 
@@ -166,7 +166,7 @@ const AddLandingPage = () => {
         />
 
         {/* Regular Price & Offer Price side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             name="regularPrice"
             placeholder="Regular Price"
@@ -182,7 +182,7 @@ const AddLandingPage = () => {
             className="w-full border p-2 rounded"
             onChange={handleInput}
           />
-        </div>
+        </div> */}
 
         <div className="flex flex-col gap-2">
           <label className="font-semibold">Banner Image *</label>

@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import Swal from "sweetalert2";
+import Loading from "@/Shared/Loading";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -16,6 +18,16 @@ const LandingPage = () => {
   const { id } = useParams();
   const axiosPublic = useAxiosPublic();
   const [footerInfo, setFooterInfo] = useState({});
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [shipping, setShipping] = useState(60);
+
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [district, setDistrict] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("cod");
 
   useEffect(() => {
     const fetchFooterInfo = async () => {
@@ -28,6 +40,7 @@ const LandingPage = () => {
     };
     fetchFooterInfo();
   }, []);
+  
 
   const { data: page, isLoading } = useQuery({
     queryKey: ["landingPage", id],
@@ -37,7 +50,28 @@ const LandingPage = () => {
     },
   });
 
-  if (isLoading) return <p className="text-center py-10">Loading...</p>;
+  const { data: product } = useQuery({
+    queryKey: ["landingProduct", page?.productId],
+    enabled: !!page?.productId,
+    queryFn: async () => {
+      const res = await axiosPublic.get(`/products/${page.productId}`);
+      return res.data;
+    },
+  });
+
+  useEffect(() => {
+  if (product) {
+    if (product.sizes?.length > 0) {
+      setSelectedSize(product.sizes[0]);   // first size selected
+    }
+    if (product.colors?.length > 0) {
+      setSelectedColor(product.colors[0]); // first color selected
+    }
+  }
+}, [product]);
+
+
+  if (isLoading) return <Loading></Loading>
   if (!page) return <p className="text-center py-10">Page not found</p>;
 
   const getEmbedUrl = (url) => {
@@ -59,6 +93,91 @@ const LandingPage = () => {
 
     return url;
   };
+
+  const handleOrderSubmit = async () => {
+    if (!name || !phone || !address || !district) {
+      return Swal.fire("Error!", "Please fill all required fields", "error");
+    }
+
+    if (!/^01\d{9}$/.test(phone)) {
+      return Swal.fire(
+        "Invalid Phone",
+        "Please enter a valid 11-digit BD phone number starting with 01",
+        "error"
+      );
+    }
+
+    const productData = {
+      productId: product?._id,
+      productName: product?.name,
+      barcode: product?.barcode || 0,
+      productImage: product?.images?.[0] || "",
+      price: product?.newPrice,
+      purchasePrice: product?.purchasePrice || 0,
+      color: selectedColor || "-",
+      size: selectedSize || "-",
+      quantity: quantity,
+    };
+
+    const subtotal = product?.newPrice * quantity;
+    const shippingCost = shipping;
+    const total = subtotal + shippingCost;
+
+    const orderData = {
+      fullName: name,
+      phone,
+      email: page?.email || "",
+      district,
+      address,
+      shipping: shipping === 60 ? "inside" : "outside",
+      payment: paymentMethod === "cod" ? "cash on delivery" : "online",
+      cartItems: [productData],
+      subtotal,
+      shippingCost,
+      discount: 0,
+      total,
+      coupon: null,
+      status: paymentMethod === "cod" ? "pending" : "initiated",
+      tran_id: `order_${Date.now()}`,
+      createdAt: new Date(),
+      orderType: "Online",
+    };
+
+    try {
+      await axiosPublic.post("/orders", orderData);
+
+      if (paymentMethod === "online") {
+        const { data } = await axiosPublic.post("/sslcommerz/init", {
+          orderId: orderData.tran_id,
+          totalAmount: total,
+          fullName: name,
+          email: page?.email || "",
+          phone,
+          address,
+        });
+
+        if (data?.GatewayPageURL) {
+          window.location.href = data.GatewayPageURL;
+        } else {
+          Swal.fire("Error", "Payment init failed", "error");
+        }
+        return;
+      }
+
+      Swal.fire("Success!", "Order placed successfully", "success");
+    } catch (err) {
+      console.log(err);
+      Swal.fire("Error!", "Something went wrong", "error");
+    }
+  };
+
+   const handleScroll = () => {
+    const section = document.getElementById("checkout");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-16">
@@ -165,7 +284,7 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row items-center gap-8 w-full">
             {/* About / Description */}
             {page.aboutDescription && (
-              <div className="md:w-1/2 text-center md:text-left">
+              <div className="md:w-1/2 text-center text-xl md:text-left">
                 <p className="text-gray-700 leading-relaxed">
                   {page.aboutDescription}
                 </p>
@@ -193,50 +312,19 @@ const LandingPage = () => {
         </motion.div>
       )}
 
-      {/* Reviews */}
-      {page.reviewImages?.length > 0 && (
-        <motion.div variants={fadeUp} initial="hidden" animate="show">
-          <h2 className="text-3xl font-bold mb-6 text-center">Reviews</h2>
-
-          <Slider
-            dots={true}
-            infinite={true}
-            speed={1000}
-            autoplay={true}
-            autoplaySpeed={2000} // 2 seconds
-            slidesToShow={3}
-            slidesToScroll={1}
-            responsive={[
-              {
-                breakpoint: 1024,
-                settings: { slidesToShow: 2 },
-              },
-              {
-                breakpoint: 768,
-                settings: { slidesToShow: 1 },
-              },
-            ]}
-          >
-            {page.reviewImages.map((img, i) => (
-              <div key={i} className="px-2">
-                {" "}
-                {/* spacing */}
-                <motion.div
-                  whileHover={{ scale: 1.03 }}
-                  className="rounded-lg overflow-hidden shadow-lg"
-                >
-                  <img
-                    src={img}
-                    alt="review"
-                    className="w-full aspect-ratio object-cover rounded-lg"
-                  />
-                </motion.div>
-              </div>
-            ))}
-          </Slider>
+      {/* Description */}
+      {page.descriptionTitle && (
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          className="text-center max-w-3xl mx-auto"
+        >
+          <h2 className="text-3xl font-bold">{page.descriptionTitle}</h2>
+          <p className="text-gray-700 mt-3">{page.description}</p>
         </motion.div>
       )}
-
+      
       {page.regularPrice && page.offerPrice && (
         <section className="bg-white py-12 px-4">
           <div className="max-w-3xl mx-auto text-center relative">
@@ -249,7 +337,7 @@ const LandingPage = () => {
             >
               পূর্বের মূল্য{" "}
               <span className="relative inline-block text-red-600 font-bold">
-                {page.regularPrice}/-
+                {product?.oldPrice}/-
                 {/* Moving Cross Animation */}
                 <motion.svg
                   viewBox="0 0 120 40"
@@ -310,7 +398,7 @@ const LandingPage = () => {
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ repeat: Infinity, duration: 1.5 }}
                 >
-                  {page.offerPrice}/-
+                {product?.newPrice}/-
                 </motion.span>
 
                 {/* Red Circle Highlight */}
@@ -356,10 +444,10 @@ const LandingPage = () => {
             </motion.p>
 
             {/* Button */}
-            <motion.button
+            <motion.button onClick={handleScroll}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="mt-2 inline-flex items-center gap-2 bg-[#E00000] hover:bg-[#CB3300] text-white font-extrabold px-10 py-4 rounded-lg shadow-lg border-4 border-[#BD8B44]"
+              className="mt-2 inline-flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold px-10 py-4 rounded-lg shadow-lg border-2 border-white"
             >
               {page.orderButtonText}
             </motion.button>
@@ -367,38 +455,52 @@ const LandingPage = () => {
         </section>
       )}
 
-      {/* Video */}
-      {page.videoUrl && (
+      {/* Reviews */}
+      {page.reviewImages?.length > 0 && (
         <motion.div variants={fadeUp} initial="hidden" animate="show">
-          <h2 className="text-3xl font-bold text-center mb-4">Video</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center">
+            {page.reviewHeading}
+          </h2>
 
-          <motion.div
-            className="w-full aspect-video rounded-xl overflow-hidden shadow-xl"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7 }}
+          <Slider
+            dots={true}
+            infinite={true}
+            speed={1000}
+            autoplay={true}
+            autoplaySpeed={2000} // 2 seconds
+            slidesToShow={3}
+            slidesToScroll={1}
+            responsive={[
+              {
+                breakpoint: 1024,
+                settings: { slidesToShow: 2 },
+              },
+              {
+                breakpoint: 768,
+                settings: { slidesToShow: 1 },
+              },
+            ]}
           >
-            <iframe
-              src={getEmbedUrl(page.videoUrl)}
-              className="w-full h-full"
-              allowFullScreen
-            ></iframe>
-          </motion.div>
+            {page.reviewImages.map((img, i) => (
+              <div key={i} className="px-2">
+                {" "}
+                {/* spacing */}
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  className="rounded-lg overflow-hidden shadow-lg"
+                >
+                  <img
+                    src={img}
+                    alt="review"
+                    className="w-full aspect-ratio object-cover rounded-lg"
+                  />
+                </motion.div>
+              </div>
+            ))}
+          </Slider>
         </motion.div>
       )}
 
-      {/* Description */}
-      {page.descriptionTitle && (
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          className="text-center max-w-3xl mx-auto"
-        >
-          <h2 className="text-3xl font-bold">{page.descriptionTitle}</h2>
-          <p className="text-gray-700 mt-3">{page.description}</p>
-        </motion.div>
-      )}
 
       {/* Order Form */}
       {page.orderFormHeading && (
@@ -406,14 +508,340 @@ const LandingPage = () => {
           variants={fadeUp}
           initial="hidden"
           animate="show"
+          id="checkout"
           className="mt-10 p-6 border rounded-xl bg-cyan-50 text-center shadow-md"
         >
           <h2 className="text-3xl font-bold">{page.orderFormHeading}</h2>
 
-          {page.orderButtonText && (
-            <button className="mt-4 px-8 py-3 bg-cyan-500 text-white text-lg rounded-lg hover:bg-cyan-600 transition">
-              {page.orderButtonText}
-            </button>
+          {/* Product Summary Under Order Form Heading */}
+          {product && (
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* LEFT SIDE — Product Info + Options + Summary */}
+              <div className="bg-white p-6 rounded-xl shadow-lg border space-y-6">
+                {/* PRODUCT HEADER */}
+                <div className="flex items-start gap-4">
+                  <img
+                    src={product?.images?.[0]}
+                    alt={product.name}
+                    className="w-28 h-28 md:w-40 md:h-40 rounded-xl object-cover shadow"
+                  />
+
+                  <div className="space-y-1">
+                    <h2 className="text-xl font-bold leading-6">
+                      {product.name}
+                    </h2>
+                    <p className="text-gray-600 font-semibold">
+                      Price: ৳{product.newPrice}
+                    </p>
+                  </div>
+                </div>
+
+                {/* OPTIONS ROW */}
+                <div className="flex flex-col gap-6">
+                  {/* SIZE SELECTOR */}
+                  {product.sizes?.length > 0 && (
+                    <div>
+                      <span className="font-semibold block mb-2">Select Size:</span>
+
+                      <div className="flex flex-wrap gap-2">
+                        {product.sizes.map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => setSelectedSize(size)}
+                            className={`px-4 py-2 min-w-[70px] text-center border rounded-lg transition 
+                ${
+                  selectedSize === size
+                    ? "bg-cyan-500 text-white border-cyan-500"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
+                }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* COLOR SELECTOR */}
+                  {product.colors?.length > 0 && (
+                    <div>
+                      <span className="font-semibold block mb-2">Select Color:</span>
+
+                      <div className="flex flex-wrap gap-2">
+                        {product.colors.map((color) => (
+                          <button
+                            key={color}
+                            onClick={() => setSelectedColor(color)}
+                            className={`px-4 py-2 min-w-[70px] text-center border rounded-lg transition
+                ${
+                  selectedColor === color
+                    ? "bg-cyan-500 text-white border-cyan-500"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
+                }`}
+                          >
+                            {color}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* QUANTITY SELECTOR */}
+                  <div>
+                    <span className="font-semibold block mb-2">Quantity:</span>
+
+                    <div className="flex items-center w-fit border rounded-lg overflow-hidden">
+                      <button
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        className="px-4 py-2 bg-gray-100 hover:bg-gray-200 font-semibold"
+                      >
+                        -
+                      </button>
+
+                      <input
+                        type="text"
+                        value={quantity}
+                        readOnly
+                        className="w-14 text-center border-l border-r py-2"
+                      />
+
+                      <button
+                        onClick={() => setQuantity((q) => q + 1)}
+                        className="px-4 py-2 bg-gray-100 hover:bg-gray-200 font-semibold"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ORDER SUMMARY */}
+                <div className="bg-white p-5 rounded-xl shadow-lg border mt-2">
+                  <h3 className="font-bold text-lg mb-4">Order Summary</h3>
+
+                  <div className="flex justify-between mb-2">
+                    <span>Product Price</span>
+                    <span>৳{product?.newPrice * quantity}</span>
+                  </div>
+
+                  <div className="flex justify-between mb-2">
+                    <span>Shipping</span>
+                    <span>৳{shipping}</span>
+                  </div>
+
+                  <hr className="my-3" />
+
+                  <div className="flex justify-between font-bold text-xl">
+                    <span>Total</span>
+                    <span>৳{product?.newPrice * quantity + shipping}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT SIDE — Customer + Payment */}
+              <div className="bg-white p-6 rounded-xl shadow-lg border space-y-5">
+                {/* Title */}
+                <h2 className="text-xl font-bold mb-4">Customer Information</h2>
+
+                {/* Full Name */}
+                <input
+                  type="text"
+                  placeholder="Full Name *"
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300"
+                  onChange={(e) => setName(e.target.value)}
+                />
+
+                {/* Phone Number */}
+                <input
+                  type="number"
+                  placeholder="Phone Number *"
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300"
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+                {/* Email */}
+                <input
+                  type="text"
+                  placeholder="Email Address"
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+
+                {/* Address */}
+                <input
+                  type="text"
+                  placeholder="Full Address *"
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300"
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+
+                {/* District */}
+                <select
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-cyan-300"
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                >
+                  <option value="">Select District *</option>
+                 <option value="Bagerhat">Bagerhat</option>
+                <option value="Bandarban">Bandarban</option>
+                <option value="Barguna">Barguna</option>
+                <option value="Barishal">Barishal</option>
+                <option value="Bhola">Bhola</option>
+                <option value="Bogura">Bogura</option>
+                <option value="Brahmanbaria">Brahmanbaria</option>
+                <option value="Chandpur">Chandpur</option>
+                <option value="Chapainawabganj">Chapainawabganj</option>
+                <option value="Chattogram">Chattogram</option>
+                <option value="Chuadanga">Chuadanga</option>
+                <option value="Cox's Bazar">Cox's Bazar</option>
+                <option value="Cumilla">Cumilla</option>
+                <option value="Dhaka">Dhaka</option>
+                <option value="Dinajpur">Dinajpur</option>
+                <option value="Faridpur">Faridpur</option>
+                <option value="Feni">Feni</option>
+                <option value="Gaibandha">Gaibandha</option>
+                <option value="Gazipur">Gazipur</option>
+                <option value="Gopalganj">Gopalganj</option>
+                <option value="Habiganj">Habiganj</option>
+                <option value="Jamalpur">Jamalpur</option>
+                <option value="Jashore">Jashore</option>
+                <option value="Jhalokati">Jhalokati</option>
+                <option value="Jhenaidah">Jhenaidah</option>
+                <option value="Joypurhat">Joypurhat</option>
+                <option value="Khagrachhari">Khagrachhari</option>
+                <option value="Khulna">Khulna</option>
+                <option value="Kishoreganj">Kishoreganj</option>
+                <option value="Kurigram">Kurigram</option>
+                <option value="Kushtia">Kushtia</option>
+                <option value="Lakshmipur">Lakshmipur</option>
+                <option value="Lalmonirhat">Lalmonirhat</option>
+                <option value="Madaripur">Madaripur</option>
+                <option value="Magura">Magura</option>
+                <option value="Manikganj">Manikganj</option>
+                <option value="Meherpur">Meherpur</option>
+                <option value="Moulvibazar">Moulvibazar</option>
+                <option value="Munshiganj">Munshiganj</option>
+                <option value="Mymensingh">Mymensingh</option>
+                <option value="Naogaon">Naogaon</option>
+                <option value="Narail">Narail</option>
+                <option value="Narayanganj">Narayanganj</option>
+                <option value="Narsingdi">Narsingdi</option>
+                <option value="Natore">Natore</option>
+                <option value="Netrokona">Netrokona</option>
+                <option value="Nilphamari">Nilphamari</option>
+                <option value="Noakhali">Noakhali</option>
+                <option value="Pabna">Pabna</option>
+                <option value="Panchagarh">Panchagarh</option>
+                <option value="Patuakhali">Patuakhali</option>
+                <option value="Pirojpur">Pirojpur</option>
+                <option value="Rajbari">Rajbari</option>
+                <option value="Rajshahi">Rajshahi</option>
+                <option value="Rangamati">Rangamati</option>
+                <option value="Rangpur">Rangpur</option>
+                <option value="Satkhira">Satkhira</option>
+                <option value="Shariatpur">Shariatpur</option>
+                <option value="Sherpur">Sherpur</option>
+                <option value="Sirajganj">Sirajganj</option>
+                <option value="Sunamganj">Sunamganj</option>
+                <option value="Sylhet">Sylhet</option>
+                <option value="Tangail">Tangail</option>
+                <option value="Thakurgaon">Thakurgaon</option>
+                </select>
+
+                {/* SHIPPING METHOD */}
+                <div className="p-4 border rounded-xl bg-white shadow-sm">
+                  <h3 className="font-semibold mb-3">Shipping Method</h3>
+
+                  {/* Inside Dhaka */}
+                  <label
+                    className={`flex justify-between mb-2 items-center p-3 rounded-lg cursor-pointer border transition 
+        ${shipping === 60 ? "bg-cyan-50 border-cyan-400" : "hover:bg-gray-50"}`}
+                  >
+                    <input
+                      type="radio"
+                      name="shipping"
+                      value="inside"
+                      checked={shipping === 60}
+                      onChange={() => setShipping(60)}
+                      className="h-5 w-5"
+                    />
+                    <span className="font-medium">Inside Dhaka</span>
+                    <span className="font-semibold">৳60</span>
+                  </label>
+
+                  {/* Outside Dhaka */}
+                  <label
+                    className={`flex justify-between items-center p-3 rounded-lg cursor-pointer border transition 
+        ${
+          shipping === 120 ? "bg-cyan-50 border-cyan-400" : "hover:bg-gray-50"
+        }`}
+                  >
+                    <input
+                      type="radio"
+                      name="shipping"
+                      value="outside"
+                      checked={shipping === 120}
+                      onChange={() => setShipping(120)}
+                      className="h-5 w-5"
+                    />
+                    <span className="font-medium">Outside Dhaka</span>
+                    <span className="font-semibold">৳120</span>
+                  </label>
+                </div>
+
+                {/* PAYMENT METHOD */}
+                <div className="p-4 border rounded-xl bg-white shadow-sm">
+                  <h3 className="font-semibold mb-3">Payment Method</h3>
+
+                  {/* COD */}
+                  <label
+                    className={`flex justify-between mb-2 items-center p-3 rounded-lg cursor-pointer border transition 
+        ${
+          paymentMethod === "cod"
+            ? "bg-cyan-50 border-cyan-400"
+            : "hover:bg-gray-50"
+        }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="cod"
+                      checked={paymentMethod === "cod"}
+                      onChange={() => setPaymentMethod("cod")}
+                      className="h-5 w-5"
+                    />
+                    <span className="font-medium">Cash on Delivery (COD)</span>
+                  </label>
+
+                  {/* Online Payment */}
+                  <label
+                    className={`flex justify-between items-center p-3 rounded-lg cursor-pointer border transition 
+        ${
+          paymentMethod === "online"
+            ? "bg-cyan-50 border-cyan-400"
+            : "hover:bg-gray-50"
+        }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="online"
+                      checked={paymentMethod === "online"}
+                      onChange={() => setPaymentMethod("online")}
+                      className="h-5 w-5"
+                    />
+                    <span className="font-medium">Online Payment</span>
+                  </label>
+                </div>
+
+                {/* ORDER BUTTON */}
+                <button
+                  onClick={handleOrderSubmit}
+                  className="w-full bg-cyan-500 text-white py-3 rounded-lg font-bold hover:bg-cyan-600 transition"
+                >
+                  {page.orderButtonText}
+                </button>
+              </div>
+            </div>
           )}
         </motion.div>
       )}

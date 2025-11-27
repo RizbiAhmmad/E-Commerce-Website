@@ -65,6 +65,7 @@ import IncompleteOrders from "@/Pages/Dashboard/Admin/IncompleteOrders";
 import AddLandingPage from "@/Pages/Dashboard/Admin/AddLandingPage";
 import AllLandingPages from "@/Pages/Dashboard/Admin/AllLandingPages";
 import LandingPage from "@/Pages/LandingPage/LandingPage";
+import OrderSuccess from "@/Pages/Dashboard/User/OrderSuccess";
 
 export const router = createBrowserRouter([
   {
@@ -138,6 +139,10 @@ export const router = createBrowserRouter([
       {
         path: "landing-page/:id",
         element: <LandingPage />,
+      },
+      {
+        path: "/order-success/:tran_id",
+        element: <OrderSuccess />,
       },
     ],
   },

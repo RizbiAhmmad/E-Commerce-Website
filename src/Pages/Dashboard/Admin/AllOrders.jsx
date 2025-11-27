@@ -337,17 +337,18 @@ const AllOrders = () => {
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
             <tr>
-              <th className="px-3 py-3">#</th>
-              <th className="px-3 py-3">Customer</th>
-              <th className="px-3 py-3">Address</th>
-              <th className="px-3 py-3">Shipping</th>
-              <th className="px-3 py-3">Payment</th>
-              <th className="px-3 py-3">Cart Items</th>
-              <th className="px-3 py-3">Total</th>
-              <th className="px-3 py-3">Date & Time</th>
-              <th className="px-3 py-3">Status</th>
-              <th className="px-3 py-3">Courier</th>
-              <th className="px-3 py-3">Actions</th>
+              <th className="px-2 py-3">#</th>
+              <th className="px-2 py-3">Customer</th>
+              <th className="px-2 py-3">Address</th>
+              <th className="px-2 py-3">Shipping</th>
+              <th className="px-2 py-3">Payment</th>
+              <th className="px-2 py-3">Cart Items</th>
+              <th className="px-2 py-3">Total</th>
+              <th className="px-2 py-3">Date & Time</th>
+              <th className="px-2 py-3">Status</th>
+              <th className="px-2 py-3">Courier</th>
+              <th className="px-2 py-3">Actions</th>
+              <th className="px-2 py-3">Fraud</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -356,8 +357,8 @@ const AllOrders = () => {
                 key={order._id}
                 className="transition duration-200 hover:bg-gray-50"
               >
-                <td className="px-3 py-3">{indexOfFirstOrder + index + 1}</td>
-                <td className="px-3 py-3">
+                <td className="px-2 py-3">{indexOfFirstOrder + index + 1}</td>
+                <td className="px-2 py-3">
                   <div className="font-semibold text-gray-800">
                     {order.fullName}
                   </div>
@@ -365,10 +366,10 @@ const AllOrders = () => {
                   <div className="text-gray-500">{order.phone}</div>
                   <div className="text-gray-500">Order No: {order._id}</div>
                 </td>
-                <td className="px-3 py-3">{order.address}</td>
-                <td className="px-3 py-3">{order.shipping}</td>
-                <td className="px-3 py-3">{order.payment}</td>
-                <td className="px-3 py-3">
+                <td className="px-2 py-3">{order.address}</td>
+                <td className="px-2 py-3">{order.shipping}</td>
+                <td className="px-2 py-3">{order.payment}</td>
+                <td className="px-2 py-3">
                   {order.cartItems.map((item) => (
                     <div
                       key={item.productId}
@@ -389,15 +390,15 @@ const AllOrders = () => {
                     </div>
                   ))}
                 </td>
-                <td className="px-3 py-3 font-bold">৳{order.total}</td>
-                <td className="px-3 py-3 font-bold">
+                <td className="px-2 py-3 font-bold">৳{order.total}</td>
+                <td className="px-2 py-3 font-bold">
                   {new Date(order.createdAt).toLocaleString()}
                 </td>
 
-                <td className="px-3 py-3">
+                <td className="px-2 py-3">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusClasses(
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusClasses(
                         order.status || order.courierStatus
                       )}`}
                     >
@@ -422,7 +423,7 @@ const AllOrders = () => {
                   </div>
                 </td>
 
-                <td className="px-3 py-3">
+                <td className="px-2 py-3">
                   <select
                     value={order.courier || ""}
                     onChange={(e) => {
@@ -440,13 +441,80 @@ const AllOrders = () => {
                   </select>
                 </td>
 
-                <td className="px-3 py-3 flex items-center justify-center gap-3">
+                <td className="px-2 py-3 flex items-center justify-center gap-3">
                   <button onClick={() => handlePrint(order)}>
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
                   <button onClick={() => handleDelete(order._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
                   </button>
+                </td>
+
+                <td className="px-2 py-3">
+                  {order.fraudCheckStatus && (
+                    <div className="mb-1">
+                      {order.fraudCheckStatus === "high" && (
+                        <span className="px-2 py-1 text-xs font-bold bg-red-100 text-red-700 rounded">
+                          HIGH RISK
+                        </span>
+                      )}
+                      {order.fraudCheckStatus === "medium" && (
+                        <span className="px-2 py-1 text-xs font-bold bg-yellow-100 text-yellow-700 rounded">
+                          MEDIUM
+                        </span>
+                      )}
+                      {order.fraudCheckStatus === "low" && (
+                        <span className="px-2 py-1 text-xs font-bold bg-green-100 text-green-700 rounded">
+                          SAFE
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {order.fraudMessage && (
+                    <div className="text-[10px] text-gray-500 mb-1">
+                      {order.fraudMessage}
+                    </div>
+                  )}
+
+                  {order.courierCheckStatus === "success" &&
+                    order.courierCheckData && (
+                      <div className="mt-1 p-1 bg-gray-50 border border-gray-200 rounded text-[10px]">
+                        <div className="text-blue-600 font-semibold">
+                          Courier Verified ✅
+                        </div>
+                        <div>
+                          Risk:{" "}
+                          <span className="font-semibold">
+                            {order.courierCheckData.risk || "N/A"}
+                          </span>
+                        </div>
+                        <div>
+                          Score:{" "}
+                          <span className="font-semibold">
+                            {order.courierCheckData.score || 0}
+                          </span>
+                        </div>
+                        {order.courierCheckData.message && (
+                          <div>
+                            Message:{" "}
+                            <span className="italic">
+                              {order.courierCheckData.message}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                  {order.courierCheckStatus === "failed" && (
+                    <div className="text-red-500 text-[10px] font-semibold mt-1">
+                      Courier Check Failed ❌
+                    </div>
+                  )}
+
+                  {!order.fraudCheckStatus && !order.courierCheckStatus && (
+                    <div className="text-gray-400 text-xs">Not Checked</div>
+                  )}
                 </td>
               </tr>
             ))}

@@ -289,7 +289,6 @@ const AllLandingPages = () => {
               <th className="px-6 py-3">#</th>
               <th className="px-6 py-3">Banner</th>
               <th className="px-6 py-3">Title</th>
-              <th className="px-6 py-3">Price</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
@@ -309,15 +308,6 @@ const AllLandingPages = () => {
 
                 <td className="px-6 py-4 font-semibold text-gray-800">
                   {lp.campaignTitle}
-                </td>
-
-                <td className="px-6 py-4">
-                  <span className="line-through text-gray-400">
-                    {lp.regularPrice}৳
-                  </span>
-                  <span className="font-bold text-green-600 ml-2">
-                    {lp.offerPrice}৳
-                  </span>
                 </td>
 
                 <td className="flex gap-4 px-6 py-4">
@@ -445,7 +435,7 @@ const AllLandingPages = () => {
               </div>
 
               {/* Prices */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium">
                     Regular Price
@@ -471,7 +461,7 @@ const AllLandingPages = () => {
                     className="w-full p-2 border rounded"
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Banner */}
               <div>
