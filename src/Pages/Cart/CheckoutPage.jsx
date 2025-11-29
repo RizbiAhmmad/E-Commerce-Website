@@ -18,6 +18,11 @@ const CheckoutPage = () => {
   const [shipping, setShipping] = useState("outside");
   const [payment, setPayment] = useState("cash on delivery");
   const [district, setDistrict] = useState("");
+  const [shippingData, setShippingData] = useState({
+    insideDhaka: 0,
+    outsideDhaka: 0,
+  });
+  const [loadingShipping, setLoadingShipping] = useState(true);
 
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -30,8 +35,25 @@ const CheckoutPage = () => {
       setEmail(user.email || "");
     }
   }, [user]);
+  useEffect(() => {
+    const fetchShipping = async () => {
+      try {
+        const res = await axiosPublic.get("/shipping");
+        setShippingData(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingShipping(false);
+      }
+    };
 
-  const shippingCost = shipping === "inside" ? 60 : 120;
+    fetchShipping();
+  }, []);
+
+  const shippingCost =
+    shipping === "inside"
+      ? Number(shippingData.insideDhaka)
+      : Number(shippingData.outsideDhaka);
 
   const subtotal = cartItems.reduce((total, item) => {
     const product = productsMap[item.productId];
@@ -133,6 +155,7 @@ const CheckoutPage = () => {
 
       if (payment === "online") {
         const { data } = await axiosPublic.post("/sslcommerz/init", {
+          tran_id: orderData.tran_id,
           orderId: orderData.tran_id,
           totalAmount: total,
           fullName,
@@ -309,7 +332,10 @@ const CheckoutPage = () => {
                     </p>
                   </div>
                   <span className="font-semibold">
-                    ৳{type === "inside" ? 60 : 120}
+                    ৳
+                    {type === "inside"
+                      ? shippingData.insideDhaka
+                      : shippingData.outsideDhaka}
                   </span>
                 </label>
               ))}

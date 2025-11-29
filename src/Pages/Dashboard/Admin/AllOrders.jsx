@@ -368,7 +368,25 @@ const AllOrders = () => {
                 </td>
                 <td className="px-2 py-3">{order.address}</td>
                 <td className="px-2 py-3">{order.shipping}</td>
-                <td className="px-2 py-3">{order.payment}</td>
+                <td className="px-2 py-3">
+  <div className="font-semibold">{order.payment}</div>
+
+  {order.payment === "online" && (
+    <span
+      className={`text-xs px-2 py-1 rounded font-bold mt-1 inline-block
+      ${
+        order.paymentStatus === "paid"
+          ? "bg-green-100 text-green-700"
+          : order.paymentStatus === "failed"
+          ? "bg-red-100 text-red-700"
+          : "bg-yellow-100 text-yellow-700"
+      }`}
+    >
+      {(order.paymentStatus || "pending").toUpperCase()}
+    </span>
+  )}
+</td>
+
                 <td className="px-2 py-3">
                   {order.cartItems.map((item) => (
                     <div

@@ -23,7 +23,9 @@ import {
   MdIncompleteCircle,
   MdInventory,
   MdLocalShipping,
+  MdOutlineAdsClick,
   MdOutlineDashboardCustomize,
+  MdOutlineLocalShipping,
   MdPrivacyTip,
 } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
@@ -356,7 +358,7 @@ const Dashboard = () => {
                     to="/dashboard/allLandingPages"
                     className="flex items-center px-2 py-2 space-x-3"
                   >
-                    <FaGift /> <span>Landing Pages</span>
+                    <MdOutlineAdsClick /> <span>Landing Pages</span>
                   </NavLink>
                 </li>
                 <li>
@@ -365,6 +367,14 @@ const Dashboard = () => {
                     className="flex items-center px-2 py-2 space-x-3"
                   >
                     <MdLocalShipping /> <span>Courier Settings</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/shippingSettings"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <MdOutlineLocalShipping /> <span>Shipping Settings</span>
                   </NavLink>
                 </li>
                 <li>
