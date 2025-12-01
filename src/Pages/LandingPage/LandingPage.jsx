@@ -28,6 +28,23 @@ const LandingPage = () => {
   const [address, setAddress] = useState("");
   const [district, setDistrict] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [shippingRates, setShippingRates] = useState({
+    insideDhaka: 0,
+    outsideDhaka: 0,
+  });
+  useEffect(() => {
+    const fetchShipping = async () => {
+      try {
+        const res = await axiosPublic.get("/shipping");
+        setShippingRates(res.data);
+
+        setShipping(res.data.insideDhaka);
+      } catch (err) {
+        console.error("Shipping fetch error", err);
+      }
+    };
+    fetchShipping();
+  }, []);
 
   useEffect(() => {
     const fetchFooterInfo = async () => {
@@ -40,7 +57,6 @@ const LandingPage = () => {
     };
     fetchFooterInfo();
   }, []);
-  
 
   const { data: page, isLoading } = useQuery({
     queryKey: ["landingPage", id],
@@ -60,18 +76,17 @@ const LandingPage = () => {
   });
 
   useEffect(() => {
-  if (product) {
-    if (product.sizes?.length > 0) {
-      setSelectedSize(product.sizes[0]);   // first size selected
+    if (product) {
+      if (product.sizes?.length > 0) {
+        setSelectedSize(product.sizes[0]);
+      }
+      if (product.colors?.length > 0) {
+        setSelectedColor(product.colors[0]);
+      }
     }
-    if (product.colors?.length > 0) {
-      setSelectedColor(product.colors[0]); // first color selected
-    }
-  }
-}, [product]);
+  }, [product]);
 
-
-  if (isLoading) return <Loading></Loading>
+  if (isLoading) return <Loading></Loading>;
   if (!page) return <p className="text-center py-10">Page not found</p>;
 
   const getEmbedUrl = (url) => {
@@ -129,7 +144,7 @@ const LandingPage = () => {
       email: page?.email || "",
       district,
       address,
-      shipping: shipping === 60 ? "inside" : "outside",
+      shipping: shipping === shippingRates.insideDhaka ? "inside" : "outside",
       payment: paymentMethod === "cod" ? "cash on delivery" : "online",
       cartItems: [productData],
       subtotal,
@@ -171,13 +186,12 @@ const LandingPage = () => {
     }
   };
 
-   const handleScroll = () => {
+  const handleScroll = () => {
     const section = document.getElementById("checkout");
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
     }
   };
-
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-16">
@@ -324,7 +338,7 @@ const LandingPage = () => {
           <p className="text-gray-700 mt-3">{page.description}</p>
         </motion.div>
       )}
-      
+
       {page.regularPrice && page.offerPrice && (
         <section className="bg-white py-12 px-4">
           <div className="max-w-3xl mx-auto text-center relative">
@@ -398,7 +412,7 @@ const LandingPage = () => {
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ repeat: Infinity, duration: 1.5 }}
                 >
-                {product?.newPrice}/-
+                  {product?.newPrice}/-
                 </motion.span>
 
                 {/* Red Circle Highlight */}
@@ -444,7 +458,8 @@ const LandingPage = () => {
             </motion.p>
 
             {/* Button */}
-            <motion.button onClick={handleScroll}
+            <motion.button
+              onClick={handleScroll}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="mt-2 inline-flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold px-10 py-4 rounded-lg shadow-lg border-2 border-white"
@@ -501,7 +516,6 @@ const LandingPage = () => {
         </motion.div>
       )}
 
-
       {/* Order Form */}
       {page.orderFormHeading && (
         <motion.div
@@ -541,7 +555,9 @@ const LandingPage = () => {
                   {/* SIZE SELECTOR */}
                   {product.sizes?.length > 0 && (
                     <div>
-                      <span className="font-semibold block mb-2">Select Size:</span>
+                      <span className="font-semibold block mb-2">
+                        Select Size:
+                      </span>
 
                       <div className="flex flex-wrap gap-2">
                         {product.sizes.map((size) => (
@@ -565,7 +581,9 @@ const LandingPage = () => {
                   {/* COLOR SELECTOR */}
                   {product.colors?.length > 0 && (
                     <div>
-                      <span className="font-semibold block mb-2">Select Color:</span>
+                      <span className="font-semibold block mb-2">
+                        Select Color:
+                      </span>
 
                       <div className="flex flex-wrap gap-2">
                         {product.colors.map((color) => (
@@ -681,70 +699,70 @@ const LandingPage = () => {
                   onChange={(e) => setDistrict(e.target.value)}
                 >
                   <option value="">Select District *</option>
-                 <option value="Bagerhat">Bagerhat</option>
-                <option value="Bandarban">Bandarban</option>
-                <option value="Barguna">Barguna</option>
-                <option value="Barishal">Barishal</option>
-                <option value="Bhola">Bhola</option>
-                <option value="Bogura">Bogura</option>
-                <option value="Brahmanbaria">Brahmanbaria</option>
-                <option value="Chandpur">Chandpur</option>
-                <option value="Chapainawabganj">Chapainawabganj</option>
-                <option value="Chattogram">Chattogram</option>
-                <option value="Chuadanga">Chuadanga</option>
-                <option value="Cox's Bazar">Cox's Bazar</option>
-                <option value="Cumilla">Cumilla</option>
-                <option value="Dhaka">Dhaka</option>
-                <option value="Dinajpur">Dinajpur</option>
-                <option value="Faridpur">Faridpur</option>
-                <option value="Feni">Feni</option>
-                <option value="Gaibandha">Gaibandha</option>
-                <option value="Gazipur">Gazipur</option>
-                <option value="Gopalganj">Gopalganj</option>
-                <option value="Habiganj">Habiganj</option>
-                <option value="Jamalpur">Jamalpur</option>
-                <option value="Jashore">Jashore</option>
-                <option value="Jhalokati">Jhalokati</option>
-                <option value="Jhenaidah">Jhenaidah</option>
-                <option value="Joypurhat">Joypurhat</option>
-                <option value="Khagrachhari">Khagrachhari</option>
-                <option value="Khulna">Khulna</option>
-                <option value="Kishoreganj">Kishoreganj</option>
-                <option value="Kurigram">Kurigram</option>
-                <option value="Kushtia">Kushtia</option>
-                <option value="Lakshmipur">Lakshmipur</option>
-                <option value="Lalmonirhat">Lalmonirhat</option>
-                <option value="Madaripur">Madaripur</option>
-                <option value="Magura">Magura</option>
-                <option value="Manikganj">Manikganj</option>
-                <option value="Meherpur">Meherpur</option>
-                <option value="Moulvibazar">Moulvibazar</option>
-                <option value="Munshiganj">Munshiganj</option>
-                <option value="Mymensingh">Mymensingh</option>
-                <option value="Naogaon">Naogaon</option>
-                <option value="Narail">Narail</option>
-                <option value="Narayanganj">Narayanganj</option>
-                <option value="Narsingdi">Narsingdi</option>
-                <option value="Natore">Natore</option>
-                <option value="Netrokona">Netrokona</option>
-                <option value="Nilphamari">Nilphamari</option>
-                <option value="Noakhali">Noakhali</option>
-                <option value="Pabna">Pabna</option>
-                <option value="Panchagarh">Panchagarh</option>
-                <option value="Patuakhali">Patuakhali</option>
-                <option value="Pirojpur">Pirojpur</option>
-                <option value="Rajbari">Rajbari</option>
-                <option value="Rajshahi">Rajshahi</option>
-                <option value="Rangamati">Rangamati</option>
-                <option value="Rangpur">Rangpur</option>
-                <option value="Satkhira">Satkhira</option>
-                <option value="Shariatpur">Shariatpur</option>
-                <option value="Sherpur">Sherpur</option>
-                <option value="Sirajganj">Sirajganj</option>
-                <option value="Sunamganj">Sunamganj</option>
-                <option value="Sylhet">Sylhet</option>
-                <option value="Tangail">Tangail</option>
-                <option value="Thakurgaon">Thakurgaon</option>
+                  <option value="Bagerhat">Bagerhat</option>
+                  <option value="Bandarban">Bandarban</option>
+                  <option value="Barguna">Barguna</option>
+                  <option value="Barishal">Barishal</option>
+                  <option value="Bhola">Bhola</option>
+                  <option value="Bogura">Bogura</option>
+                  <option value="Brahmanbaria">Brahmanbaria</option>
+                  <option value="Chandpur">Chandpur</option>
+                  <option value="Chapainawabganj">Chapainawabganj</option>
+                  <option value="Chattogram">Chattogram</option>
+                  <option value="Chuadanga">Chuadanga</option>
+                  <option value="Cox's Bazar">Cox's Bazar</option>
+                  <option value="Cumilla">Cumilla</option>
+                  <option value="Dhaka">Dhaka</option>
+                  <option value="Dinajpur">Dinajpur</option>
+                  <option value="Faridpur">Faridpur</option>
+                  <option value="Feni">Feni</option>
+                  <option value="Gaibandha">Gaibandha</option>
+                  <option value="Gazipur">Gazipur</option>
+                  <option value="Gopalganj">Gopalganj</option>
+                  <option value="Habiganj">Habiganj</option>
+                  <option value="Jamalpur">Jamalpur</option>
+                  <option value="Jashore">Jashore</option>
+                  <option value="Jhalokati">Jhalokati</option>
+                  <option value="Jhenaidah">Jhenaidah</option>
+                  <option value="Joypurhat">Joypurhat</option>
+                  <option value="Khagrachhari">Khagrachhari</option>
+                  <option value="Khulna">Khulna</option>
+                  <option value="Kishoreganj">Kishoreganj</option>
+                  <option value="Kurigram">Kurigram</option>
+                  <option value="Kushtia">Kushtia</option>
+                  <option value="Lakshmipur">Lakshmipur</option>
+                  <option value="Lalmonirhat">Lalmonirhat</option>
+                  <option value="Madaripur">Madaripur</option>
+                  <option value="Magura">Magura</option>
+                  <option value="Manikganj">Manikganj</option>
+                  <option value="Meherpur">Meherpur</option>
+                  <option value="Moulvibazar">Moulvibazar</option>
+                  <option value="Munshiganj">Munshiganj</option>
+                  <option value="Mymensingh">Mymensingh</option>
+                  <option value="Naogaon">Naogaon</option>
+                  <option value="Narail">Narail</option>
+                  <option value="Narayanganj">Narayanganj</option>
+                  <option value="Narsingdi">Narsingdi</option>
+                  <option value="Natore">Natore</option>
+                  <option value="Netrokona">Netrokona</option>
+                  <option value="Nilphamari">Nilphamari</option>
+                  <option value="Noakhali">Noakhali</option>
+                  <option value="Pabna">Pabna</option>
+                  <option value="Panchagarh">Panchagarh</option>
+                  <option value="Patuakhali">Patuakhali</option>
+                  <option value="Pirojpur">Pirojpur</option>
+                  <option value="Rajbari">Rajbari</option>
+                  <option value="Rajshahi">Rajshahi</option>
+                  <option value="Rangamati">Rangamati</option>
+                  <option value="Rangpur">Rangpur</option>
+                  <option value="Satkhira">Satkhira</option>
+                  <option value="Shariatpur">Shariatpur</option>
+                  <option value="Sherpur">Sherpur</option>
+                  <option value="Sirajganj">Sirajganj</option>
+                  <option value="Sunamganj">Sunamganj</option>
+                  <option value="Sylhet">Sylhet</option>
+                  <option value="Tangail">Tangail</option>
+                  <option value="Thakurgaon">Thakurgaon</option>
                 </select>
 
                 {/* SHIPPING METHOD */}
@@ -754,37 +772,39 @@ const LandingPage = () => {
                   {/* Inside Dhaka */}
                   <label
                     className={`flex justify-between mb-2 items-center p-3 rounded-lg cursor-pointer border transition 
-        ${shipping === 60 ? "bg-cyan-50 border-cyan-400" : "hover:bg-gray-50"}`}
+${
+  shipping === shippingRates.insideDhaka
+    ? "bg-cyan-50 border-cyan-400"
+    : "hover:bg-gray-50"
+}`}
                   >
                     <input
                       type="radio"
                       name="shipping"
-                      value="inside"
-                      checked={shipping === 60}
-                      onChange={() => setShipping(60)}
-                      className="h-5 w-5"
+                      checked={shipping === shippingRates.insideDhaka}
+                      onChange={() => setShipping(shippingRates.insideDhaka)}
                     />
-                    <span className="font-medium">Inside Dhaka</span>
-                    <span className="font-semibold">৳60</span>
+                    <span>Inside Dhaka</span>
+                    <span>৳{shippingRates.insideDhaka}</span>
                   </label>
 
                   {/* Outside Dhaka */}
                   <label
                     className={`flex justify-between items-center p-3 rounded-lg cursor-pointer border transition 
-        ${
-          shipping === 120 ? "bg-cyan-50 border-cyan-400" : "hover:bg-gray-50"
-        }`}
+${
+  shipping === shippingRates.outsideDhaka
+    ? "bg-cyan-50 border-cyan-400"
+    : "hover:bg-gray-50"
+}`}
                   >
                     <input
                       type="radio"
                       name="shipping"
-                      value="outside"
-                      checked={shipping === 120}
-                      onChange={() => setShipping(120)}
-                      className="h-5 w-5"
+                      checked={shipping === shippingRates.outsideDhaka}
+                      onChange={() => setShipping(shippingRates.outsideDhaka)}
                     />
-                    <span className="font-medium">Outside Dhaka</span>
-                    <span className="font-semibold">৳120</span>
+                    <span>Outside Dhaka</span>
+                    <span>৳{shippingRates.outsideDhaka}</span>
                   </label>
                 </div>
 

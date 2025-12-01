@@ -187,14 +187,7 @@ const Dashboard = () => {
                     <FaPalette /> <span>Colors</span>
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink
-                    to="/dashboard/stock"
-                    className="flex items-center px-2 py-2 space-x-3"
-                  >
-                    <FaChartLine /> <span>Stock Report</span>
-                  </NavLink>
-                </li>
+                
 
                 {/* POS & Orders */}
                 <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
@@ -261,7 +254,14 @@ const Dashboard = () => {
                     <FaChartBar /> <span>Sales Report</span>
                   </NavLink>
                 </li>
-
+                <li>
+                  <NavLink
+                    to="/dashboard/stock"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaChartLine /> <span>Stock Report</span>
+                  </NavLink>
+                </li>
                 <li>
                   <NavLink
                     to="/dashboard/ExpenseReport"
@@ -319,7 +319,6 @@ const Dashboard = () => {
                     <FaStar /> <span>Reviews</span>
                   </NavLink>
                 </li>
-
                 {/* Promo */}
                 <li className="pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   PROMO
