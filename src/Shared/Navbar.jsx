@@ -140,7 +140,7 @@ const Navbar = () => {
       .catch(() => setFooterInfo(null));
   }, []);
 
-    const lastOrderCountRef = useRef(0);
+  const lastOrderCountRef = useRef(0);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -173,7 +173,6 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, []);
 
-
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
       <div className="max-w-7xl mx-auto flex justify-between items-center py-3">
@@ -196,68 +195,52 @@ const Navbar = () => {
 
         {/* Desktop Search + Categories */}
         <div className="hidden md:flex items-center w-1/2 relative gap-4">
-          {/* <div className="flex items-center gap-4 ">
-            <Link
-              to="/"
-              className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl "
-            >
-              Home
-            </Link>
-            <Link
-              to="/about"
-              className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl "
-            >
-              About
-            </Link>
-            <Link
-              to="/contact"
-              className="text-black dark:text-gray-200 hover:text-cyan-500 text-xl "
-            >
-              Contact
-            </Link>
-          </div> */}
-
           {/* Categories */}
-          <div className="relative">
+          <div className="relative group">
             <button
-              onClick={() => setOpenCategory(openCategory ? null : "show")}
+              onMouseEnter={() => setOpenCategory(true)}
               className="flex items-center text-xl gap-1 text-black dark:text-gray-200 hover:text-cyan-500"
             >
-              Categories <FaChevronDown className="text-sm mt-0.5" />
+              Category <FaChevronDown className="text-sm mt-0.5" />
             </button>
 
             {openCategory && (
               <div
-                className="absolute left-0 top-full mt-2 bg-white dark:bg-gray-900 border rounded-md shadow-md w-56 z-50"
-                onMouseLeave={() => setOpenCategory(null)}
+                onMouseLeave={() => setOpenCategory(false)}
+                className="absolute left-0 top-full mt-2 bg-white dark:bg-gray-900 border shadow-xl w-[700px] rounded-md z-50 p-6"
               >
-                {menuData.map((cat) => (
-                  <div key={cat._id} className="relative">
-                    <div
-                      onMouseEnter={() => setOpenCategory(cat._id)}
-                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex justify-between items-center"
-                    >
-                      {cat.name} <IoIosArrowForward className="text-xs" />
+                <div className="grid grid-cols-4 gap-6">
+                  {menuData.map((cat) => (
+                    <div key={cat._id}>
+                      {/* Category (Bold) */}
+                      <h3
+                        className="font-bold text-black dark:text-white mb-3 cursor-pointer hover:text-cyan-500"
+                        onClick={() => {
+                          navigate(`/category/${cat._id}`);
+                          setOpenCategory(false);
+                        }}
+                      >
+                        {cat.name}
+                      </h3>
+
+                      {/* Subcategories */}
+                      <ul className="space-y-1">
+                        {cat.subcategories.map((sub) => (
+                          <li
+                            key={sub._id}
+                            className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 cursor-pointer"
+                            onClick={() => {
+                              navigate(`/subcategory/${sub._id}`);
+                              setOpenCategory(false);
+                            }}
+                          >
+                            {sub.name}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    {openCategory === cat._id &&
-                      cat.subcategories.length > 0 && (
-                        <div className="absolute top-0 left-full bg-white dark:bg-gray-900 shadow-lg border rounded-md mt-0 p-4 grid grid-cols-1 gap-2 z-50 w-48">
-                          {cat.subcategories.map((sub) => (
-                            <div
-                              key={sub._id}
-                              className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded"
-                              onClick={() => {
-                                navigate(`/subcategory/${sub._id}`);
-                                setOpenCategory(null);
-                              }}
-                            >
-                              {sub.name}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </div>

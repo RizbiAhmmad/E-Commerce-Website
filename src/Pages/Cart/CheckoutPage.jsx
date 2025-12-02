@@ -87,7 +87,7 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
-    if (!fullName || !phone || !email || !address) {
+    if (!fullName || !phone || !address) {
       return Swal.fire("Error", "Please fill all required fields", "error");
     }
     if (!/^01\d{9}$/.test(phone)) {
@@ -130,9 +130,17 @@ const CheckoutPage = () => {
       };
     });
 
+    let normalizedPhone = phone.toString().replace(/\D/g, "");
+
+    if (normalizedPhone.startsWith("0")) {
+      normalizedPhone = "88" + normalizedPhone;
+    } else if (!normalizedPhone.startsWith("88")) {
+      normalizedPhone = "88" + normalizedPhone;
+    }
+
     const orderData = {
       fullName,
-      phone,
+      phone: normalizedPhone,
       email,
       district,
       address,

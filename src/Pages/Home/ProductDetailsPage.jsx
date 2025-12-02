@@ -192,14 +192,14 @@ const ProductDetailsPage = () => {
   };
 
   const handleBuyNow = () => {
-    if (!user) {
-      Swal.fire({
-        icon: "error",
-        title: "You must be logged in to continue",
-      });
-      navigate("/login", { state: { from: location } });
-      return;
-    }
+    // if (!user) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "You must be logged in to continue",
+    //   });
+    //   navigate("/login", { state: { from: location } });
+    //   return;
+    // }
 
     const buyItem = {
       productId: product._id,

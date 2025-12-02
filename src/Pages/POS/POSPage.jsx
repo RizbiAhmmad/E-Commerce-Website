@@ -909,7 +909,7 @@ const POSPage = () => {
                   <img
                     src={footerInfo.logo}
                     alt="Company Logo"
-                    className="w-20 h-auto"
+                    className="w-18 h-auto"
                   />
                 )}
               </div>
@@ -922,7 +922,7 @@ const POSPage = () => {
               <p className="text-xs text-center">{footerInfo?.phone}</p>
             </div>
 
-            <hr className="border-t-2 border-dashed border-gray-400 my-3" />
+            <hr className="border-t-2 border-dashed border-gray-400 my-2" />
             <div className="text-left text-xs">
               <p>
                 <strong>Name:</strong> {receiptData.customer?.name}
@@ -940,9 +940,14 @@ const POSPage = () => {
                   <strong>District:</strong> {receiptData.customer.district}
                 </p>
               )}
+              {receiptData.customer?.note && (
+                <p>
+                  <strong>Note:</strong> {receiptData.customer.note}
+                </p>
+              )}
             </div>
 
-            <hr className="border-t-2 border-dashed border-gray-400 my-3" />
+            <hr className="border-t-2 border-dashed border-gray-400 my-2" />
             <div className="flex justify-between text-sm">
               <span>Order ID {receiptData.orderId}</span>
               <span>
@@ -955,7 +960,7 @@ const POSPage = () => {
             <div className="text-sm mt-1">
               {new Date(receiptData.createdAt).toLocaleDateString()}
             </div>
-            <hr className="border-t-2 border-dashed border-gray-400 my-3" />
+            <hr className="border-t-2 border-dashed border-gray-400 my-2" />
 
             <div className="text-sm font-semibold mb-1">Items</div>
             <div className="space-y-2 text-sm">
@@ -974,7 +979,7 @@ const POSPage = () => {
               ))}
             </div>
 
-            <hr className="border-t-2 border-dashed border-gray-400 my-3" />
+            <hr className="border-t-2 border-dashed border-gray-400 my-2" />
             <div className="flex justify-between text-sm">
               <span>SUBTOTAL:</span>
               <span>৳{fmt(receiptData.subtotal)}</span>
@@ -992,7 +997,7 @@ const POSPage = () => {
               <span>৳{fmt(receiptData.total)}</span>
             </div>
 
-            <hr className="border-t-2 border-dashed border-gray-400 my-3" />
+            <hr className="border-t-2 border-dashed border-gray-400 my-2" />
             <div className="text-sm">
               <div className="flex justify-between">
                 <span>Payment Type:</span>
@@ -1034,7 +1039,7 @@ const POSPage = () => {
               )}
             </div>
 
-            <div className="text-center mt-6 text-sm">
+            <div className="text-center mt-4 text-sm">
               <div>Thank You</div>
               <div>Please Come Again</div>
             </div>
