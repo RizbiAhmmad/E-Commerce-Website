@@ -8,6 +8,8 @@ import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { GrView } from "react-icons/gr";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import { MdFlashOn } from "react-icons/md";
+import { HiMiniShoppingBag } from "react-icons/hi2";
 
 const SubcategoryProducts = () => {
   const { subId } = useParams();
@@ -25,25 +27,23 @@ const SubcategoryProducts = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const fetchProducts = async () => {
-    try {
-      const res = await axiosPublic.get(
-        `/products?subcategoryId=${subId}`
-      );
-      const activeProducts = res.data.filter((p) => p.status === "active");
-      setProducts(activeProducts);
+    const fetchProducts = async () => {
+      try {
+        const res = await axiosPublic.get(`/products?subcategoryId=${subId}`);
+        const activeProducts = res.data.filter((p) => p.status === "active");
+        setProducts(activeProducts);
 
-      const prices = activeProducts.map((p) => p.newPrice);
-      const maxPrice = Math.max(...prices, 10000);
-      setPriceRange([0, maxPrice]);
-    } catch (err) {
-      console.error("❌ Error fetching products:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchProducts();
-}, [subId]);
+        const prices = activeProducts.map((p) => p.newPrice);
+        const maxPrice = Math.max(...prices, 10000);
+        setPriceRange([0, maxPrice]);
+      } catch (err) {
+        console.error("❌ Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [subId]);
 
   if (loading) return <Loading />;
 
@@ -121,6 +121,26 @@ const SubcategoryProducts = () => {
       }
     };
 
+    const handleBuyNow = (e) => {
+      e.stopPropagation();
+
+      const buyItem = {
+        productId: product._id,
+        quantity: 1,
+        selectedColor: "",
+        selectedSize: "",
+      };
+
+      navigate("/checkout", {
+        state: {
+          cartItems: [buyItem],
+          productsMap: {
+            [product._id]: product,
+          },
+        },
+      });
+    };
+
     return (
       <div
         onClick={() => navigate(`/product/${product._id}`)}
@@ -172,62 +192,64 @@ const SubcategoryProducts = () => {
           {/* <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
             {product.name}
           </h3> */}
-         <div className="mt-1 mb-1">
-          <h3
-            className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
+          <div className="mt-1 mb-1">
+            <h3
+              className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
                  leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
-          >
-            {product.name}
-          </h3>
-        </div>
+            >
+              {product.name}
+            </h3>
+          </div>
 
           <div className="flex items-end justify-between my-1 flex-wrap gap-2">
-                    <div>
-                      <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
-                        {!product.stock || Number(product.stock) === 0 ? (
-                          <span className="text-red-500 font-semibold">Out of stock</span>
-                        ) : (
-                          <span className="text-green-500 font-semibold">In Stock</span>
-                        )}
-                      </span>
-          
-                      <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
-                        {hasDiscount ? (
-                          <>
-                            <span className="text-red-500 line-through">
-                              {formatPrice(oldPriceNum)}
-                            </span>
-                            <span className="font-bold text-black dark:text-white">
-                              {formatPrice(newPriceNum)}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="font-bold dark:text-white text-black">
-                            {formatPrice(newPriceNum)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-          
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-6 flex-shrink-0"
-                    >
-                      <button
-                        onClick={handleAddToCart}
-                        className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-                      >
-                        <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
-                      </button>
-          
-                      <button
-                        onClick={() => navigate(`/product/${product._id}`)}
-                        className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-                      >
-                        <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
-                      </button>
-                    </div>
-                  </div>
+            <div>
+              <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
+                {!product.stock || Number(product.stock) === 0 ? (
+                  <span className="text-red-500 font-semibold">
+                    Out of stock
+                  </span>
+                ) : (
+                  <span className="text-green-500 font-semibold">In Stock</span>
+                )}
+              </span>
+
+              <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
+                {hasDiscount ? (
+                  <>
+                    <span className="text-red-500 line-through">
+                      {formatPrice(oldPriceNum)}
+                    </span>
+                    <span className="font-bold text-black dark:text-white">
+                      {formatPrice(newPriceNum)}
+                    </span>
+                  </>
+                ) : (
+                  <span className="font-bold dark:text-white text-black">
+                    {formatPrice(newPriceNum)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-6 flex-shrink-0"
+            >
+              <button
+                onClick={handleAddToCart}
+                className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+              >
+                <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
+              </button>
+
+              <button
+                onClick={handleBuyNow}
+                className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+              >
+                <HiMiniShoppingBag className="text-[1.6rem] text-[#0FABCA] hover:text-white" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );

@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import Loading from "./Loading";
 
 export default function Footer() {
   const [footerInfo, setFooterInfo] = useState(null);
@@ -36,7 +37,7 @@ export default function Footer() {
   }, [axiosPublic]);
 
   if (loading)
-    return <p className="text-center text-gray-400">Loading footer...</p>;
+    return <Loading></Loading>;
   if (!footerInfo || Object.keys(footerInfo).length === 0)
     return <p className="text-center text-gray-400">No footer data found.</p>;
 

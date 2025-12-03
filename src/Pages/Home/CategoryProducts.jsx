@@ -8,6 +8,8 @@ import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { GrView } from "react-icons/gr";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import { MdFlashOn } from "react-icons/md";
+import { HiMiniShoppingBag } from "react-icons/hi2";
 
 const CategoryProducts = () => {
   const { id } = useParams();
@@ -140,6 +142,26 @@ const CategoryProducts = () => {
       }
     };
 
+    const handleBuyNow = (e) => {
+      e.stopPropagation();
+
+      const buyItem = {
+        productId: product._id,
+        quantity: 1,
+        selectedColor: "",
+        selectedSize: "",
+      };
+
+      navigate("/checkout", {
+        state: {
+          cartItems: [buyItem],
+          productsMap: {
+            [product._id]: product,
+          },
+        },
+      });
+    };
+
     return (
       <div
         onClick={() => navigate(`/product/${product._id}`)}
@@ -242,10 +264,10 @@ const CategoryProducts = () => {
               </button>
 
               <button
-                onClick={() => navigate(`/product/${product._id}`)}
-                className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                onClick={handleBuyNow}
+                className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
               >
-                <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
+                <HiMiniShoppingBag className="text-[1.6rem] text-[#0FABCA] hover:text-white" />
               </button>
             </div>
           </div>

@@ -10,7 +10,9 @@ const AllPOSOrders = () => {
   const ordersPerPage = 20;
   const axiosPublic = useAxiosPublic();
   const [couriers, setCouriers] = useState([]);
+  const [footerInfo, setFooterInfo] = useState(null);
 
+  // Fetch couriers
   const fetchCouriers = async () => {
     try {
       const res = await axiosPublic.get("/courier/settings");
@@ -37,6 +39,16 @@ const AllPOSOrders = () => {
     fetchCouriers();
   }, []);
 
+  // Footer Info
+  useEffect(() => {
+    axiosPublic
+      .get("/footer")
+      .then((res) => {
+        if (res.data.length > 0) setFooterInfo(res.data[0]);
+      })
+      .catch(() => setFooterInfo(null));
+  }, []);
+
   // delete POS order
   const handleDelete = (id) => {
     Swal.fire({
@@ -58,6 +70,8 @@ const AllPOSOrders = () => {
       }
     });
   };
+
+  // courier assign
   const handleCourierAssign = async (orderId, courierName) => {
     if (!courierName) return;
 
@@ -65,6 +79,7 @@ const AllPOSOrders = () => {
       const res = await axiosPublic.patch(`/pos/orders/${orderId}/courier`, {
         courierName,
       });
+
       if (res.data.success) {
         Swal.fire("Updated!", "Courier assigned successfully.", "success");
         fetchOrders();
@@ -77,7 +92,7 @@ const AllPOSOrders = () => {
     }
   };
 
-  // filter orders by multiple fields
+  // search filter
   const filteredOrders = orders.filter((order) => {
     const term = searchTerm.toLowerCase();
     return (
@@ -88,7 +103,7 @@ const AllPOSOrders = () => {
     );
   });
 
-  // pagination logic
+  // pagination
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = filteredOrders.slice(
@@ -101,104 +116,141 @@ const AllPOSOrders = () => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
+
   const handlePrint = (order) => {
     const printWindow = window.open("", "_blank");
+
+    const companyLogo = footerInfo?.logo
+      ? `<img src="${footerInfo.logo}" style="width:60px;margin:auto;display:block;" />`
+      : "";
+
+    const companyInfo = footerInfo
+      ? `
+        <div class="center bold">${footerInfo?.name || ""}</div>
+        <div class="center" style="font-size:10px;">${footerInfo?.address || ""}</div>
+        <div class="center" style="font-size:10px;">${footerInfo?.phone || ""}</div>
+      `
+      : "";
+
     const htmlContent = `
     <html>
-      <head>
-        <title>POS Invoice - ${order.orderId}</title>
-        <style>
-          body { font-family: Arial; padding: 20px; }
-          h2 { text-align: center; }
-          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          table, th, td { border: 1px solid #ddd; }
-          th, td { padding: 8px; text-align: left; }
-          .totalBox { width: 300px; float: right; margin-top: 20px; }
-          .totalRow { display: flex; justify-content: space-between; padding: 6px 0; }
-          .footer { text-align:center; margin-top:50px; color:gray; }
-        </style>
-      </head>
-      <body>
+    <head>
+      <title>Receipt - ${order.orderId}</title>
 
-        <h2>POS Invoice</h2>
-        
-        <p><strong>Order ID:</strong> ${order.orderId}</p>
-        <p><strong>Customer:</strong> ${order.customer?.name || ""}</p>
-        <p><strong>Address:</strong> ${order.customer?.address || ""}</p>
-        <p><strong>District:</strong> ${order.customer?.district || ""}</p>
-        <p><strong>Phone:</strong> ${order.customer?.phone || ""}</p>
-        <p><strong>Note:</strong> ${order.customer?.note || ""}</p>
-        <p><strong>Date:</strong> ${new Date(
-          order.createdAt
-        ).toLocaleString()}</p>
+      <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      @media print {
+        body {
+          margin: 0;
+          padding: 0;
+        }
+
+        #receipt {
+          width: 80mm;
+          max-width: 80mm;
+          padding: 10px;
+          margin: 0 auto;
+          font-size: 11px;
+          line-height: 1.3;
+        }
+
+        .center { text-align: center; }
+        .bold { font-weight: bold; }
+        .flex-between { display: flex; justify-content: space-between; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        td { padding: 3px 0; }
+        hr { border: none; border-top: 1px dashed #000; margin: 6px 0; }
+      }
+      </style>
+    </head>
+
+    <body>
+      <div id="receipt">
+
+        ${companyLogo}
+        ${companyInfo}
+
+        <hr />
+
+        <div><b>Order ID:</b> ${order.orderId}</div>
+        <div><b>Name:</b> ${order.customer?.name || ""}</div>
+        <div><b>Phone:</b> ${order.customer?.phone || ""}</div>
+        <div><b>Address:</b> ${order.customer?.address || ""}</div>
+        <div><b>District:</b> ${order.customer?.district || ""}</div>
+        <div><b>Note:</b> ${order.customer?.note || ""}</div>
+        <div><b>Date:</b> ${new Date(order.createdAt).toLocaleString()}</div>
+
+        <hr />
 
         <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Size</th>
-              <th>Color</th>
-              <th>Qty</th>
-              <th>Price</th>
-              <th>Subtotal</th>
-            </tr>
-          </thead>
           <tbody>
             ${order.cartItems
               ?.map(
                 (item) => `
+              <tr><td colspan="2"><b>${item.productName}</b></td></tr>
               <tr>
-                <td>${item.productName}</td>
-                <td>${item.size || "-"}</td>
-                <td>${item.color || "-"}</td>
-                <td>${item.quantity}</td>
-                <td>৳${item.price}</td>
-                <td>৳${item.price * item.quantity}</td>
+                <td>Qty: ${item.quantity} × ৳${item.price}</td>
+                <td style="text-align:right;">৳${item.quantity * item.price}</td>
+              </tr>
+              <tr>
+                <td colspan="2" style="font-size:10px;color:gray;">
+                  Size: ${item.size || "-"} | Color: ${item.color || "-"}
+                </td>
               </tr>`
               )
               .join("")}
           </tbody>
         </table>
 
-        <!-- Summary Section -->
-        <div class="totalBox">
-          <div class="totalRow"><strong>Subtotal:</strong> ৳${
-            order.subtotal
-          }</div>
+        <hr />
 
-          ${
-            order.discount > 0
-              ? `<div class="totalRow"><strong>Discount:</strong> -৳${order.discount}</div>`
-              : ""
-          }
+        <div class="flex-between"><span>Subtotal:</span><span>৳${order.subtotal}</span></div>
 
-          ${
-            order.tax > 0
-              ? `<div class="totalRow"><strong>Tax:</strong> ৳${order.tax}</div>`
-              : ""
-          }
+        ${
+          order.discount > 0
+            ? `<div class="flex-between"><span>Discount:</span><span>-৳${order.discount}</span></div>`
+            : ""
+        }
 
-          ${
-            order.shippingCharge > 0
-              ? `<div class="totalRow"><strong>Shipping:</strong> ৳${order.shippingCharge}</div>`
-              : ""
-          }
+        ${
+          order.tax > 0
+            ? `<div class="flex-between"><span>Tax:</span><span>৳${order.tax}</span></div>`
+            : ""
+        }
 
-          <div class="totalRow" style="border-top:1px solid #000; margin-top:10px; padding-top:10px;">
-            <strong>Total:</strong> ৳${order.total}
-          </div>
+        ${
+          order.shippingCharge > 0
+            ? `<div class="flex-between"><span>Shipping:</span><span>৳${order.shippingCharge}</span></div>`
+            : ""
+        }
+
+        <hr />
+
+        <div class="flex-between bold" style="font-size:13px;">
+          <span>Total:</span>
+          <span>৳${order.total}</span>
         </div>
 
-        <div class="footer">
-          Thank you ❤️
-        </div>
+        <hr />
 
-      </body>
-    </html>
-  `;
+        <div class="center" style="margin-top: 10px;">Thank you ❤️</div>
+      </div>
+
+      <script>
+        window.onload = () => {
+          window.print();
+          window.close();
+        };
+      </script>
+
+    </body>
+    </html>`;
+
     printWindow.document.write(htmlContent);
     printWindow.document.close();
-    printWindow.print();
   };
 
   return (
@@ -207,7 +259,7 @@ const AllPOSOrders = () => {
         All POS Orders
       </h2>
 
-      {/* Search Bar */}
+      {/* Search */}
       <div className="flex justify-start mb-4">
         <div className="relative w-100">
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -224,7 +276,7 @@ const AllPOSOrders = () => {
         </div>
       </div>
 
-      {/* Orders Table */}
+      {/* Table */}
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
@@ -241,12 +293,10 @@ const AllPOSOrders = () => {
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
+
           <tbody className="divide-y divide-gray-200">
             {currentOrders.map((order, index) => (
-              <tr
-                key={order._id}
-                className="transition duration-200 hover:bg-gray-50"
-              >
+              <tr key={order._id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">{indexOfFirstOrder + index + 1}</td>
                 <td className="px-6 py-4 font-semibold">{order.orderId}</td>
 
@@ -254,15 +304,9 @@ const AllPOSOrders = () => {
                   <div className="font-semibold text-gray-800">
                     {order.customer?.name}
                   </div>
-                  <div className="font-semibold text-gray-800">
-                    {order.customer?.address}
-                  </div>
-                  <div className="font-semibold text-gray-800">
-                    {order.customer?.district}
-                  </div>
-                  <div className="font-semibold text-gray-800">
-                    {order.customer?.note}
-                  </div>
+                  <div className="font-semibold">{order.customer?.address}</div>
+                  <div className="font-semibold">{order.customer?.district}</div>
+                  <div className="font-semibold">{order.customer?.note}</div>
                   <div className="text-gray-600">{order.customer?.phone}</div>
                 </td>
 
@@ -292,13 +336,13 @@ const AllPOSOrders = () => {
                 <td className="px-6 py-4 font-bold">৳{order.discount}</td>
                 <td className="px-6 py-4 font-bold">৳{order.total}</td>
 
+                {/* Courier */}
                 <td className="px-3 py-3">
                   <select
                     value={order.courier || ""}
-                    onChange={(e) => {
-                      if (e.target.value)
-                        handleCourierAssign(order._id, e.target.value);
-                    }}
+                    onChange={(e) =>
+                      handleCourierAssign(order._id, e.target.value)
+                    }
                     className="border border-gray-300 rounded px-2 py-1 text-xs"
                   >
                     <option value="">Assign Courier</option>
@@ -318,22 +362,22 @@ const AllPOSOrders = () => {
                   })}
                 </td>
 
+                {/* Actions */}
                 <td className="flex gap-4 px-6 py-6">
                   <button onClick={() => handlePrint(order)}>
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
 
-                  {/* Delete Button */}
-                  {/* <button onClick={() => handleDelete(order._id)}>
-    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-  </button> */}
+                  <button onClick={() => handleDelete(order._id)}>
+                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                  </button>
                 </td>
               </tr>
             ))}
 
             {filteredOrders.length === 0 && (
               <tr>
-                <td colSpan="9" className="py-6 text-center text-gray-500">
+                <td colSpan="10" className="py-6 text-center text-gray-500">
                   No POS orders found.
                 </td>
               </tr>
