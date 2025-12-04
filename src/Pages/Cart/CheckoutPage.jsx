@@ -161,10 +161,10 @@ const CheckoutPage = () => {
     try {
       const res = await axiosPublic.post("/orders", orderData);
       const savedOrder = {
-  ...orderData,
-  _id: res.data.insertedId,
-};
-localStorage.setItem("pendingOrderId", res.data.insertedId);
+        ...orderData,
+        _id: res.data.insertedId,
+      };
+      localStorage.setItem("pendingOrderId", res.data.insertedId);
 
       if (payment === "online") {
         const { data } = await axiosPublic.post("/sslcommerz/init", {
@@ -172,7 +172,7 @@ localStorage.setItem("pendingOrderId", res.data.insertedId);
           orderId: orderData.tran_id,
           totalAmount: total,
           fullName,
-          email,
+          email: email || "N/A",
           phone,
           address,
         });
@@ -186,7 +186,6 @@ localStorage.setItem("pendingOrderId", res.data.insertedId);
       }
 
       Swal.fire("Success!", "Order placed successfully", "success");
-      // navigate("/dashboard/myorders");
       navigate("/myorder", { state: { orderData: savedOrder } });
     } catch (err) {
       console.error(err);

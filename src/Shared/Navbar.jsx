@@ -33,6 +33,10 @@ const Navbar = () => {
   const [orders, setOrders] = useState([]);
   const [orderCount, setOrderCount] = useState(0);
 
+  const [trackId, setTrackId] = useState("");
+  const [trackingData, setTrackingData] = useState(null);
+  const [showTrackBox, setShowTrackBox] = useState(false);
+
   const navigate = useNavigate();
   const [role, setRole] = useState(null);
   useEffect(() => {
@@ -143,6 +147,8 @@ const Navbar = () => {
   const lastOrderCountRef = useRef(0);
 
   useEffect(() => {
+    if (role !== "admin") return;
+
     const fetchOrders = async () => {
       try {
         const res = await axiosPublic.get("/orders");
@@ -171,7 +177,21 @@ const Navbar = () => {
     fetchOrders();
     const interval = setInterval(fetchOrders, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [role]);
+
+  const handleTrack = async () => {
+    if (!trackId.trim()) {
+      return Swal.fire("Error", "Enter Order ID", "warning");
+    }
+
+    try {
+      const res = await axiosPublic.get(`/orders/${trackId}`);
+      setTrackingData(res.data);
+      setShowTrackBox(true);
+    } catch (error) {
+      Swal.fire("Not Found", "Invalid Order ID", "error");
+    }
+  };
 
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
@@ -194,7 +214,7 @@ const Navbar = () => {
         </motion.div>
 
         {/* Desktop Search + Categories */}
-        <div className="hidden md:flex items-center w-1/2 relative gap-4">
+        <div className="hidden md:flex items-center  relative gap-4">
           {/* Categories */}
           <div className="relative group">
             <button
@@ -309,6 +329,28 @@ const Navbar = () => {
               </span>
             )}
           </Link>
+
+          {/* ORDER TRACKER */}
+          <div className="hidden md:flex items-center border rounded-xl overflow-hidden">
+            <input
+              value={trackId}
+              onChange={(e) => setTrackId(e.target.value)}
+              placeholder="Order ID"
+              className="px-3 py-1 text-sm outline-none dark:bg-gray-800"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleTrack();
+                }
+              }}
+            />
+            <button
+              onClick={handleTrack}
+              className="bg-cyan-600 text-white px-3 py-1 text-sm hover:bg-cyan-700"
+            >
+              Track
+            </button>
+          </div>
+
           {user && role === "admin" ? (
             <div className="relative group">
               <FaBell
@@ -511,6 +553,27 @@ const Navbar = () => {
                 </div>
               )}
 
+              <div className="mt-4 px-2 flex gap-2">
+                <input
+                  value={trackId}
+                  onChange={(e) => setTrackId(e.target.value)}
+                  placeholder="Order ID"
+                  className="flex-1 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white outline-none"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleTrack();
+                    }
+                  }}
+                />
+
+                <button
+                  onClick={handleTrack}
+                  className="px-3 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700"
+                >
+                  Track
+                </button>
+              </div>
+
               {/* Theme Toggle */}
               {/* <div className="mt-3">
           <ThemeChange />
@@ -612,6 +675,49 @@ const Navbar = () => {
           </button>
         )}
       </div>
+      {showTrackBox && trackingData && (
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 w-[320px] relative">
+            <button
+              onClick={() => setShowTrackBox(false)}
+              className="absolute right-3 top-2 text-gray-400 hover:text-red-500"
+            >
+              ✕
+            </button>
+
+            <h3 className="text-lg font-bold mb-2">📦 Order Tracking</h3>
+
+            <p>
+              <strong>ID:</strong> {trackingData._id}
+            </p>
+            <p>
+              <strong>Name:</strong> {trackingData.fullName}
+            </p>
+            <p>
+              <strong>Phone:</strong> {trackingData.phone}
+            </p>
+            <p>
+              <strong>Payment:</strong> {trackingData.payment}
+            </p>
+            <p>
+              <strong>Status:</strong>
+              <span className="ml-1 text-cyan-600 font-semibold capitalize">
+                {trackingData.status}
+              </span>
+            </p>
+            <p>
+              <strong>Total:</strong> ৳{trackingData.total}
+            </p>
+
+            <button
+              onClick={() => setShowTrackBox(false)}
+              className="mt-4 w-full bg-cyan-600 text-white py-2 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

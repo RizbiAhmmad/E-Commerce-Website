@@ -163,13 +163,13 @@ const OrderSuccessPage = () => {
             <FaHome /> Back to Home
           </Link>
 
-          <Link
+          {/* <Link
             to="/products"
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-green-600 
                        hover:bg-green-700 text-white shadow-lg"
           >
             <FaShoppingBag /> Continue Shopping
-          </Link>
+          </Link> */}
         </div>
       </motion.div>
     </div>

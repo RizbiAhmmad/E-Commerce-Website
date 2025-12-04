@@ -143,7 +143,7 @@ const LandingPage = () => {
     const orderData = {
       fullName: name,
       phone,
-      email: email,
+      email: email || "N/A",
       district,
       address,
       shipping: shipping === shippingRates.insideDhaka ? "inside" : "outside",
@@ -174,12 +174,14 @@ const LandingPage = () => {
         localStorage.setItem("pendingOrderId", orderId);
 
         const { data } = await axiosPublic.post("/sslcommerz/init", {
-          orderId: orderData.tran_id,
+          tran_id: orderData.tran_id, 
+          orderId: orderId, 
           totalAmount: total,
           fullName: name,
-          email: email,
+          email: email || "N/A",
           phone,
           address,
+          cartItems: [productData], 
         });
 
         if (data?.GatewayPageURL) {
