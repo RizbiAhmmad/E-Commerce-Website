@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import { motion } from "framer-motion";
@@ -22,10 +22,12 @@ const LandingPage = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [shipping, setShipping] = useState(60);
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
   const [district, setDistrict] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [shippingRates, setShippingRates] = useState({
@@ -141,7 +143,7 @@ const LandingPage = () => {
     const orderData = {
       fullName: name,
       phone,
-      email: page?.email || "",
+      email: email,
       district,
       address,
       shipping: shipping === shippingRates.insideDhaka ? "inside" : "outside",
@@ -159,14 +161,23 @@ const LandingPage = () => {
     };
 
     try {
-      await axiosPublic.post("/orders", orderData);
+      const res = await axiosPublic.post("/orders", orderData);
+      const orderId = res.data.insertedId;
+
+      const savedOrder = {
+        ...orderData,
+        _id: orderId,
+      };
+      localStorage.setItem("pendingOrderId", orderId);
 
       if (paymentMethod === "online") {
+        localStorage.setItem("pendingOrderId", orderId);
+
         const { data } = await axiosPublic.post("/sslcommerz/init", {
           orderId: orderData.tran_id,
           totalAmount: total,
           fullName: name,
-          email: page?.email || "",
+          email: email,
           phone,
           address,
         });
@@ -179,7 +190,10 @@ const LandingPage = () => {
         return;
       }
 
-      Swal.fire("Success!", "Order placed successfully", "success");
+      // COD SUCCESS
+      Swal.fire("Success!", "Order placed successfully", "success").then(() => {
+        navigate("/myorder", { state: { orderData: savedOrder } });
+      });
     } catch (err) {
       console.log(err);
       Swal.fire("Error!", "Something went wrong", "error");

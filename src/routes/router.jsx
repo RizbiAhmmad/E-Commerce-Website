@@ -67,6 +67,7 @@ import AllLandingPages from "@/Pages/Dashboard/Admin/AllLandingPages";
 import LandingPage from "@/Pages/LandingPage/LandingPage";
 import OrderSuccess from "@/Pages/Dashboard/User/OrderSuccess";
 import ShippingSettings from "@/Pages/Dashboard/Admin/ShippingSettings";
+import OrderSuccessPage from "@/Pages/Dashboard/User/OrderSuccessPage";
 
 export const router = createBrowserRouter([
   {
@@ -144,6 +145,10 @@ export const router = createBrowserRouter([
       {
         path: "/order-success/:tran_id",
         element: <OrderSuccess />,
+      },
+      {
+        path: "/myorder",
+        element: <OrderSuccessPage />,
       },
     ],
   },
