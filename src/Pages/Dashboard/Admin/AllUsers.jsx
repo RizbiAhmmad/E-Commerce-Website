@@ -13,20 +13,26 @@ const AllUsers = () => {
       return res.data;
     },
   });
+  const handleRoleChange = (user, newRole) => {
+    if (!newRole || user.role === newRole) return;
 
-  const handleMakeAdmin = (user) => {
-    axiosPublic.patch(`/users/admin/${user._id}`).then((res) => {
-      if (res.data.modifiedCount > 0) {
-        refetch();
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: `${user.name} is now an Admin!`,
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-    });
+    axiosPublic
+      .patch(`/users/role/${user._id}`, { role: newRole })
+      .then((res) => {
+        if (res.data.modifiedCount > 0) {
+          refetch();
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: `${user.name} is now ${newRole}!`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      })
+      .catch(() => {
+        Swal.fire("Error", "Failed to update role", "error");
+      });
   };
 
   const handleDeleteUser = (user) => {
@@ -81,18 +87,28 @@ const AllUsers = () => {
                 </td>
                 <td className="px-6 py-4">{user.name}</td>
                 <td className="px-6 py-4">{user.email}</td>
-                <td className="px-6 py-4">
-                  {user.role === "admin" ? (
-                    <span className="text-cyan-600 font-semibold">Admin</span>
-                  ) : (
-                    <button
-                      onClick={() => handleMakeAdmin(user)}
-                      className="bg-cyan-500 hover:bg-cyan-600 text-white text-xs px-3 py-1 rounded-md transition duration-200"
-                    >
-                      Make Admin
-                    </button>
+                <td className="px-6 py-4 flex items-center gap-2">
+                  {/* Current role badge */}
+                  {user.role && (
+                    <span className="bg-cyan-100 text-black text-md font-bold px-2 py-2 rounded">
+                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    </span>
                   )}
+
+                  {/* Role dropdown */}
+                  <select
+                    value={user.role || ""}
+                    onChange={(e) => handleRoleChange(user, e.target.value)}
+                    className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800 text-black dark:text-white"
+                  >
+                    <option value="">Select Role</option>
+                    <option value="admin">Admin</option>
+                    <option value="manager">Manager</option>
+                    <option value="pos">POS Operator</option>
+                    <option value="user">User</option>
+                  </select>
                 </td>
+
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleDeleteUser(user)}

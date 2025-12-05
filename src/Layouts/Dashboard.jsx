@@ -123,7 +123,7 @@ const Dashboard = () => {
                 </li>
 
                 {/* Users */}
-                {/* <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
+                <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
                   USERS
                 </li>
                 <li>
@@ -133,7 +133,7 @@ const Dashboard = () => {
                   >
                     <FaUsers /> <span>Users</span>
                   </NavLink>
-                </li> */}
+                </li>
 
                 {/* Product & Stock */}
                 <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">

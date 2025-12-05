@@ -345,7 +345,7 @@ const Navbar = () => {
             />
             <button
               onClick={handleTrack}
-              className="bg-cyan-600 text-white px-3 py-1 text-sm hover:bg-cyan-700"
+              className="bg-cyan-500 text-white px-3 py-1 text-sm hover:bg-cyan-600"
             >
               Track
             </button>
