@@ -27,6 +27,7 @@ const AddProduct = () => {
     variant: "",
     barcode: "",
     videoUrl: "",
+    freeShipping: false,
   });
 
   const [imageFiles, setImageFiles] = useState([]);
@@ -110,6 +111,7 @@ const AddProduct = () => {
         images: imageUrls,
         email: user?.email,
         videoUrl: formData.videoUrl,
+        freeShipping: formData.freeShipping,
       };
 
       const res = await axiosPublic.post("/products", productData, {
@@ -355,6 +357,22 @@ const AddProduct = () => {
           required
           className="border p-2 rounded"
         />
+
+        <div className="flex items-center gap-2 md:col-span-2">
+          <input
+            type="checkbox"
+            id="freeShipping"
+            name="freeShipping"
+            checked={formData.freeShipping}
+            onChange={(e) =>
+              setFormData({ ...formData, freeShipping: e.target.checked })
+            }
+            className="w-4 h-4"
+          />
+          <label htmlFor="freeShipping" className="font-semibold">
+            Enable Free Shipping
+          </label>
+        </div>
 
         <div className="">
           <label className="block mb-1 font-semibold">Status</label>

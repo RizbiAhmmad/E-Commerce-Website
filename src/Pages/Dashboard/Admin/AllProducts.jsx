@@ -699,6 +699,22 @@ const AllProducts = () => {
                 className="border p-2 rounded"
               />
 
+              <div className="flex items-center gap-2 md:col-span-2 mt-2">
+                <input
+                  type="checkbox"
+                  name="freeShipping"
+                  checked={editProduct.freeShipping === true}
+                  onChange={(e) =>
+                    setEditProduct({
+                      ...editProduct,
+                      freeShipping: e.target.checked,
+                    })
+                  }
+                  className="w-4 h-4"
+                />
+                <label className="font-semibold">Free Shipping</label>
+              </div>
+
               <div>
                 <label className="block mb-1 font-semibold">Status</label>
                 <select

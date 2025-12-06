@@ -76,7 +76,7 @@ const OrderSuccessPage = () => {
         </p>
 
         {/* ORDER BOX */}
-        <div className="bg-gray-50 dark:bg-neutral-800 p-6 rounded-xl border">
+        <div className="bg-cyan-50 dark:bg-neutral-800 p-6 rounded-xl border">
           <h2 className="text-xl font-bold mb-4 text-gray-700 dark:text-white">
             Order Details
           </h2>

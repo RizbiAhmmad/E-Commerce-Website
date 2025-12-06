@@ -28,6 +28,14 @@ const CheckoutPage = () => {
   const [discount, setDiscount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const axiosPublic = useAxiosPublic();
+const [localCartItems, setLocalCartItems] = useState([]);
+
+useEffect(() => {
+  if (state?.cartItems) {
+    setLocalCartItems(state.cartItems);
+  }
+}, [state]);
+
 
   useEffect(() => {
     if (user) {
@@ -50,10 +58,47 @@ const CheckoutPage = () => {
     fetchShipping();
   }, []);
 
-  const shippingCost =
-    shipping === "inside"
-      ? Number(shippingData.insideDhaka)
-      : Number(shippingData.outsideDhaka);
+  useEffect(() => {
+    let sessionId = localStorage.getItem("checkoutSessionId");
+    if (!sessionId) {
+      sessionId = "session_" + Date.now();
+      localStorage.setItem("checkoutSessionId", sessionId);
+    }
+  }, []);
+
+  useEffect(() => {
+    const sessionId = localStorage.getItem("checkoutSessionId");
+    if (!sessionId) return;
+
+    const timeout = setTimeout(() => {
+      const incomplete = {
+        sessionId,
+        fullName,
+        phone,
+        email,
+        district,
+        address,
+        shipping,
+        payment,
+        cartItems: localCartItems,
+      };
+
+      axiosPublic.post("/incomplete-orders", incomplete);
+    }, 2000); 
+
+    return () => clearTimeout(timeout);
+  }, [fullName, phone, email, district, address, shipping, payment, cartItems]);
+
+const isAllFreeShipping = cartItems.every((item) => {
+  const product = productsMap[item.productId];
+  return product?.freeShipping === true;
+});
+
+  const shippingCost = isAllFreeShipping
+  ? 0
+  : shipping === "inside"
+  ? Number(shippingData.insideDhaka)
+  : Number(shippingData.outsideDhaka);
 
   const subtotal = cartItems.reduce((total, item) => {
     const product = productsMap[item.productId];
@@ -159,6 +204,11 @@ const CheckoutPage = () => {
     };
 
     try {
+      await axiosPublic.delete(
+        "/incomplete-orders/" + localStorage.getItem("checkoutSessionId")
+      );
+      localStorage.removeItem("checkoutSessionId");
+
       const res = await axiosPublic.post("/orders", orderData);
       const savedOrder = {
         ...orderData,

@@ -104,13 +104,13 @@ const AllReviews = () => {
                     {new Date(review.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-4">
-                    {/* <button
+                    <button
                       onClick={() => handleDelete(review._id)}
                       className="text-red-500 hover:text-red-700"
                       title="Delete Review"
                     >
                       <FaTrashAlt size={18} />
-                    </button> */}
+                    </button>
                   </td>
                 </tr>
               ))

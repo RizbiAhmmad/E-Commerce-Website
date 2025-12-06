@@ -134,10 +134,14 @@ const LandingPage = () => {
       color: selectedColor || "-",
       size: selectedSize || "-",
       quantity: quantity,
+      freeShipping: product?.freeShipping || false,
     };
 
     const subtotal = product?.newPrice * quantity;
-    const shippingCost = shipping;
+    // const shippingCost = shipping;
+
+    const shippingCost = product?.freeShipping === true ? 0 : Number(shipping);
+
     const total = subtotal + shippingCost;
 
     const orderData = {
@@ -174,14 +178,14 @@ const LandingPage = () => {
         localStorage.setItem("pendingOrderId", orderId);
 
         const { data } = await axiosPublic.post("/sslcommerz/init", {
-          tran_id: orderData.tran_id, 
-          orderId: orderId, 
+          tran_id: orderData.tran_id,
+          orderId: orderId,
           totalAmount: total,
           fullName: name,
           email: email || "N/A",
           phone,
           address,
-          cartItems: [productData], 
+          cartItems: [productData],
         });
 
         if (data?.GatewayPageURL) {
@@ -222,7 +226,7 @@ const LandingPage = () => {
           <img
             src={footerInfo.logo}
             alt="Company Logo"
-            className="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg"
+            className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-4 rounded-full shadow-lg"
           />
         )}
 
@@ -348,10 +352,21 @@ const LandingPage = () => {
           variants={fadeUp}
           initial="hidden"
           animate="show"
-          className="text-center max-w-3xl mx-auto"
+          className="max-w-4xl mx-auto text-center py-10"
         >
-          <h2 className="text-3xl font-bold">{page.descriptionTitle}</h2>
-          <p className="text-gray-700 mt-3">{page.description}</p>
+          <h2 className="text-4xl font-extrabold text-gray-800 mb-6 relative inline-block">
+            {page.descriptionTitle}
+            <span className="block w-20 h-1 bg-cyan-500 mx-auto mt-2 rounded-full"></span>
+          </h2>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="bg-white shadow-xl border border-gray-200 rounded-2xl p-6 md:p-10 leading-relaxed text-gray-700 text-lg md:text-xl"
+          >
+            <p className="whitespace-pre-line">{page.description}</p>
+          </motion.div>
         </motion.div>
       )}
 
@@ -660,14 +675,19 @@ const LandingPage = () => {
 
                   <div className="flex justify-between mb-2">
                     <span>Shipping</span>
-                    <span>৳{shipping}</span>
+                    <span>
+                      ৳{product?.freeShipping === true ? 0 : shipping}
+                    </span>
                   </div>
-
                   <hr className="my-3" />
 
                   <div className="flex justify-between font-bold text-xl">
                     <span>Total</span>
-                    <span>৳{product?.newPrice * quantity + shipping}</span>
+                    <span>
+                      ৳
+                      {product?.newPrice * quantity +
+                        (product?.freeShipping === true ? 0 : shipping)}
+                    </span>
                   </div>
                 </div>
               </div>
