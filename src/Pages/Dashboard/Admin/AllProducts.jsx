@@ -5,6 +5,7 @@ import Select from "react-select";
 import { FaEdit, FaPlus, FaSearch, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import Loading from "@/Shared/Loading";
 
 const AllProducts = () => {
   const { user } = useContext(AuthContext);
@@ -56,6 +57,19 @@ const AllProducts = () => {
   const [imageFiles, setImageFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [footerInfo, setFooterInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchFooterInfo = async () => {
+      try {
+        const res = await axiosPublic.get("/footer");
+        setFooterInfo(res.data[0]);
+      } catch (err) {
+        console.error("❌ Footer Info Fetch Error:", err.message);
+      }
+    };
+    fetchFooterInfo();
+  }, []);
 
   // Fetch all data once on mount
   useEffect(() => {
@@ -231,63 +245,86 @@ const AllProducts = () => {
     const productPrice = product.newPrice;
 
     const content = `
-        <html>
-        <head>
-            <title>Barcode Print</title>
-            <style>
-                @media print {
-                    @page { margin: 8mm; }
-                }
-                body {
-                    font-family: Arial, sans-serif;
-                    padding: 10px;
-                    text-align: center;
-                }
-                .label-box {
-                    border: 1px solid #ddd;
-                    padding: 10px;
-                    display: inline-block;
-                }
-                .product-name {
-                    font-size: 14px;
-                    font-weight: bold;
-                    margin-bottom: 4px;
-                }
-                    .product-price {
-                    font-size: 12px;
-                    margin-bottom: 4px;
-                }
-            </style>
-        </head>
-        <body>
+<html>
+<head>
+    <style>
+        @media print {
+            @page { margin: 8mm; }
+        }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            text-align: center;
+        }
+        .label-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            display: inline-block;
+        }
+        .product-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
 
-            <div class="label-box">
-                <div class="product-name">${productName}</div>
-                <div class="product-price">Price: ${productPrice} Tk</div>
+        .price-box {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
 
-                <div id="barcode-container" data-barcode="${barcode}"></div>
-            </div>
+        .old-price {
+            color: red;
+            text-decoration: line-through;
+            margin-right: 6px;
+            font-weight: bold;
+        }
 
-            <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-            <script>
-                const container = document.getElementById('barcode-container');
-                const code = container.getAttribute('data-barcode');
+        .new-price {
+            color: #000;
+            font-weight: 700;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
 
-                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                container.appendChild(svg);
+<div class="label-box">
+    <div class="product-name">${footerInfo.name}</div>
+    <div class="product-name">${productName}</div>
 
-                JsBarcode(svg, code, {
-                    format: "CODE128",
-                    width: 2,
-                    height: 60,
-                    displayValue: true
-                });
+    <div class="price-box">
+        ${
+          product.oldPrice
+            ? `<span class="old-price">৳${product.oldPrice}</span>`
+            : ""
+        }
+        <span class="new-price">৳${product.newPrice}</span>
+    </div>
 
-                window.print();
-            </script>
-        </body>
-        </html>
-    `;
+    <div id="barcode-container" data-barcode="${barcode}"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script>
+    const container = document.getElementById('barcode-container');
+    const code = container.getAttribute('data-barcode');
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    container.appendChild(svg);
+
+    JsBarcode(svg, code, {
+        format: "CODE128",
+        width: 2,
+        height: 60,
+        displayValue: true
+    });
+
+    window.print();
+</script>
+
+</body>
+</html>
+`;
 
     const printWindow = window.open("", "_blank");
     if (printWindow) {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaLinkedin, FaYoutube, FaTiktok, FaInstagram } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import Loading from "@/Shared/Loading";
 
 const Contact = () => {
   const [footerInfo, setFooterInfo] = useState(null);
@@ -22,7 +23,7 @@ const Contact = () => {
   if (!footerInfo) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-semibold">Loading Contact Info...</p>
+        <Loading></Loading>
       </div>
     );
   }

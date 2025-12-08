@@ -92,11 +92,40 @@ const AllPOSOrders = () => {
     }
   };
 
+  const handleReturn = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This order will be returned and stock restored!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, return it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axiosPublic.patch(`/pos/orders/${id}/return`);
+          if (res.data.success) {
+            Swal.fire("Returned!", res.data.message, "success");
+            fetchOrders(); // Refresh table
+          }
+        } catch (err) {
+          Swal.fire(
+            "Error!",
+            err.response?.data?.message || "Return failed",
+            "error"
+          );
+        }
+      }
+    });
+  };
+
   // search filter
   const filteredOrders = orders.filter((order) => {
     const term = searchTerm.toLowerCase();
     return (
       order.orderId?.toLowerCase().includes(term) ||
+      order._id?.toLowerCase().includes(term) ||
       order.customer?.name?.toLowerCase().includes(term) ||
       order.customer?.phone?.toLowerCase().includes(term) ||
       order.payment?.method?.toLowerCase().includes(term)
@@ -116,7 +145,6 @@ const AllPOSOrders = () => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-
   const handlePrint = (order) => {
     const printWindow = window.open("", "_blank");
 
@@ -127,8 +155,12 @@ const AllPOSOrders = () => {
     const companyInfo = footerInfo
       ? `
         <div class="center bold">${footerInfo?.name || ""}</div>
-        <div class="center" style="font-size:10px;">${footerInfo?.address || ""}</div>
-        <div class="center" style="font-size:10px;">${footerInfo?.phone || ""}</div>
+        <div class="center" style="font-size:10px;">${
+          footerInfo?.address || ""
+        }</div>
+        <div class="center" style="font-size:10px;">${
+          footerInfo?.phone || ""
+        }</div>
       `
       : "";
 
@@ -193,7 +225,9 @@ const AllPOSOrders = () => {
               <tr><td colspan="2"><b>${item.productName}</b></td></tr>
               <tr>
                 <td>Qty: ${item.quantity} × ৳${item.price}</td>
-                <td style="text-align:right;">৳${item.quantity * item.price}</td>
+                <td style="text-align:right;">৳${
+                  item.quantity * item.price
+                }</td>
               </tr>
               <tr>
                 <td colspan="2" style="font-size:10px;color:gray;">
@@ -207,7 +241,9 @@ const AllPOSOrders = () => {
 
         <hr />
 
-        <div class="flex-between"><span>Subtotal:</span><span>৳${order.subtotal}</span></div>
+        <div class="flex-between"><span>Subtotal:</span><span>৳${
+          order.subtotal
+        }</span></div>
 
         ${
           order.discount > 0
@@ -281,40 +317,52 @@ const AllPOSOrders = () => {
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
             <tr>
-              <th className="px-6 py-3">#</th>
-              <th className="px-6 py-3">Order ID</th>
-              <th className="px-6 py-3">Customer</th>
-              <th className="px-6 py-3">Payment</th>
-              <th className="px-6 py-3">Products</th>
-              <th className="px-6 py-3">Discount</th>
-              <th className="px-6 py-3">Total</th>
-              <th className="px-6 py-3">Courier</th>
-              <th className="px-6 py-3">Date & Time</th>
-              <th className="px-6 py-3">Actions</th>
+              <th className="px-4 py-3">#</th>
+              <th className="px-4 py-3">Order ID</th>
+              <th className="px-4 py-3">Customer</th>
+              <th className="px-4 py-3">Payment</th>
+              <th className="px-4 py-3">Products</th>
+              <th className="px-4 py-3">Discount</th>
+              <th className="px-4 py-3">Total</th>
+              <th className="px-4 py-3">Courier</th>
+              <th className="px-4 py-3">Date & Time</th>
+              <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-200">
             {currentOrders.map((order, index) => (
               <tr key={order._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">{indexOfFirstOrder + index + 1}</td>
-                <td className="px-6 py-4 font-semibold">{order.orderId}</td>
+                <td className="px-4 py-3">{indexOfFirstOrder + index + 1}</td>
+                <td className="px-4 py-3 font-semibold">
+                  OrderID: {order.orderId}
+                  <br />
+                  MongoID: {order._id}
+                  <br />
+                  {order.isReturned && (
+                    <span className="ml-2 px-2 py-1 text-xs bg-red-200 text-red-800 rounded">
+                      Returned
+                    </span>
+                  )}
+                </td>
 
-                <td className="px-6 py-4">
+                <td className="px-4 py-3">
                   <div className="font-semibold text-gray-800">
                     {order.customer?.name}
                   </div>
                   <div className="font-semibold">{order.customer?.address}</div>
-                  <div className="font-semibold">{order.customer?.district}</div>
+                  <div className="font-semibold">
+                    {order.customer?.district}
+                  </div>
                   <div className="font-semibold">{order.customer?.note}</div>
                   <div className="text-gray-600">{order.customer?.phone}</div>
                 </td>
 
-                <td className="px-6 py-4 capitalize">
+                <td className="px-4 py-3 capitalize">
                   {order.payment?.method || "-"}
                 </td>
 
-                <td className="px-6 py-4">
+                <td className="px-4 py-3">
                   {order.cartItems?.map((item, i) => (
                     <div key={i} className="flex items-center gap-2 mb-2">
                       <img
@@ -333,11 +381,11 @@ const AllPOSOrders = () => {
                   ))}
                 </td>
 
-                <td className="px-6 py-4 font-bold">৳{order.discount}</td>
-                <td className="px-6 py-4 font-bold">৳{order.total}</td>
+                <td className="px-4 py-3 font-bold">৳{order.discount}</td>
+                <td className="px-4 py-3 font-bold">৳{order.total}</td>
 
                 {/* Courier */}
-                <td className="px-3 py-3">
+                <td className="px-4 py-3">
                   <select
                     value={order.courier || ""}
                     onChange={(e) =>
@@ -354,7 +402,7 @@ const AllPOSOrders = () => {
                   </select>
                 </td>
 
-                <td className="px-6 py-4">
+                <td className="px-4 py-3">
                   {new Date(order.createdAt).toLocaleDateString()}{" "}
                   {new Date(order.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
@@ -363,7 +411,7 @@ const AllPOSOrders = () => {
                 </td>
 
                 {/* Actions */}
-                <td className="flex gap-4 px-6 py-6">
+                <td className="flex gap-4 px-4 py-3">
                   <button onClick={() => handlePrint(order)}>
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
@@ -371,6 +419,14 @@ const AllPOSOrders = () => {
                   <button onClick={() => handleDelete(order._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
                   </button>
+                  {!order.isReturned && (
+                    <button
+                      onClick={() => handleReturn(order._id)}
+                      className="text-red-500 hover:text-red-600 border-2 border-red-500 p-2 rounded-xl"
+                    >
+                      Return
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

@@ -60,6 +60,57 @@ const LandingPage = () => {
     fetchFooterInfo();
   }, []);
 
+  useEffect(() => {
+  let sessionId = localStorage.getItem("landingSessionId");
+  if (!sessionId) {
+    sessionId = "landing_" + Date.now();
+    localStorage.setItem("landingSessionId", sessionId);
+  }
+}, []);
+
+useEffect(() => {
+  const sessionId = localStorage.getItem("landingSessionId");
+  if (!sessionId) return;
+
+  const timeout = setTimeout(() => {
+    if (!name && !phone && !address && !district) return; // skip empty
+
+    const incompleteOrder = {
+      sessionId,
+      fullName: name,
+      phone,
+      email,
+      district,
+      address,
+      shipping: shipping === shippingRates.insideDhaka ? "inside" : "outside",
+      payment: paymentMethod === "cod" ? "cash on delivery" : "online",
+      cartItems: [
+        {
+          productId: product?._id,
+          productName: product?.name,
+          barcode: product?.barcode || 0,
+          productImage: product?.images?.[0] || "",
+          price: product?.newPrice,
+          purchasePrice: product?.purchasePrice || 0,
+          color: selectedColor || "-",
+          size: selectedSize || "-",
+          quantity,
+          freeShipping: product?.freeShipping || false,
+        },
+      ],
+      subtotal: product?.newPrice * quantity,
+      shippingCost: product?.freeShipping ? 0 : Number(shipping),
+      discount: 0,
+      total: product?.newPrice * quantity + (product?.freeShipping ? 0 : Number(shipping)),
+    };
+
+    axiosPublic.post("/incomplete-orders", incompleteOrder);
+  }, 2000); // delay 2s
+
+  return () => clearTimeout(timeout);
+}, [name, phone, email, district, address, selectedSize, selectedColor, quantity, shipping]);
+
+
   const { data: page, isLoading } = useQuery({
     queryKey: ["landingPage", id],
     queryFn: async () => {
@@ -112,99 +163,91 @@ const LandingPage = () => {
   };
 
   const handleOrderSubmit = async () => {
-    if (!name || !phone || !address || !district) {
-      return Swal.fire("Error!", "Please fill all required fields", "error");
-    }
+  if (!name || !phone || !address || !district) {
+    return Swal.fire("Error!", "Please fill all required fields", "error");
+  }
 
-    if (!/^01\d{9}$/.test(phone)) {
-      return Swal.fire(
-        "Invalid Phone",
-        "Please enter a valid 11-digit BD phone number starting with 01",
-        "error"
-      );
-    }
+  if (!/^01\d{9}$/.test(phone)) {
+    return Swal.fire(
+      "Invalid Phone",
+      "Please enter a valid 11-digit BD phone number starting with 01",
+      "error"
+    );
+  }
 
-    const productData = {
-      productId: product?._id,
-      productName: product?.name,
-      barcode: product?.barcode || 0,
-      productImage: product?.images?.[0] || "",
-      price: product?.newPrice,
-      purchasePrice: product?.purchasePrice || 0,
-      color: selectedColor || "-",
-      size: selectedSize || "-",
-      quantity: quantity,
-      freeShipping: product?.freeShipping || false,
-    };
-
-    const subtotal = product?.newPrice * quantity;
-    // const shippingCost = shipping;
-
-    const shippingCost = product?.freeShipping === true ? 0 : Number(shipping);
-
-    const total = subtotal + shippingCost;
-
-    const orderData = {
-      fullName: name,
-      phone,
-      email: email || "N/A",
-      district,
-      address,
-      shipping: shipping === shippingRates.insideDhaka ? "inside" : "outside",
-      payment: paymentMethod === "cod" ? "cash on delivery" : "online",
-      cartItems: [productData],
-      subtotal,
-      shippingCost,
-      discount: 0,
-      total,
-      coupon: null,
-      status: paymentMethod === "cod" ? "pending" : "initiated",
-      tran_id: `order_${Date.now()}`,
-      createdAt: new Date(),
-      orderType: "Online",
-    };
-
-    try {
-      const res = await axiosPublic.post("/orders", orderData);
-      const orderId = res.data.insertedId;
-
-      const savedOrder = {
-        ...orderData,
-        _id: orderId,
-      };
-      localStorage.setItem("pendingOrderId", orderId);
-
-      if (paymentMethod === "online") {
-        localStorage.setItem("pendingOrderId", orderId);
-
-        const { data } = await axiosPublic.post("/sslcommerz/init", {
-          tran_id: orderData.tran_id,
-          orderId: orderId,
-          totalAmount: total,
-          fullName: name,
-          email: email || "N/A",
-          phone,
-          address,
-          cartItems: [productData],
-        });
-
-        if (data?.GatewayPageURL) {
-          window.location.href = data.GatewayPageURL;
-        } else {
-          Swal.fire("Error", "Payment init failed", "error");
-        }
-        return;
-      }
-
-      // COD SUCCESS
-      Swal.fire("Success!", "Order placed successfully", "success").then(() => {
-        navigate("/myorder", { state: { orderData: savedOrder } });
-      });
-    } catch (err) {
-      console.log(err);
-      Swal.fire("Error!", "Something went wrong", "error");
-    }
+  const productData = {
+    productId: product?._id,
+    productName: product?.name,
+    barcode: product?.barcode || 0,
+    productImage: product?.images?.[0] || "",
+    price: product?.newPrice,
+    purchasePrice: product?.purchasePrice || 0,
+    color: selectedColor || "-",
+    size: selectedSize || "-",
+    quantity: quantity,
+    freeShipping: product?.freeShipping || false,
   };
+
+  const subtotal = product?.newPrice * quantity;
+  const shippingCost = product?.freeShipping ? 0 : Number(shipping);
+  const total = subtotal + shippingCost;
+
+  const orderData = {
+    fullName: name,
+    phone,
+    email: email || "N/A",
+    district,
+    address,
+    shipping: shipping === shippingRates.insideDhaka ? "inside" : "outside",
+    payment: paymentMethod === "cod" ? "cash on delivery" : "online",
+    cartItems: [productData],
+    subtotal,
+    shippingCost,
+    discount: 0,
+    total,
+    coupon: null,
+    status: paymentMethod === "cod" ? "pending" : "initiated",
+    tran_id: `order_${Date.now()}`,
+    createdAt: new Date(),
+    orderType: "Online",
+  };
+
+  try {
+    const res = await axiosPublic.post("/orders", orderData);
+    const orderId = res.data.insertedId; // Assuming your backend returns insertedId
+    localStorage.setItem("pendingOrderId", orderId);
+
+    const savedOrder = { ...orderData, _id: orderId };
+
+    if (paymentMethod === "online") {
+      const { data } = await axiosPublic.post("/sslcommerz/init", {
+        tran_id: orderData.tran_id,
+        orderId,
+        totalAmount: total,
+        fullName: name,
+        email: email || "N/A",
+        phone,
+        address,
+        cartItems: [productData],
+      });
+
+      if (data?.GatewayPageURL) {
+        window.location.href = data.GatewayPageURL;
+      } else {
+        Swal.fire("Error", "Payment init failed", "error");
+      }
+      return;
+    }
+
+    Swal.fire("Success!", "Order placed successfully", "success").then(() => {
+      navigate("/myorder", { state: { orderData: savedOrder } });
+    });
+  } catch (err) {
+    console.error(err);
+    Swal.fire("Error!", "Something went wrong", "error");
+  }
+};
+
 
   const handleScroll = () => {
     const section = document.getElementById("checkout");

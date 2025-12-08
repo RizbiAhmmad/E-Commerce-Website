@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import * as XLSX from "xlsx";
 
 const ProfitLossReport = () => {
   const axiosPublic = useAxiosPublic();
   const [report, setReport] = useState({});
+  const [expenseReport, setExpenseReport] = useState({});
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState("today");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
+  // FETCH PROFIT REPORT
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const res = await axiosPublic.get(
-          "/profit-loss-report"
-        );
+        const res = await axiosPublic.get("/profit-loss-report");
         setReport(res.data);
         setOrders(res.data.allOrders || []);
       } catch (err) {
@@ -22,72 +25,175 @@ const ProfitLossReport = () => {
     fetchReport();
   }, []);
 
+  // FETCH EXPENSE REPORT
+  useEffect(() => {
+    const fetchExpense = async () => {
+      try {
+        const res = await axiosPublic.get("/expenses/report");
+        setExpenseReport(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchExpense();
+  }, []);
+
+  // NET PROFIT CALCULATOR
+  const getNetStats = () => {
+    const profitToday = report.today?.profit || 0;
+    const expenseToday = expenseReport.today || 0;
+
+    const profitWeek = report.thisWeek?.profit || 0;
+    const expenseWeek = expenseReport.thisWeek || 0;
+
+    const profitMonth = report.thisMonth?.profit || 0;
+    const expenseMonth = expenseReport.thisMonth || 0;
+
+    const profitAll = report.allTime?.profit || 0;
+    const expenseAll = expenseReport.total || 0;
+
+    return {
+      today: profitToday - expenseToday,
+      week: profitWeek - expenseWeek,
+      month: profitMonth - expenseMonth,
+      total: profitAll - expenseAll,
+    };
+  };
+
+  // FILTER ORDERS
   const getFilteredOrders = () => {
     const now = new Date();
+
     return orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
+
       if (filter === "today") {
         return orderDate.toDateString() === now.toDateString();
       }
+
       if (filter === "week") {
         const weekAgo = new Date();
         weekAgo.setDate(now.getDate() - 7);
         return orderDate >= weekAgo;
       }
+
       if (filter === "month") {
         return (
           orderDate.getMonth() === now.getMonth() &&
           orderDate.getFullYear() === now.getFullYear()
         );
       }
+
+      if (filter === "range" && startDate && endDate) {
+        const sd = new Date(startDate);
+        const ed = new Date(endDate);
+        return orderDate >= sd && orderDate <= ed;
+      }
+
       return true;
     });
+  };
+
+  // EXPORT EXCEL
+  const exportToExcel = () => {
+    const filteredOrders = getFilteredOrders().flatMap((order) =>
+      (order.cartItems || []).map((p) => {
+        const totalSale = p.price * p.quantity;
+        const totalCost = (p.purchasePrice || 0) * p.quantity;
+        const profit =
+          totalSale - totalCost - (order.discount || 0) + (order.tax || 0);
+
+        return {
+          ProductName: p.productName || p.name || p.title,
+          PurchasePrice: p.purchasePrice || 0,
+          SalePrice: p.price,
+          Quantity: p.quantity,
+          TotalSale: totalSale,
+          TotalCost: totalCost,
+          Discount: order.discount || 0,
+          Tax: Number(order.tax || 0).toFixed(2),
+          ProfitOrLoss: profit,
+          Date: new Date(order.createdAt).toLocaleDateString(),
+          OrderType: order.orderType,
+        };
+      })
+    );
+
+    const worksheet = XLSX.utils.json_to_sheet(filteredOrders);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Profit Loss Report");
+
+    XLSX.writeFile(workbook, "profit_loss_report.xlsx");
   };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h2 className="pb-4 mb-8 text-3xl font-bold text-center border-b-2 border-gray-200">
-        💰 Profit & Loss Report
+        💰 Profit, Expense & Net Profit Report
       </h2>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-10">
-        <div className="bg-blue-100 p-4 rounded-lg shadow">
-          <h3 className="text-gray-600">All Time Profit</h3>
-          <p className="text-2xl font-bold">৳{report.allTime?.profit}</p>
+      {/* 🔥 TOP TOTAL CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="bg-green-100 p-5 rounded-lg shadow text-center">
+          <h3 className="text-gray-700 font-semibold">Total Profit</h3>
+          <p className="text-3xl font-bold">৳{report.allTime?.profit || 0}</p>
         </div>
-        <div className="bg-green-100 p-4 rounded-lg shadow">
-          <h3 className="text-gray-600">This Month</h3>
-          <p className="text-2xl font-bold">৳{report.thisMonth?.profit}</p>
+
+        <div className="bg-red-100 p-5 rounded-lg shadow text-center">
+          <h3 className="text-gray-700 font-semibold">Total Expense</h3>
+          <p className="text-3xl font-bold">৳{expenseReport.total || 0}</p>
         </div>
-        <div className="bg-red-100 p-4 rounded-lg shadow">
-          <h3 className="text-gray-600">Today</h3>
-          <p className="text-2xl font-bold">৳{report.today?.profit}</p>
+
+        <div className="bg-blue-100 p-5 rounded-lg shadow text-center">
+          <h3 className="text-gray-700 font-semibold">Net Profit</h3>
+          <p className="text-3xl font-bold">৳{getNetStats().total}</p>
         </div>
       </div>
 
-      {/* Product Table */}
+      {/* 🔥 PERIOD SUMMARY CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="bg-green-50 p-4 rounded-lg shadow text-center">
+          <h3 className="font-medium">Today Profit: ৳{report.today?.profit || 0}</h3>
+          <h3 className="mt-1">Today Expense: ৳{expenseReport.today || 0}</h3>
+          <h3 className="mt-1 font-bold text-blue-600">Net Today: ৳{getNetStats().today}</h3>
+        </div>
+
+        <div className="bg-yellow-50 p-4 rounded-lg shadow text-center">
+          <h3 className="font-medium">This Week Profit: ৳{report.thisWeek?.profit || 0}</h3>
+          <h3 className="mt-1">This Week Expense: ৳{expenseReport.thisWeek || 0}</h3>
+          <h3 className="mt-1 font-bold text-blue-600">Net Week: ৳{getNetStats().week}</h3>
+        </div>
+
+        <div className="bg-purple-50 p-4 rounded-lg shadow text-center">
+          <h3 className="font-medium">This Month Profit: ৳{report.thisMonth?.profit || 0}</h3>
+          <h3 className="mt-1">This Month Expense: ৳{expenseReport.thisMonth || 0}</h3>
+          <h3 className="mt-1 font-bold text-blue-600">Net Month: ৳{getNetStats().month}</h3>
+        </div>
+      </div>
+
+      {/* PRODUCT TABLE */}
       <div className="bg-white shadow rounded-lg p-4 mt-10">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">Products (Profit/Loss)</h3>
-          <div className="flex gap-2">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+
+          <h3 className="text-lg font-semibold w-full md:w-auto">
+            Products (Profit / Loss)
+          </h3>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border px-3 py-1 rounded" />
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border px-3 py-1 rounded" />
+            <button onClick={() => setFilter("range")} className="px-3 py-1 bg-blue-600 text-white rounded">Apply</button>
+            <button onClick={exportToExcel} className="px-4 py-2 bg-green-600 text-white rounded shadow">📥 Export</button>
+          </div>
+
+          <div className="flex flex-wrap gap-2 justify-end">
             {["all", "today", "week", "month"].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3 py-1 rounded ${
-                  filter === f
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
+                className={`px-3 py-1 rounded ${filter === f ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
               >
-                {f === "all"
-                  ? "All"
-                  : f === "today"
-                  ? "Today"
-                  : f === "week"
-                  ? "This Week"
-                  : "This Month"}
+                {f === "all" ? "All" : f === "today" ? "Today" : f === "week" ? "This Week" : "This Month"}
               </button>
             ))}
           </div>
@@ -115,49 +221,21 @@ const ProfitLossReport = () => {
                 (order.cartItems || []).map((p, idx) => {
                   const totalSale = p.price * p.quantity;
                   const totalCost = (p.purchasePrice || 0) * p.quantity;
-                  const profit =
-                    totalSale -
-                    totalCost -
-                    (order.discount || 0) +
-                    (order.tax || 0);
+                  const profit = totalSale - totalCost - (order.discount || 0) + (order.tax || 0);
 
                   return (
                     <tr key={`${order._id}-${idx}`}>
-                      <td className="px-4 py-2 border">
-                        <div className="flex flex-col">
-                          <span className="font-medium">
-                            {p.productName || p.name || p.title}
-                          </span>
-                          {p.barcode && (
-                            <span className="text-xs text-gray-500">
-                              Code: {p.barcode}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      <td className="px-4 py-2 border">
-                        ৳{p.purchasePrice || 0}
-                      </td>
+                      <td className="px-4 py-2 border font-medium">{p.productName || p.name || p.title}</td>
+                      <td className="px-4 py-2 border">৳{p.purchasePrice || 0}</td>
                       <td className="px-4 py-2 border">৳{p.price}</td>
                       <td className="px-4 py-2 border">{p.quantity}</td>
                       <td className="px-4 py-2 border">৳{totalSale}</td>
                       <td className="px-4 py-2 border">৳{totalCost}</td>
-                      <td className="px-4 py-2 border">
-                        ৳{order.discount || 0}
-                      </td>
+                      <td className="px-4 py-2 border">৳{order.discount || 0}</td>
                       <td className="px-4 py-2 border">৳{Number(order.tax || 0).toFixed(2)}</td>
-                      <td
-                        className={`px-4 py-2 border font-bold ${
-                          profit >= 0 ? "text-green-600" : "text-red-600"
-                        }`}
-                      >
-                        ৳{profit}
-                      </td>
+                      <td className={`px-4 py-2 border font-bold ${profit >= 0 ? "text-green-600" : "text-red-600"}`}>৳{profit}</td>
                       <td className="px-4 py-2 border">{order.orderType}</td>
-                      <td className="px-4 py-2 border">
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </td>
+                      <td className="px-4 py-2 border">{new Date(order.createdAt).toLocaleDateString()}</td>
                     </tr>
                   );
                 })

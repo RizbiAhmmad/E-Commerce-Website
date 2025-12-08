@@ -251,6 +251,7 @@ const POSPage = () => {
         change: change,
       },
       orderId: `#${Date.now()}`,
+      isReturned : false
     };
 
     try {

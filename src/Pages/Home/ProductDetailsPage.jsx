@@ -6,11 +6,11 @@ import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import Loading from "@/Shared/Loading";
 import { AuthContext } from "@/provider/AuthProvider";
 import Swal from "sweetalert2";
-import ImageZoom from "react-image-zooom";
 import { motion } from "framer-motion";
 import { IoCartOutline } from "react-icons/io5";
 import { GrView } from "react-icons/gr";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import { Lens } from "@/components/lightswind/lens";
 
 const ProductDetailsPage = () => {
   const { user } = useContext(AuthContext);
@@ -260,42 +260,47 @@ const ProductDetailsPage = () => {
                 )}
               </div>
               <div className="relative h-full">
-                <ImageZoom
-                  src={
-                    product.images?.[currentImageIndex] ||
-                    "https://via.placeholder.com/400"
-                  }
-                  alt={product.name}
-                  zoom="200"
-                  className="w-full h-full object-cover rounded-md"
-                />
+                <Lens
+                  zoomFactor={2.5}
+                  lensSize={150}
+                  className="w-full h-full rounded-md relative"
+                >
+                  <img
+                    src={
+                      product.images?.[currentImageIndex] ||
+                      "https://via.placeholder.com/400"
+                    }
+                    alt={product.name}
+                    className="w-full h-full object-cover rounded-md"
+                  />
 
-                {product.images?.length > 1 && (
-                  <>
-                    <button
-                      onClick={() =>
-                        setCurrentImageIndex(
-                          (prev) =>
-                            (prev - 1 + product.images.length) %
-                            product.images.length
-                        )
-                      }
-                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white"
-                    >
-                      <BiChevronLeft className="w-6 h-6" />
-                    </button>
-                    <button
-                      onClick={() =>
-                        setCurrentImageIndex(
-                          (prev) => (prev + 1) % product.images.length
-                        )
-                      }
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white"
-                    >
-                      <BiChevronRight className="w-6 h-6" />
-                    </button>
-                  </>
-                )}
+                  {product.images?.length > 1 && (
+                    <>
+                      <button
+                        onClick={() =>
+                          setCurrentImageIndex(
+                            (prev) =>
+                              (prev - 1 + product.images.length) %
+                              product.images.length
+                          )
+                        }
+                        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white z-20"
+                      >
+                        <BiChevronLeft className="w-6 h-6" />
+                      </button>
+                      <button
+                        onClick={() =>
+                          setCurrentImageIndex(
+                            (prev) => (prev + 1) % product.images.length
+                          )
+                        }
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white z-20"
+                      >
+                        <BiChevronRight className="w-6 h-6" />
+                      </button>
+                    </>
+                  )}
+                </Lens>
               </div>
             </div>
 
