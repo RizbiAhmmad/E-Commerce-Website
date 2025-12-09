@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { FaTrashAlt, FaSearch, FaPrint } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import * as XLSX from "xlsx";
 
 const AllPOSOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -289,6 +290,44 @@ const AllPOSOrders = () => {
     printWindow.document.close();
   };
 
+  const exportPOSOrdersToExcel = () => {
+    if (!orders || orders.length === 0) return;
+
+    const dataForExcel = orders.map((order) => ({
+      OrderID: order.orderId,
+      MongoID: order._id,
+      CustomerName: order.customer?.name || "",
+      Email: order.customer?.email || "",
+      Phone: order.customer?.phone || "",
+      Address: order.customer?.address || "",
+      District: order.customer?.district || "",
+      Note: order.customer?.note || "",
+      PaymentMethod: order.payment?.method || "",
+      CartItems: (order.cartItems || [])
+        .map(
+          (item) =>
+            `${item.productName} (Size: ${item.size || "-"}, Color: ${
+              item.color || "-"
+            }, Qty: ${item.quantity}, Price: ${item.price})`
+        )
+        .join("; "),
+      Subtotal: order.subtotal || 0,
+      Discount: order.discount || 0,
+      Tax: order.tax || 0,
+      Shipping: order.shippingCharge || 0,
+      Total: order.total || 0,
+      Courier: order.courier || "",
+      Date: new Date(order.createdAt).toLocaleString(),
+      Returned: order.isReturned ? "Yes" : "No",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "POS Orders");
+
+    XLSX.writeFile(workbook, "pos_orders.xlsx");
+  };
+
   return (
     <div className="max-w-7xl p-6 mx-auto">
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
@@ -296,7 +335,7 @@ const AllPOSOrders = () => {
       </h2>
 
       {/* Search */}
-      <div className="flex justify-start mb-4">
+      <div className="flex justify-between mb-4">
         <div className="relative w-100">
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
@@ -309,6 +348,14 @@ const AllPOSOrders = () => {
             }}
             className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
+        </div>
+        <div className="">
+          <button
+            onClick={exportPOSOrdersToExcel}
+            className="px-4 py-2 bg-green-500 text-white rounded-xl shadow"
+          >
+            📥 Export POS Orders
+          </button>
         </div>
       </div>
 

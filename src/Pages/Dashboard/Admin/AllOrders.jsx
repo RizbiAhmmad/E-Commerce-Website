@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { FaPrint, FaSearch, FaTrashAlt } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import * as XLSX from "xlsx";
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -281,6 +282,41 @@ const AllOrders = () => {
     printWindow.print();
   };
 
+  const exportOrdersToExcel = () => {
+    if (!orders || orders.length === 0) return;
+
+    const dataForExcel = orders.map((order) => ({
+      OrderID: order._id,
+      CustomerName: order.fullName,
+      Email: order.email,
+      Phone: order.phone,
+      Address: order.address,
+      Shipping: order.shipping === "inside" ? "Inside Dhaka" : "Outside Dhaka",
+      PaymentMethod: order.payment,
+      CartItems: (order.cartItems || [])
+        .map(
+          (item) =>
+            `${item.productName} (Size: ${item.size || "-"}, Color: ${
+              item.color || "-"
+            }, Qty: ${item.quantity})`
+        )
+        .join("; "),
+      Subtotal: order.subtotal || 0,
+      ShippingCost: order.shippingCost || 0,
+      Discount: order.discount || 0,
+      Total: order.total || 0,
+      Status: order.status || "Pending",
+      Courier: order.courier || "-",
+      Date: new Date(order.createdAt).toLocaleString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
+
+    XLSX.writeFile(workbook, "all_orders.xlsx");
+  };
+
   return (
     <div className="max-w-7xl p-6 mx-auto">
       <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
@@ -329,6 +365,13 @@ const AllOrders = () => {
             <option value="cancelled">Cancelled</option>
             <option value="returned">Returned</option>
           </select>
+
+          <button
+            onClick={exportOrdersToExcel}
+            className="px-4 py-2 ml-2 bg-green-500 text-white rounded-xl shadow"
+          >
+            📥 Export All Orders
+          </button>
         </div>
       </div>
 
@@ -369,11 +412,11 @@ const AllOrders = () => {
                 <td className="px-2 py-3">{order.address}</td>
                 <td className="px-2 py-3">{order.shipping}</td>
                 <td className="px-2 py-3">
-  <div className="font-semibold">{order.payment}</div>
+                  <div className="font-semibold">{order.payment}</div>
 
-  {order.payment === "online" && (
-    <span
-      className={`text-xs px-2 py-1 rounded font-bold mt-1 inline-block
+                  {order.payment === "online" && (
+                    <span
+                      className={`text-xs px-2 py-1 rounded font-bold mt-1 inline-block
       ${
         order.paymentStatus === "paid"
           ? "bg-green-100 text-green-700"
@@ -381,11 +424,11 @@ const AllOrders = () => {
           ? "bg-red-100 text-red-700"
           : "bg-yellow-100 text-yellow-700"
       }`}
-    >
-      {(order.paymentStatus || "pending").toUpperCase()}
-    </span>
-  )}
-</td>
+                    >
+                      {(order.paymentStatus || "pending").toUpperCase()}
+                    </span>
+                  )}
+                </td>
 
                 <td className="px-2 py-3">
                   {order.cartItems.map((item) => (

@@ -186,9 +186,9 @@ const AllExpense = () => {
                   <button onClick={() => openEditModal(exp)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
-                  {/* <button onClick={() => handleDelete(exp._id)}>
+                  <button onClick={() => handleDelete(exp._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}
