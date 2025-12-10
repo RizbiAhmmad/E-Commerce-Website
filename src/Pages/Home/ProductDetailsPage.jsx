@@ -12,6 +12,11 @@ import { GrView } from "react-icons/gr";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import { Lens } from "@/components/lightswind/lens";
 
+const pushGTM = (data) => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(data);
+};
+
 const ProductDetailsPage = () => {
   const { user } = useContext(AuthContext);
   const axiosPublic = useAxiosPublic();
@@ -173,6 +178,28 @@ const ProductDetailsPage = () => {
     try {
       const res = await axiosPublic.post("/cart", cartData);
       if (res.data.insertedId) {
+        pushGTM({
+          event: "add_to_cart",
+          ecommerce: {
+            currency: "BDT",
+            value: Number(product.newPrice) * quantity,
+            items: [
+              {
+                item_id: product._id,
+                item_name: product.name,
+                price: Number(product.newPrice),
+                item_brand: getBrandName(product.brandId),
+                item_category: product.categoryName || "",
+                item_color: selectedColor,
+                item_size: selectedSize,
+                quantity: quantity,
+              },
+            ],
+          },
+        });
+
+        console.log("GTM Fired: add_to_cart (Product Details)");
+
         Swal.fire({
           icon: "success",
           title: "Added to cart successfully",

@@ -260,13 +260,13 @@ const SalesReport = () => {
 
             <button
               onClick={() => setFilter("range")}
-              className="px-3 py-1 bg-blue-600 text-white rounded"
+              className="px-3 py-2 bg-blue-600 text-white rounded"
             >
               Apply
             </button>
             <button
               onClick={exportToExcel}
-              className="px-4 py-2 bg-green-600 text-white rounded shadow"
+              className="px-4 py-2 bg-purple-600 text-white rounded shadow"
             >
               📥 Export to Excel
             </button>
@@ -356,7 +356,7 @@ const SalesReport = () => {
             </h3>
             <button
               onClick={exportSummaryToExcel}
-              className="px-4 py-2 bg-green-600 text-white rounded"
+              className="px-4 py-2 bg-purple-600 text-white rounded"
             >
               📥 Export Summary
             </button>

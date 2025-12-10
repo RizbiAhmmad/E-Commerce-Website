@@ -1,3 +1,4 @@
+import GTMPageView from "@/Pages/Dashboard/Admin/GTMPageView";
 import FloatingChatMenu from "@/Shared/FloatingChatMenu";
 import Footer from "@/Shared/Footer";
 import Navbar from "@/Shared/Navbar";
@@ -12,6 +13,7 @@ const MainLayout = () => {
     <div>
       <ScrollToTop />
       {!noHeaderFooter && <Navbar />}
+      <GTMPageView></GTMPageView>
       <Outlet />
       {!noHeaderFooter && <Footer />}
       <FloatingChatMenu />

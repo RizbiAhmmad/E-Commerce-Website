@@ -28,14 +28,13 @@ const CheckoutPage = () => {
   const [discount, setDiscount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const axiosPublic = useAxiosPublic();
-const [localCartItems, setLocalCartItems] = useState([]);
+  const [localCartItems, setLocalCartItems] = useState([]);
 
-useEffect(() => {
-  if (state?.cartItems) {
-    setLocalCartItems(state.cartItems);
-  }
-}, [state]);
-
+  useEffect(() => {
+    if (state?.cartItems) {
+      setLocalCartItems(state.cartItems);
+    }
+  }, [state]);
 
   useEffect(() => {
     if (user) {
@@ -43,6 +42,7 @@ useEffect(() => {
       setEmail(user.email || "");
     }
   }, [user]);
+
   useEffect(() => {
     const fetchShipping = async () => {
       try {
@@ -84,21 +84,21 @@ useEffect(() => {
       };
 
       axiosPublic.post("/incomplete-orders", incomplete);
-    }, 2000); 
+    }, 2000);
 
     return () => clearTimeout(timeout);
   }, [fullName, phone, email, district, address, shipping, payment, cartItems]);
 
-const isAllFreeShipping = cartItems.every((item) => {
-  const product = productsMap[item.productId];
-  return product?.freeShipping === true;
-});
+  const isAllFreeShipping = cartItems.every((item) => {
+    const product = productsMap[item.productId];
+    return product?.freeShipping === true;
+  });
 
   const shippingCost = isAllFreeShipping
-  ? 0
-  : shipping === "inside"
-  ? Number(shippingData.insideDhaka)
-  : Number(shippingData.outsideDhaka);
+    ? 0
+    : shipping === "inside"
+    ? Number(shippingData.insideDhaka)
+    : Number(shippingData.outsideDhaka);
 
   const subtotal = cartItems.reduce((total, item) => {
     const product = productsMap[item.productId];
@@ -106,6 +106,34 @@ const isAllFreeShipping = cartItems.every((item) => {
   }, 0);
 
   const total = subtotal + shippingCost - discount;
+
+  const formatGtmItems = () => {
+    return cartItems.map((item) => {
+      const product = productsMap[item.productId];
+      return {
+        item_id: item.productId,
+        item_name: product?.name,
+        price: product?.newPrice,
+        quantity: item.quantity,
+      };
+    });
+  };
+
+  useEffect(() => {
+    if (!cartItems.length) return;
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "begin_checkout",
+      ecommerce: {
+        currency: "BDT",
+        value: total,
+        items: formatGtmItems(),
+      },
+    });
+
+    console.log("GTM Fired: begin_checkout");
+  }, []);
 
   const handleApplyCoupon = async () => {
     const code = couponCode.trim();
@@ -132,13 +160,27 @@ const isAllFreeShipping = cartItems.every((item) => {
   };
 
   const handlePlaceOrder = async () => {
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "order_click",
+      ecommerce: {
+        currency: "BDT",
+        value: total,
+        items: formatGtmItems(),
+      },
+    });
+
+    console.log("GTM Fired: order_click");
+
     if (!fullName || !phone || !address) {
       return Swal.fire("Error", "Please fill all required fields", "error");
     }
+
     if (!/^01\d{9}$/.test(phone)) {
       return Swal.fire(
         "Invalid Phone",
-        "Please enter a valid 11-digit Bangladeshi phone number starting with 01",
+        "Please enter a valid 11-digit Bangladeshi phone number",
         "error"
       );
     }
@@ -214,6 +256,7 @@ const isAllFreeShipping = cartItems.every((item) => {
         ...orderData,
         _id: res.data.insertedId,
       };
+
       localStorage.setItem("pendingOrderId", res.data.insertedId);
 
       if (payment === "online") {
@@ -237,11 +280,13 @@ const isAllFreeShipping = cartItems.every((item) => {
 
       Swal.fire("Success!", "Order placed successfully", "success");
       navigate("/myorder", { state: { orderData: savedOrder } });
+
     } catch (err) {
       console.error(err);
       Swal.fire("Error", "Something went wrong", "error");
     }
   };
+
 
   return (
     <div className="min-h-screen dark:bg-black bg-gray-50 dark:text-white py-24">

@@ -130,7 +130,7 @@ const ProfitLossReport = () => {
   const fetchDateRangeStats = async () => {
     if (!startDate || !endDate) return;
 
-    // 1️⃣ profit from orders
+    // profit from orders
     const res1 = await axiosPublic.get("/profit-loss-report");
     const orders = res1.data.allOrders || [];
 
@@ -161,7 +161,7 @@ const ProfitLossReport = () => {
 
     const profit = sales - cost - discount + tax;
 
-    // 2️⃣ expense from backend
+    // expense from backend
     const res2 = await axiosPublic.get(
       `/expenses/report?startDate=${startDate}&endDate=${endDate}`
     );
@@ -175,13 +175,64 @@ const ProfitLossReport = () => {
     });
   };
 
+  const getFilteredExpenses = () => {
+    if (!expenseReport.allExpenses) return [];
+
+    const now = new Date();
+
+    return expenseReport.allExpenses.filter((exp) => {
+      const expDate = new Date(exp.date);
+
+      if (filter === "today") {
+        return expDate.toDateString() === now.toDateString();
+      }
+
+      if (filter === "week") {
+        const weekAgo = new Date();
+        weekAgo.setDate(now.getDate() - 7);
+        return expDate >= weekAgo;
+      }
+
+      if (filter === "month") {
+        return (
+          expDate.getMonth() === now.getMonth() &&
+          expDate.getFullYear() === now.getFullYear()
+        );
+      }
+
+      if (filter === "range" && startDate && endDate) {
+        const sd = new Date(startDate);
+        const ed = new Date(endDate);
+        return expDate >= sd && expDate <= ed;
+      }
+
+      return true;
+    });
+  };
+
+  const exportExpensesToExcel = () => {
+    const filteredExpenses = getFilteredExpenses().map((exp) => ({
+      Category: exp.category,
+      Name: exp.name,
+      Price: exp.price,
+      Note: exp.note,
+      Date: new Date(exp.date).toLocaleDateString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(filteredExpenses);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses Report");
+
+    XLSX.writeFile(workbook, "expenses_report.xlsx");
+  };
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h2 className="pb-4 mb-8 text-3xl font-bold text-center border-b-2 border-gray-200">
         💰 Profit, Expense & Net Profit Report
       </h2>
 
-      {/* 🔥 TOP TOTAL CARDS */}
+      {/* TOP TOTAL CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div className="bg-green-100 p-5 rounded-lg shadow text-center">
           <h3 className="text-gray-700 font-semibold">Total Profit</h3>
@@ -224,7 +275,7 @@ const ProfitLossReport = () => {
         </div>
       )}
 
-      {/* 🔥 PERIOD SUMMARY CARDS */}
+      {/* PERIOD SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div className="bg-green-50 p-4 rounded-lg shadow text-center">
           <h3 className="font-medium">
@@ -296,7 +347,7 @@ const ProfitLossReport = () => {
 
             <button
               onClick={exportToExcel}
-              className="px-4 py-1 bg-green-600 text-white rounded shadow"
+              className="px-4 py-1 bg-purple-600 text-white rounded shadow"
             >
               📥 Export
             </button>
@@ -388,6 +439,56 @@ const ProfitLossReport = () => {
               )}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* EXPENSE TABLE */}
+      <div className="bg-white shadow rounded-lg p-4 mt-10">
+        <div className="flex justify-start items-center space-x-4 mb-4">
+          <h3 className="text-lg font-semibold">Expenses</h3>
+          <button
+            onClick={exportExpensesToExcel}
+            className="px-4 py-1 bg-purple-600 text-white rounded shadow"
+          >
+            📥 Export Expenses
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="table-auto w-full border border-gray-200 text-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-2 border">Category</th>
+                <th className="px-4 py-2 border">Name</th>
+                <th className="px-4 py-2 border">Price</th>
+                <th className="px-4 py-2 border">Note</th>
+                <th className="px-4 py-2 border">Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {getFilteredExpenses().map((exp) => (
+                <tr key={exp._id}>
+                  <td className="px-4 py-2 border">{exp.category}</td>
+                  <td className="px-4 py-2 border">{exp.name}</td>
+                  <td className="px-4 py-2 border">৳{exp.price}</td>
+                  <td className="px-4 py-2 border">{exp.note}</td>
+                  <td className="px-4 py-2 border">
+                    {new Date(exp.date).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Total expense */}
+        <div className="text-right mt-4 font-bold text-red-600">
+          Total Expense: ৳
+          {getFilteredExpenses().reduce(
+            (sum, exp) => sum + Number(exp.price || 0),
+            0
+          )}
         </div>
       </div>
     </div>

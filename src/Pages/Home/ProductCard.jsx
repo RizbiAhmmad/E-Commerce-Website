@@ -12,6 +12,11 @@ import { AuthContext } from "@/provider/AuthProvider";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import { HiMiniShoppingBag } from "react-icons/hi2";
 
+const pushGTM = (data) => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(data);
+};
+
 const ProductCard = () => {
   const axiosPublic = useAxiosPublic();
   const fetchProducts = async () => {
@@ -51,16 +56,36 @@ const ProductCard = () => {
 
   const [visibleCount, setVisibleCount] = useState(20);
 
-  if (isLoading) return <Loading />;
-  if (isError)
-    return <p className="text-center text-red-500">{error.message}</p>;
-
   const getBrandName = (brandId) => {
     return brands?.find((b) => b._id === brandId)?.name || "Unknown";
   };
 
   const activeProducts =
     products?.filter((product) => product.status === "active") || [];
+
+  useEffect(() => {
+    if (!activeProducts.length) return;
+
+    pushGTM({
+      event: "view_item_list",
+      ecommerce: {
+        item_list_name: "All Products",
+        items: activeProducts.slice(0, visibleCount).map((p) => ({
+          item_id: p._id,
+          item_name: p.name,
+          price: Number(p.newPrice),
+          item_brand: getBrandName(p.brandId),
+          discount: p.oldPrice ? Number(p.oldPrice) - Number(p.newPrice) : 0,
+        })),
+      },
+    });
+
+    console.log("GTM Fired: view_item_list");
+  }, [visibleCount, activeProducts]);
+
+  if (isLoading) return <Loading />;
+  if (isError)
+    return <p className="text-center text-red-500">{error.message}</p>;
 
   const getAverageRating = (productId) => {
     if (!reviews) return 0;
@@ -173,6 +198,22 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
       const res = await axiosPublic.post("/cart", cartData);
       if (res.data.insertedId) {
+        pushGTM({
+          event: "add_to_cart",
+          ecommerce: {
+            items: [
+              {
+                item_id: product._id,
+                item_name: product.name,
+                price: Number(product.newPrice),
+                item_brand: brandName,
+                quantity: 1,
+              },
+            ],
+          },
+        });
+        console.log("GTM Fired: add to cart");
+
         Swal.fire({
           icon: "success",
           title: "Added to cart successfully",
@@ -193,6 +234,21 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
   const handleBuyNow = (e) => {
     e.stopPropagation();
 
+    pushGTM({
+      event: "begin_checkout",
+      ecommerce: {
+        items: [
+          {
+            item_id: product._id,
+            item_name: product.name,
+            price: Number(product.newPrice),
+            item_brand: brandName,
+            quantity: 1,
+          },
+        ],
+      },
+    });
+
     const buyItem = {
       productId: product._id,
       quantity: 1,
@@ -212,6 +268,22 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
   const handleAddToWhisper = async (e) => {
     e.stopPropagation();
+    pushGTM({
+      event: "add_to_wishlist",
+      ecommerce: {
+        items: [
+          {
+            item_id: product._id,
+            item_name: product.name,
+            price: Number(product.newPrice),
+            item_brand: brandName,
+          },
+        ],
+      },
+    });
+
+    console.log("GTM Fired: Add to wishlist");
+
     if (!user) {
       Swal.fire({
         icon: "error",
@@ -263,7 +335,23 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
   return (
     <div
-      onClick={() => navigate(`/product/${product._id}`)}
+      onClick={() => {
+        pushGTM({
+          event: "select_item",
+          ecommerce: {
+            items: [
+              {
+                item_id: product._id,
+                item_name: product.name,
+                price: Number(product.newPrice),
+                item_brand: brandName,
+              },
+            ],
+          },
+        });
+
+        navigate(`/product/${product._id}`);
+      }}
       className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer dark:hover:bg-cyan-600 hover:bg-cyan-100 hover:shadow-xl transition-all duration-300 overflow-hidden"
     >
       <div className="relative overflow-hidden rounded-md">
