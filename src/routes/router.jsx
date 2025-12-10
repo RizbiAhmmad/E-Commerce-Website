@@ -68,6 +68,7 @@ import LandingPage from "@/Pages/LandingPage/LandingPage";
 import OrderSuccess from "@/Pages/Dashboard/User/OrderSuccess";
 import ShippingSettings from "@/Pages/Dashboard/Admin/ShippingSettings";
 import OrderSuccessPage from "@/Pages/Dashboard/User/OrderSuccessPage";
+import GTMSettings from "@/Pages/Dashboard/Admin/GTMSettings";
 
 export const router = createBrowserRouter([
   {
@@ -345,6 +346,10 @@ export const router = createBrowserRouter([
       {
         path: "shippingSettings",
         element: <ShippingSettings />,
+      },
+      {
+        path: "gtmSettings",
+        element: <GTMSettings />,
       },
     ],
   },

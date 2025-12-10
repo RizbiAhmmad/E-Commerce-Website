@@ -37,7 +37,7 @@ import { BiSolidCoupon } from "react-icons/bi";
 import { BsCashCoin } from "react-icons/bs";
 import { IoIosCash } from "react-icons/io";
 import { FaSliders, FaUsersViewfinder } from "react-icons/fa6";
-import { SiBrandfolder } from "react-icons/si";
+import { SiBrandfolder, SiGoogleanalytics } from "react-icons/si";
 
 <style>
   {`
@@ -374,6 +374,14 @@ const Dashboard = () => {
                     className="flex items-center px-2 py-2 space-x-3"
                   >
                     <MdOutlineLocalShipping /> <span>Shipping Settings</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/gtmSettings"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <SiGoogleanalytics /> <span>GTM Settings</span>
                   </NavLink>
                 </li>
                 <li>
