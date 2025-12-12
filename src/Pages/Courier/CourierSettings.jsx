@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
-const mask = (s) => (s ? `${String(s).slice(0, 4)}••••` : "-");
+const mask = (s) => (s ? `${String(s).slice(0, 40)}` : "-");
 
 const CourierSettings = () => {
   const axiosPublic = useAxiosPublic();

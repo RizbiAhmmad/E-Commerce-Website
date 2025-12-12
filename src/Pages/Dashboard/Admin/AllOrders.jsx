@@ -13,6 +13,16 @@ const AllOrders = () => {
   const ordersPerPage = 20;
   const axiosPublic = useAxiosPublic();
 
+  const [showCourierModal, setShowCourierModal] = useState(false);
+const [selectedOrderId, setSelectedOrderId] = useState(null);
+
+const [deliveryType, setDeliveryType] = useState("");
+const [itemType, setItemType] = useState("");
+const [itemQuantity, setItemQuantity] = useState("");
+const [itemWeight, setItemWeight] = useState("");
+const [selectedCourierName, setSelectedCourierName] = useState("");
+
+
   // Fetch orders
   const fetchOrders = async () => {
     try {
@@ -98,6 +108,40 @@ const AllOrders = () => {
       console.error(error);
     }
   };
+
+  const submitCourierData = async () => {
+  if (!deliveryType || !itemType || !itemQuantity || !itemWeight) {
+    return Swal.fire("Error", "All fields are required!", "error");
+  }
+
+  try {
+    const res = await axiosPublic.patch(`/orders/${selectedOrderId}/courier`, {
+      courierName: selectedCourierName,
+      deliveryType: Number(deliveryType),
+      itemType: Number(itemType),
+      itemQuantity: Number(itemQuantity),
+      itemWeight: Number(itemWeight),
+    });
+
+    if (res.data.success) {
+      Swal.fire("Success", "Courier Assigned Successfully!", "success");
+      fetchOrders();
+      setShowCourierModal(false);
+
+      // Reset fields
+      setDeliveryType("");
+      setItemType("");
+      setItemQuantity("");
+      setItemWeight("");
+    } else {
+      Swal.fire("Error", res.data.message, "error");
+    }
+  } catch (error) {
+    console.log(error);
+    Swal.fire("Error", "Failed to assign courier", "error");
+  }
+};
+
 
   // Status badge classes
   const getStatusClasses = (status) => {
@@ -488,9 +532,14 @@ const AllOrders = () => {
                   <select
                     value={order.courier || ""}
                     onChange={(e) => {
-                      if (e.target.value)
-                        handleCourierAssign(order._id, e.target.value);
-                    }}
+  const val = e.target.value;
+  if (val) {
+    setSelectedOrderId(order._id);
+    setSelectedCourierName(val);
+    setShowCourierModal(true);
+  }
+}}
+
                     className="border border-gray-300 rounded px-2 py-1 text-xs"
                   >
                     <option value="">Assign Courier</option>
@@ -589,6 +638,75 @@ const AllOrders = () => {
             )}
           </tbody>
         </table>
+
+       {showCourierModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+
+      <h2 className="text-xl font-bold mb-4">Assign Courier</h2>
+
+      <p className="mb-2 text-gray-700">Courier: {selectedCourierName}</p>
+
+      {/* Delivery Type */}
+      <label className="block text-sm mb-1 font-semibold">Delivery Type</label>
+      <input
+        type="number"
+        value={deliveryType}
+        onChange={(e) => setDeliveryType(e.target.value)}
+        className="w-full border px-3 py-2 rounded mb-3"
+        placeholder="Enter Delivery Type (e.g. 48)"
+      />
+
+      {/* Item Type */}
+      <label className="block text-sm mb-1 font-semibold">Item Type</label>
+      <input
+        type="number"
+        value={itemType}
+        onChange={(e) => setItemType(e.target.value)}
+        className="w-full border px-3 py-2 rounded mb-3"
+        placeholder="Enter Item Type (e.g. 1)"
+      />
+
+      {/* Item Quantity */}
+      <label className="block text-sm mb-1 font-semibold">Quantity</label>
+      <input
+        type="number"
+        value={itemQuantity}
+        onChange={(e) => setItemQuantity(e.target.value)}
+        className="w-full border px-3 py-2 rounded mb-3"
+        placeholder="Enter Quantity"
+      />
+
+      {/* Item Weight */}
+      <label className="block text-sm mb-1 font-semibold">Weight (gm)</label>
+      <input
+        type="number"
+        value={itemWeight}
+        onChange={(e) => setItemWeight(e.target.value)}
+        className="w-full border px-3 py-2 rounded mb-4"
+        placeholder="Enter Weight (g)"
+      />
+
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={() => setShowCourierModal(false)}
+          className="px-4 py-2 bg-gray-300 rounded"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={submitCourierData}
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
       </div>
 
       <div className="mt-6 flex justify-center items-center gap-4">

@@ -80,7 +80,7 @@ const ProductCard = () => {
       },
     });
 
-    console.log("GTM Fired: view_item_list");
+    // console.log("GTM Fired: view_item_list");
   }, [visibleCount, activeProducts]);
 
   if (isLoading) return <Loading />;
@@ -212,7 +212,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
             ],
           },
         });
-        console.log("GTM Fired: add to cart");
+        // console.log("GTM Fired: add to cart");
 
         Swal.fire({
           icon: "success",
@@ -282,7 +282,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
       },
     });
 
-    console.log("GTM Fired: Add to wishlist");
+    // console.log("GTM Fired: Add to wishlist");
 
     if (!user) {
       Swal.fire({
