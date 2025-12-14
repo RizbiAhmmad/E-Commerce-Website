@@ -289,7 +289,7 @@ const ProductDetailsPage = () => {
               <div className="relative h-full">
                 <Lens
                   zoomFactor={1.5}
-                  lensSize={200}
+                  lensSize={150}
                   className="w-full h-full rounded-md relative"
                 >
                   <img

@@ -140,6 +140,29 @@ const SalesReport = () => {
     XLSX.writeFile(workbook, "product_summary.xlsx");
   };
 
+  const getSalesSummary = () => {
+    const filteredOrders = getFilteredOrders();
+
+    let price = 0;
+    let quantity = 0;
+    let total = 0;
+    let discount = 0;
+    let tax = 0;
+
+    filteredOrders.forEach((order) => {
+      discount += Number(order.discount || 0);
+      tax += Number(order.tax || 0);
+
+      (order.cartItems || []).forEach((p) => {
+        price += Number(p.price || 0);
+        quantity += Number(p.quantity || 0);
+        total += Number(p.price || 0) * Number(p.quantity || 0);
+      });
+    });
+
+    return { price, quantity, total, discount, tax };
+  };
+
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
       <h2 className="pb-4 mb-8 text-2xl md:text-3xl font-bold text-center border-b-2 border-gray-200">
@@ -347,6 +370,40 @@ const SalesReport = () => {
               )}
             </tbody>
           </table>
+
+          {/* SUMMARY TABLE */}
+          <div className="mt-6 overflow-x-auto">
+            <table className="table-auto w-full border border-gray-300 text-sm">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="border px-4 py-2 text-left">Summary</th>
+                  <th className="border px-4 py-2">Price</th>
+                  <th className="border px-4 py-2">Quantity</th>
+                  <th className="border px-4 py-2">Total</th>
+                  <th className="border px-4 py-2">Discount</th>
+                  <th className="border px-4 py-2">Tax</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {(() => {
+                  const sum = getSalesSummary();
+                  return (
+                    <tr className="font-semibold bg-white">
+                      <td className="border px-4 py-2">Grand Total</td>
+                      <td className="border px-4 py-2">৳{sum.price}</td>
+                      <td className="border px-4 py-2">{sum.quantity}</td>
+                      <td className="border px-4 py-2">৳{sum.total}</td>
+                      <td className="border px-4 py-2">৳{sum.discount}</td>
+                      <td className="border px-4 py-2">
+                        ৳{Number(sum.tax).toFixed(2)}
+                      </td>
+                    </tr>
+                  );
+                })()}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 mt-10">

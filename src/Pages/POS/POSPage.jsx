@@ -393,13 +393,13 @@ const POSPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-8">
       {/* Left: Products */}
-      <div className="md:col-span-2 border rounded p-4">
+      <div className="md:col-span-2 border rounded-xl p-4">
         <div className="relative w-full mb-4">
           <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             ref={searchInputRef}
-            className="border p-2 w-full rounded text-lg pl-10"
+            className="border p-2 w-full rounded-xl text-lg pl-10"
             placeholder="Search product by name or barcode..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -424,14 +424,14 @@ const POSPage = () => {
                 key={p._id}
                 onClick={() => openModal(p)}
                 disabled={Number(p.stock) === 0}
-                className={`border rounded p-2 flex flex-col items-center justify-center transition shadow
+                className={`border rounded-xl p-2 flex flex-col items-center justify-center transition shadow
           ${Number(p.stock) === 0 ? "bg-red-200 " : "hover:bg-cyan-100"}
         `}
               >
                 <img
                   src={p.images?.[0] || "https://via.placeholder.com/60"}
                   alt={p.name}
-                  className="w-30 h-30 object-cover mb-2 rounded"
+                  className="w-40 h-40 object-cover mb-2 rounded-xl"
                 />
                 <span className="text-sm font-bold text-center">{p.name}</span>
                 <span className="text-sm text-center">{p.barcode}</span>
@@ -448,34 +448,34 @@ const POSPage = () => {
       </div>
 
       {/* Right: POS Cart + Customer Info */}
-      <div className="border rounded p-4 flex flex-col">
+      <div className="border rounded-xl p-4 flex flex-col">
         <h2 className="font-semibold text-lg mb-4">POS Cart</h2>
 
         <div className="mb-4">
           <input
             type="text"
             placeholder="Customer Name"
-            className="border p-2 rounded w-full mb-2"
+            className="border p-2 rounded-xl w-full mb-2"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
           />
           <input
             type="number"
             placeholder="Number"
-            className="border p-2 rounded w-full mb-2"
+            className="border p-2 rounded-xl w-full mb-2"
             value={customerPhone}
             onChange={(e) => setCustomerPhone(e.target.value)}
           />
           <input
             type="text"
             placeholder="Address"
-            className="border p-2 rounded w-full mb-2"
+            className="border p-2 rounded-xl w-full mb-2"
             value={customerAddress}
             onChange={(e) => setCustomerAddress(e.target.value)}
           />
           {/* NEW DISTRICT SELECT */}
           <select
-            className="border p-2 rounded w-full mb-2"
+            className="border p-2 rounded-xl w-full mb-2"
             value={customerDistrict}
             onChange={(e) => setCustomerDistrict(e.target.value)}
           >
@@ -489,7 +489,7 @@ const POSPage = () => {
           {/* NEW NOTE FIELD */}
           <textarea
             placeholder="Additional Notes"
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded-xl w-full"
             value={customerNote}
             onChange={(e) => setCustomerNote(e.target.value)}
           />
@@ -622,10 +622,10 @@ const POSPage = () => {
         )}
       </div>
 
-      {/* Product Modal (Color & Size Styling Improved) */}
+      {/* Product Modal */}
       {modalOpen && selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="bg-white rounded p-6 max-w-xl w-full relative">
+          <div className="bg-white rounded-xl p-6 max-w-xl w-full relative">
             <button
               onClick={() => setModalOpen(false)}
               className="absolute top-4 right-4 text-red-500 font-bold"
@@ -639,7 +639,7 @@ const POSPage = () => {
                   key={idx}
                   src={img}
                   alt={selectedProduct.name}
-                  className="w-full h-60 object-cover rounded"
+                  className="w-40 h-40 object-cover rounded-xl"
                 />
               ))}
             </div>

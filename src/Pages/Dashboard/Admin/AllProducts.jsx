@@ -218,7 +218,7 @@ const AllProducts = () => {
     }));
   };
 
-  const filteredProducts = currentProductsData.filter(
+  const filteredProducts = [...currentProductsData].reverse().filter(
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.barcode?.toLowerCase().includes(searchTerm.toLowerCase())

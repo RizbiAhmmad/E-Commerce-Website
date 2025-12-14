@@ -179,19 +179,39 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, [role]);
 
-  const handleTrack = async () => {
-    if (!trackId.trim()) {
-      return Swal.fire("Error", "Enter Order ID", "warning");
-    }
+  // const handleTrack = async () => {
+  //   if (!trackId.trim()) {
+  //     return Swal.fire("Error", "Enter Order ID", "warning");
+  //   }
 
-    try {
-      const res = await axiosPublic.get(`/orders/${trackId}`);
-      setTrackingData(res.data);
-      setShowTrackBox(true);
-    } catch (error) {
-      Swal.fire("Not Found", "Invalid Order ID", "error");
-    }
-  };
+  //   try {
+  //     const res = await axiosPublic.get(`/orders/${trackId}`);
+  //     setTrackingData(res.data);
+  //     setShowTrackBox(true);
+  //   } catch (error) {
+  //     Swal.fire("Not Found", "Invalid Order ID", "error");
+  //   }
+  // };
+const handleTrack = async () => {
+  if (!trackId.trim()) {
+    return Swal.fire("Error", "Enter Order ID", "warning");
+  }
+
+  try {
+    const res = await axiosPublic.get(`/orders/${trackId}`);
+    const orderData = res.data;
+
+    // Close mobile menu & search
+    setIsOpen(false);
+    setSearchOpen(false);
+
+    // Navigate
+    navigate("/myorder", { state: { orderData } });
+  } catch (error) {
+    Swal.fire("Not Found", "Invalid Order ID", "error");
+  }
+};
+
 
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
@@ -553,7 +573,7 @@ const Navbar = () => {
                 </div>
               )}
 
-              <div className="mt-4 px-2 flex gap-2">
+              <div className="mt-4 px-2 flex gap-1">
                 <input
                   value={trackId}
                   onChange={(e) => setTrackId(e.target.value)}
@@ -568,7 +588,7 @@ const Navbar = () => {
 
                 <button
                   onClick={handleTrack}
-                  className="px-3 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700"
+                  className="px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700"
                 >
                   Track
                 </button>

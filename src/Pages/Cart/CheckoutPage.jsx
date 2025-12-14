@@ -486,6 +486,7 @@ const CheckoutPage = () => {
                   checked={payment === "online"}
                   onChange={() => setPayment("online")}
                   className="hidden"
+                  disabled
                 />
                 <FaCreditCard className="icon" />
                 <span>Online Payment</span>
