@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
@@ -8,6 +8,9 @@ const AddCoupon = () => {
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const axiosPublic = useAxiosPublic();
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [selectedProducts, setSelectedProducts] = useState([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -44,15 +47,15 @@ const AddCoupon = () => {
       );
 
       const imageUrl = uploadRes.data.secure_url;
-      const couponData = { ...formData, image: imageUrl };
+      const couponData = {
+        ...formData,
+        image: imageUrl,
+        productIds: selectedProducts,
+      };
 
-      const res = await axiosPublic.post(
-        "/coupons",
-        couponData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const res = await axiosPublic.post("/coupons", couponData, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (res.data.insertedId) {
         Swal.fire("Success", "Coupon added successfully!", "success");
@@ -66,6 +69,27 @@ const AddCoupon = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    axiosPublic.get("/products").then((res) => {
+      setProducts(res.data);
+    });
+  }, []);
+
+  const filteredProducts = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.barcode?.includes(search)
+  );
+  const toggleProduct = (id) => {
+    const productId = String(id);
+
+    setSelectedProducts((prev) =>
+      prev.includes(productId)
+        ? prev.filter((pid) => pid !== productId)
+        : [...prev, productId]
+    );
   };
 
   return (
@@ -118,6 +142,44 @@ const AddCoupon = () => {
           onChange={handleChange}
           className="border p-2 rounded"
         />
+
+        <div className="md:col-span-2">
+          <label className="block mb-2 font-semibold">
+            Select Products for Coupon
+          </label>
+
+          <input
+            type="text"
+            placeholder="Search by product name or barcode"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full p-2 mb-2 border rounded"
+          />
+
+          <div className="max-h-60 overflow-y-auto border rounded p-2 space-y-2">
+            {filteredProducts.map((product) => (
+              <label
+                key={product._id}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedProducts.includes(String(product._id))}
+                  onChange={() => toggleProduct(product._id)}
+                />
+
+                <span className="text-sm">
+                  {product.name}{" "}
+                  <span className="text-gray-400">({product.barcode})</span>
+                </span>
+              </label>
+            ))}
+          </div>
+
+          <p className="mt-1 text-sm text-gray-500">
+            Selected: {selectedProducts.length} product(s)
+          </p>
+        </div>
 
         <div>
           <label className="block mb-1 font-semibold">Image</label>
@@ -175,7 +237,7 @@ const AddCoupon = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded"
           >
-            {/* <option value="active">Active</option> */}
+            <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
         </div>

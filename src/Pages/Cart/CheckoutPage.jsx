@@ -135,29 +135,60 @@ const CheckoutPage = () => {
     console.log("GTM Fired: begin_checkout");
   }, []);
 
-  const handleApplyCoupon = async () => {
-    const code = couponCode.trim();
-    if (!code) {
-      return Swal.fire("Error!", "Please enter a coupon code", "error");
-    }
-    try {
-      const res = await axiosPublic.post("/apply-coupon", {
-        code,
-        totalAmount: subtotal,
-      });
+  // const handleApplyCoupon = async () => {
+  //   const code = couponCode.trim();
+  //   if (!code) {
+  //     return Swal.fire("Error!", "Please enter a coupon code", "error");
+  //   }
+  //   try {
+  //     const res = await axiosPublic.post("/apply-coupon", {
+  //       code,
+  //       totalAmount: subtotal,
+  //     });
 
-      const { discount: serverDiscount, code: applied } = res.data || {};
-      setDiscount(serverDiscount || 0);
-      setAppliedCoupon({ code: applied });
+  //     const { discount: serverDiscount, code: applied } = res.data || {};
+  //     setDiscount(serverDiscount || 0);
+  //     setAppliedCoupon({ code: applied });
 
-      Swal.fire("Success!", `Coupon applied: -৳${serverDiscount}`, "success");
-    } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to apply coupon";
-      setDiscount(0);
-      setAppliedCoupon(null);
-      Swal.fire("Invalid!", msg, "error");
-    }
-  };
+  //     Swal.fire("Success!", `Coupon applied: -৳${serverDiscount}`, "success");
+  //   } catch (error) {
+  //     const msg = error?.response?.data?.message || "Failed to apply coupon";
+  //     setDiscount(0);
+  //     setAppliedCoupon(null);
+  //     Swal.fire("Invalid!", msg, "error");
+  //   }
+  // };
+
+const handleApplyCoupon = async () => {
+  const code = couponCode.trim();
+  if (!code) {
+    return Swal.fire("Error!", "Please enter a coupon code", "error");
+  }
+
+  const cartProductIds = cartItems.map(item => String(item.productId));
+
+  try {
+    const res = await axiosPublic.post("/apply-coupon", {
+      code,
+      cartProductIds,
+      cartItems,
+      productsMap
+    });
+
+    const { discount, code: applied } = res.data;
+
+    setDiscount(discount || 0);
+    setAppliedCoupon({ code: applied });
+
+    Swal.fire("Success!", `Coupon applied: -৳${discount}`, "success");
+  } catch (error) {
+    const msg = error?.response?.data?.message || "Failed to apply coupon";
+    setDiscount(0);
+    setAppliedCoupon(null);
+    Swal.fire("Invalid!", msg, "error");
+  }
+};
+
 
   const handlePlaceOrder = async () => {
 
@@ -529,6 +560,8 @@ const CheckoutPage = () => {
               <span>-৳{discount}</span>
             </div>
           )}
+
+          
 
           <div className="flex justify-between font-bold text-lg">
             <span>Total</span>

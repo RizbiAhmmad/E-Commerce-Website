@@ -18,6 +18,10 @@ const AllCoupons = () => {
   const axiosPublic = useAxiosPublic();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [selectedProducts, setSelectedProducts] = useState([]);
+
   const [formData, setFormData] = useState({
     name: "",
     code: "",
@@ -35,6 +39,7 @@ const AllCoupons = () => {
 
   const openEditModal = (coupon) => {
     setSelectedCoupon(coupon);
+
     setFormData({
       name: coupon.name,
       code: coupon.code,
@@ -46,6 +51,9 @@ const AllCoupons = () => {
       status: coupon.status,
       image: coupon.image,
     });
+
+    setSelectedProducts(coupon.productIds || []);
+
     setNewImageFile(null);
     setIsModalOpen(true);
   };
@@ -77,13 +85,11 @@ const AllCoupons = () => {
         setUploading(false);
       }
 
-      await axiosPublic.put(
-        `/coupons/${selectedCoupon._id}`,
-        {
-          ...formData,
-          image: imageUrl,
-        }
-      );
+      await axiosPublic.put(`/coupons/${selectedCoupon._id}`, {
+        ...formData,
+        image: imageUrl,
+        productIds: selectedProducts,
+      });
 
       Swal.fire("Updated!", "Coupon has been updated.", "success");
       setIsModalOpen(false);
@@ -114,6 +120,21 @@ const AllCoupons = () => {
         });
       }
     });
+  };
+
+  useEffect(() => {
+    axiosPublic.get("/products").then((res) => {
+      setProducts(res.data);
+    });
+  }, []);
+  const toggleProduct = (id) => {
+    const productId = String(id);
+
+    setSelectedProducts((prev) =>
+      prev.includes(productId)
+        ? prev.filter((pid) => pid !== productId)
+        : [...prev, productId]
+    );
   };
 
   return (
@@ -150,7 +171,10 @@ const AllCoupons = () => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {coupons.map((coupon, index) => (
-              <tr key={coupon._id} className="transition duration-200 hover:bg-gray-50">
+              <tr
+                key={coupon._id}
+                className="transition duration-200 hover:bg-gray-50"
+              >
                 <td className="px-4 sm:px-6 py-4">{index + 1}</td>
                 <td className="px-4 sm:px-6 py-4">
                   <img
@@ -159,29 +183,39 @@ const AllCoupons = () => {
                     className="object-cover w-10 h-10 border rounded"
                   />
                 </td>
-                <td className="px-4 sm:px-6 py-4 font-semibold text-gray-800">{coupon.name}</td>
+                <td className="px-4 sm:px-6 py-4 font-semibold text-gray-800">
+                  {coupon.name}
+                </td>
                 <td className="px-4 sm:px-6 py-4 font-mono">{coupon.code}</td>
                 <td className="px-4 sm:px-6 py-4">
                   {coupon.discountType === "percentage"
                     ? `${coupon.discountValue}%`
-                    : `$${coupon.discountValue}`}
+                    : `৳ ${coupon.discountValue}`}
                 </td>
-                <td className="px-4 sm:px-6 py-4">{coupon.startDate?.slice(0, 10)}</td>
-                <td className="px-4 sm:px-6 py-4">{coupon.expiryDate?.slice(0, 10)}</td>
+                <td className="px-4 sm:px-6 py-4">
+                  {coupon.startDate?.slice(0, 10)}
+                </td>
+                <td className="px-4 sm:px-6 py-4">
+                  {coupon.expiryDate?.slice(0, 10)}
+                </td>
                 <td className="px-4 sm:px-6 py-4">
                   {coupon.status === "active" ? (
-                    <span className="px-2 py-1 text-xs text-green-800 bg-green-100 rounded">Active</span>
+                    <span className="px-2 py-1 text-xs text-green-800 bg-green-100 rounded">
+                      Active
+                    </span>
                   ) : (
-                    <span className="px-2 py-1 text-xs text-red-800 bg-red-100 rounded">Inactive</span>
+                    <span className="px-2 py-1 text-xs text-red-800 bg-red-100 rounded">
+                      Inactive
+                    </span>
                   )}
                 </td>
                 <td className="flex gap-2 sm:gap-4 px-4 sm:px-6 py-4">
                   <button onClick={() => openEditModal(coupon)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
-                  {/* <button onClick={() => handleDelete(coupon._id)}>
+                  <button onClick={() => handleDelete(coupon._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}
@@ -199,7 +233,7 @@ const AllCoupons = () => {
       {/* Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 px-4">
-          <div className="bg-white p-2 sm:p-4 rounded shadow-lg w-full max-w-md relative">
+          <div className="bg-white p-2 sm:p-4 rounded shadow-lg w-full max-w-xl relative">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-2 right-2 text-gray-500 text-xl"
@@ -208,66 +242,74 @@ const AllCoupons = () => {
             </button>
             <h3 className="mb-4 text-xl font-semibold">Edit Coupon</h3>
             <form onSubmit={handleUpdate} className="space-y-2 sm:space-y-3">
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleModalChange}
-                placeholder="Coupon Name"
-                className="w-full p-2 border rounded"
-                required
-              />
-              <input
-                type="text"
-                name="code"
-                value={formData.code}
-                onChange={handleModalChange}
-                placeholder="Coupon Code"
-                className="w-full p-2 border rounded"
-                required
-              />
-              <select
-                name="discountType"
-                value={formData.discountType}
-                onChange={handleModalChange}
-                className="w-full p-2 border rounded"
-              >
-                <option value="percentage">Percentage</option>
-                <option value="fixed">Fixed Amount</option>
-              </select>
-              <input
-                type="number"
-                name="discountValue"
-                value={formData.discountValue}
-                onChange={handleModalChange}
-                placeholder="Discount Value"
-                className="w-full p-2 border rounded"
-                required
-              />
-              <input
-                type="number"
-                name="minOrderAmount"
-                value={formData.minOrderAmount}
-                onChange={handleModalChange}
-                placeholder="Minimum Order Amount"
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleModalChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-              <input
-                type="date"
-                name="expiryDate"
-                value={formData.expiryDate}
-                onChange={handleModalChange}
-                className="w-full p-2 border rounded"
-                required
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleModalChange}
+                  placeholder="Coupon Name"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+                <input
+                  type="text"
+                  name="code"
+                  value={formData.code}
+                  onChange={handleModalChange}
+                  placeholder="Coupon Code"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="flex gap-2">
+                <select
+                  name="discountType"
+                  value={formData.discountType}
+                  onChange={handleModalChange}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="percentage">Percentage</option>
+                  <option value="fixed">Fixed Amount</option>
+                </select>
+
+                <input
+                  type="number"
+                  name="discountValue"
+                  value={formData.discountValue}
+                  onChange={handleModalChange}
+                  placeholder="Discount Value"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+                <input
+                  type="number"
+                  name="minOrderAmount"
+                  value={formData.minOrderAmount}
+                  onChange={handleModalChange}
+                  placeholder="Minimum Order Amount"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleModalChange}
+                  className="w-full p-2 border rounded"
+                  required
+                />
+                <input
+                  type="date"
+                  name="expiryDate"
+                  value={formData.expiryDate}
+                  onChange={handleModalChange}
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
 
               <div>
                 <label className="block text-sm font-medium">Image</label>
@@ -296,7 +338,55 @@ const AllCoupons = () => {
                     className="w-16 h-16 mt-2 rounded object-cover border"
                   />
                 )}
-                {uploading && <p className="text-sm text-gray-500 mt-1">Uploading...</p>}
+                {uploading && (
+                  <p className="text-sm text-gray-500 mt-1">Uploading...</p>
+                )}
+              </div>
+              <div>
+                <label className="block mb-2 font-semibold">
+                  Select Products for Coupon
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="Search by product name or barcode"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full p-2 mb-2 border rounded"
+                />
+
+                <div className="max-h-30 overflow-y-auto border rounded p-2 space-y-2">
+                  {products
+                    .filter(
+                      (p) =>
+                        p.name.toLowerCase().includes(search.toLowerCase()) ||
+                        p.barcode?.includes(search)
+                    )
+                    .map((product) => (
+                      <label
+                        key={product._id}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.includes(
+                            String(product._id)
+                          )}
+                          onChange={() => toggleProduct(product._id)}
+                        />
+                        <span className="text-sm">
+                          {product.name}{" "}
+                          <span className="text-gray-400">
+                            ({product.barcode})
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                </div>
+
+                <p className="mt-1 text-xs text-gray-500">
+                  Selected: {selectedProducts.length} product(s)
+                </p>
               </div>
 
               <select

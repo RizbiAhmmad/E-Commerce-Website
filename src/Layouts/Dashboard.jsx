@@ -52,14 +52,14 @@ import { SiBrandfolder, SiGoogleanalytics } from "react-icons/si";
       background: transparent;
     }
   `}
-</style>
-
+</style>;
 
 const Dashboard = () => {
   const { user } = useAuth();
   const axiosPublic = useAxiosPublic();
   const [userRole, setUserRole] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [footerInfo, setFooterInfo] = useState(null);
 
   useEffect(() => {
     if (user && user.email) {
@@ -71,6 +71,14 @@ const Dashboard = () => {
         .catch((error) => console.error("Error fetching user role:", error));
     }
   }, [axiosPublic, user]);
+
+  useEffect(() => {
+    axiosPublic.get("/footer").then((res) => {
+      if (res.data?.length > 0) {
+        setFooterInfo(res.data[0]);
+      }
+    });
+  }, [axiosPublic]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -116,6 +124,18 @@ const Dashboard = () => {
             {/* Admin Menu */}
             {userRole === "admin" && (
               <>
+                {footerInfo?.logo && (
+                  <div className="flex justify-center mb-6">
+                    <div className="p-4 bg-transparent rounded-full shadow-lg">
+                      <img
+                        src={footerInfo.logo}
+                        alt="Company Logo"
+                        className="object-contain w-10 h-10"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <li>
                   <NavLink to="/" className="flex items-center py-2 space-x-3">
                     <FaHome /> <span>Home</span>
@@ -187,7 +207,6 @@ const Dashboard = () => {
                     <FaPalette /> <span>Colors</span>
                   </NavLink>
                 </li>
-                
 
                 {/* POS & Orders */}
                 <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">

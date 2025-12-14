@@ -188,7 +188,7 @@ const SubcategoryProducts = () => {
         </div>
 
         {/* Info */}
-        <div className="mt-2 p-1">
+        <div className="mt-1 p-1">
           {/* <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
             {product.name}
           </h3> */}
@@ -213,7 +213,7 @@ const SubcategoryProducts = () => {
                 )}
               </span>
 
-              <div className="mt-1 min-h-[40px] flex items-center gap-2 flex-wrap">
+              <div className="mt-1 min-h-[30px] flex items-center gap-2 flex-wrap">
                 {hasDiscount ? (
                   <>
                     <span className="text-red-500 line-through">
@@ -237,7 +237,7 @@ const SubcategoryProducts = () => {
             >
               <button
                 onClick={handleAddToCart}
-                className="p-2 border border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
               >
                 <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
               </button>
@@ -330,7 +330,7 @@ const SubcategoryProducts = () => {
             <p className="text-center text-gray-600">No products found.</p>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {currentProducts.map((product) => (
                   <motion.div
                     key={product._id}

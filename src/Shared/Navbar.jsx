@@ -356,7 +356,7 @@ const handleTrack = async () => {
               value={trackId}
               onChange={(e) => setTrackId(e.target.value)}
               placeholder="Order ID"
-              className="px-3 py-1 text-sm outline-none dark:bg-gray-800"
+              className="px-3 py-2 text-sm outline-none dark:bg-gray-800"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   handleTrack();
@@ -365,7 +365,7 @@ const handleTrack = async () => {
             />
             <button
               onClick={handleTrack}
-              className="bg-cyan-500 text-white px-3 py-1 text-sm hover:bg-cyan-600"
+              className="bg-cyan-500 text-white px-3 py-2 text-sm hover:bg-cyan-600"
             >
               Track
             </button>
@@ -578,7 +578,7 @@ const handleTrack = async () => {
                   value={trackId}
                   onChange={(e) => setTrackId(e.target.value)}
                   placeholder="Order ID"
-                  className="flex-1 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white outline-none"
+                  className="flex-1 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white outline-none"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleTrack();
