@@ -12,6 +12,15 @@ const AllPOSOrders = () => {
   const axiosPublic = useAxiosPublic();
   const [couriers, setCouriers] = useState([]);
   const [footerInfo, setFooterInfo] = useState(null);
+  const [showCourierModal, setShowCourierModal] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+
+  const [deliveryType, setDeliveryType] = useState("");
+  const [itemType, setItemType] = useState("");
+  const [itemQuantity, setItemQuantity] = useState("");
+  const [itemWeight, setItemWeight] = useState("");
+  const [selectedCourierName, setSelectedCourierName] = useState("");
+  const [specialInstruction, setSpecialInstruction] = useState("");
 
   // Fetch couriers
   const fetchCouriers = async () => {
@@ -73,23 +82,38 @@ const AllPOSOrders = () => {
   };
 
   // courier assign
-  const handleCourierAssign = async (orderId, courierName) => {
-    if (!courierName) return;
+  const submitCourierData = async () => {
+    if (!deliveryType || !itemType || !itemQuantity || !itemWeight) {
+      return Swal.fire("Error", "All fields are required!", "error");
+    }
 
     try {
-      const res = await axiosPublic.patch(`/pos/orders/${orderId}/courier`, {
-        courierName,
-      });
+      const res = await axiosPublic.patch(
+        `/pos/orders/${selectedOrderId}/courier`,
+        {
+          courierName: selectedCourierName,
+          deliveryType: Number(deliveryType),
+          itemType: Number(itemType),
+          itemQuantity: Number(itemQuantity),
+          itemWeight: Number(itemWeight),
+          specialInstruction,
+        }
+      );
 
       if (res.data.success) {
-        Swal.fire("Updated!", "Courier assigned successfully.", "success");
+        Swal.fire("Success", "Courier Assigned Successfully!", "success");
         fetchOrders();
+        setShowCourierModal(false);
+
+        setDeliveryType("");
+        setItemType("");
+        setItemQuantity("");
+        setItemWeight("");
       } else {
-        Swal.fire("Error!", res.data.message, "error");
+        Swal.fire("Error", res.data.message, "error");
       }
     } catch (error) {
-      Swal.fire("Error!", "Failed to assign courier", "error");
-      console.error(error);
+      Swal.fire("Error", "Failed to assign courier", "error");
     }
   };
 
@@ -364,24 +388,24 @@ const AllPOSOrders = () => {
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
             <tr>
-              <th className="px-4 py-3">#</th>
-              <th className="px-4 py-3">Order ID</th>
-              <th className="px-4 py-3">Customer</th>
-              <th className="px-4 py-3">Payment</th>
-              <th className="px-4 py-3">Products</th>
-              <th className="px-4 py-3">Discount</th>
-              <th className="px-4 py-3">Total</th>
-              <th className="px-4 py-3">Courier</th>
-              <th className="px-4 py-3">Date & Time</th>
-              <th className="px-4 py-3">Actions</th>
+              <th className="px-3 py-3">#</th>
+              <th className="px-3 py-3">Order ID</th>
+              <th className="px-3 py-3">Customer</th>
+              <th className="px-3 py-3">Payment</th>
+              <th className="px-3 py-3">Products</th>
+              <th className="px-3 py-3">Discount</th>
+              <th className="px-3 py-3">Total</th>
+              <th className="px-3 py-3">Courier</th>
+              <th className="px-3 py-3">Date & Time</th>
+              <th className="px-3 py-3">Actions</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-200">
             {currentOrders.map((order, index) => (
               <tr key={order._id} className="hover:bg-gray-50">
-                <td className="px-4 py-3">{indexOfFirstOrder + index + 1}</td>
-                <td className="px-4 py-3 font-semibold">
+                <td className="px-3 py-3">{indexOfFirstOrder + index + 1}</td>
+                <td className="px-3 py-3 font-semibold">
                   OrderID: {order.orderId}
                   <br />
                   MongoID: {order._id}
@@ -393,7 +417,7 @@ const AllPOSOrders = () => {
                   )}
                 </td>
 
-                <td className="px-4 py-3">
+                <td className="px-3 py-3">
                   <div className="font-semibold text-gray-800">
                     {order.customer?.name}
                   </div>
@@ -405,11 +429,11 @@ const AllPOSOrders = () => {
                   <div className="text-gray-600">{order.customer?.phone}</div>
                 </td>
 
-                <td className="px-4 py-3 capitalize">
+                <td className="px-3 py-3 capitalize">
                   {order.payment?.method || "-"}
                 </td>
 
-                <td className="px-4 py-3">
+                <td className="px-3 py-3">
                   {order.cartItems?.map((item, i) => (
                     <div key={i} className="flex items-center gap-2 mb-2">
                       <img
@@ -428,16 +452,21 @@ const AllPOSOrders = () => {
                   ))}
                 </td>
 
-                <td className="px-4 py-3 font-bold">৳{order.discount}</td>
-                <td className="px-4 py-3 font-bold">৳{order.total}</td>
+                <td className="px-3 py-3 font-bold">৳{order.discount}</td>
+                <td className="px-3 py-3 font-bold">৳{order.total}</td>
 
                 {/* Courier */}
-                <td className="px-4 py-3">
+                <td className="px-3 py-3">
                   <select
                     value={order.courier || ""}
-                    onChange={(e) =>
-                      handleCourierAssign(order._id, e.target.value)
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val) {
+                        setSelectedOrderId(order._id);
+                        setSelectedCourierName(val);
+                        setShowCourierModal(true);
+                      }
+                    }}
                     className="border border-gray-300 rounded px-2 py-1 text-xs"
                   >
                     <option value="">Assign Courier</option>
@@ -449,7 +478,7 @@ const AllPOSOrders = () => {
                   </select>
                 </td>
 
-                <td className="px-4 py-3">
+                <td className="px-3 py-3">
                   {new Date(order.createdAt).toLocaleDateString()}{" "}
                   {new Date(order.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
@@ -458,7 +487,7 @@ const AllPOSOrders = () => {
                 </td>
 
                 {/* Actions */}
-                <td className="flex gap-4 px-4 py-3">
+                <td className="flex gap-4 px-3 py-3">
                   <button onClick={() => handlePrint(order)}>
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
@@ -487,6 +516,85 @@ const AllPOSOrders = () => {
             )}
           </tbody>
         </table>
+        {showCourierModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+              <h2 className="text-xl font-bold mb-4">Assign Courier</h2>
+
+              <p className="mb-2 text-gray-700">
+                Courier: {selectedCourierName}
+              </p>
+
+              <label className="block text-sm mb-1 font-semibold">
+                Delivery Type (24 / 48 hours)
+              </label>
+              <input
+                type="number"
+                value={deliveryType}
+                onChange={(e) => setDeliveryType(e.target.value)}
+                className="w-full border px-3 py-2 rounded mb-3"
+              />
+
+              <label className="block text-sm mb-1 font-semibold">
+                Item Type (1 for document, 2 for Parcel)
+              </label>
+              <input
+                type="number"
+                value={itemType}
+                onChange={(e) => setItemType(e.target.value)}
+                className="w-full border px-3 py-2 rounded mb-3"
+              />
+
+              <label className="block text-sm mb-1 font-semibold">
+                Quantity
+              </label>
+              <input
+                type="number"
+                value={itemQuantity}
+                onChange={(e) => setItemQuantity(e.target.value)}
+                className="w-full border px-3 py-2 rounded mb-3"
+              />
+
+              <label className="block text-sm mb-1 font-semibold">
+                Weight (KG)
+              </label>
+              <input
+                type="number"
+                value={itemWeight}
+                onChange={(e) => setItemWeight(e.target.value)}
+                className="w-full border px-3 py-2 rounded mb-4"
+              />
+
+              <label className="block text-sm mb-1 font-semibold">
+                Special Instruction (Optional)
+              </label>
+
+              <textarea
+                value={specialInstruction}
+                onChange={(e) => setSpecialInstruction(e.target.value)}
+                placeholder="e.g. Deliver before 5 PM / Call before delivery"
+                className="w-full border px-3 py-2 rounded mb-4"
+                rows={2}
+              />
+
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setShowCourierModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={submitCourierData}
+                  className="px-4 py-2 bg-blue-600 text-white rounded"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Pagination */}

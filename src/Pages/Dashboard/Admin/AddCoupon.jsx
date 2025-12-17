@@ -156,7 +156,7 @@ const AddCoupon = () => {
             className="w-full p-2 mb-2 border rounded"
           />
 
-          <div className="max-h-60 overflow-y-auto border rounded p-2 space-y-2">
+          <div className="max-h-50 overflow-y-auto border rounded p-2 space-y-2">
             {filteredProducts.map((product) => (
               <label
                 key={product._id}
