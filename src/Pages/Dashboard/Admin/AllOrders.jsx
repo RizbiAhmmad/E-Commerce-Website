@@ -21,7 +21,7 @@ const AllOrders = () => {
   const [itemQuantity, setItemQuantity] = useState("");
   const [itemWeight, setItemWeight] = useState("");
   const [selectedCourierName, setSelectedCourierName] = useState("");
-const [specialInstruction, setSpecialInstruction] = useState("");
+  const [specialInstruction, setSpecialInstruction] = useState("");
 
   // Fetch orders
   const fetchOrders = async () => {
@@ -698,17 +698,16 @@ const [specialInstruction, setSpecialInstruction] = useState("");
                 placeholder="Enter Weight (g)"
               />
               <label className="block text-sm mb-1 font-semibold">
-  Special Instruction (Optional)
-</label>
+                Special Instruction (Optional)
+              </label>
 
-<textarea
-  value={specialInstruction}
-  onChange={(e) => setSpecialInstruction(e.target.value)}
-  placeholder="e.g. Deliver before 5 PM / Call before delivery"
-  className="w-full border px-3 py-2 rounded mb-4"
-  rows={2}
-/>
-
+              <textarea
+                value={specialInstruction}
+                onChange={(e) => setSpecialInstruction(e.target.value)}
+                placeholder="e.g. Deliver before 5 PM / Call before delivery"
+                className="w-full border px-3 py-2 rounded mb-4"
+                rows={2}
+              />
 
               <div className="flex justify-end gap-2">
                 <button

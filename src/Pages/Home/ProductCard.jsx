@@ -69,7 +69,7 @@ const ProductCard = () => {
     pushGTM({
       event: "view_item_list",
       ecommerce: {
-        item_list_name: "All Products",
+        currency: "BDT",
         items: activeProducts.slice(0, visibleCount).map((p) => ({
           item_id: p._id,
           item_name: p.name,

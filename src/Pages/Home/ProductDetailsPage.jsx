@@ -31,6 +31,7 @@ const ProductDetailsPage = () => {
   // const [isFavorite, setIsFavorite] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   // Review form state
   const [reviewRating, setReviewRating] = useState(0);
@@ -80,6 +81,9 @@ const ProductDetailsPage = () => {
   useEffect(() => {
     axiosPublic.get("/brands").then((res) => setBrands(res.data));
   }, []);
+  useEffect(() => {
+    axiosPublic.get("/categories").then((res) => setCategories(res.data));
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -88,10 +92,39 @@ const ProductDetailsPage = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!product || !brands.length || !categories.length) return;
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "view_item",
+      ecommerce: {
+        currency: "BDT",
+        value: Number(product.newPrice),
+        items: [
+          {
+            item_id: product._id,
+            item_name: product.name,
+            item_brand: getBrandName(product.brandId),
+            item_category: getCategoryName(product.categoryId),
+            price: Number(product.newPrice),
+            discount: product.oldPrice
+              ? Number(product.oldPrice) - Number(product.newPrice)
+              : 0,
+            quantity: 1,
+          },
+        ],
+      },
+    });
+  }, [product, brands, categories]);
+
   if (!product) return <Loading />;
 
   const getBrandName = (id) =>
     brands.find((b) => b._id === id)?.name || "Unknown";
+
+  const getCategoryName = (id) =>
+    categories.find((c) => c._id === id)?.name || "Uncategorized";
 
   const oldPriceNum = Number(product.oldPrice);
   const newPriceNum = Number(product.newPrice);
