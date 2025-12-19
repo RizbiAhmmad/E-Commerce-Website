@@ -10,7 +10,7 @@ const AddCategory = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
-    status: "inactive",
+    status: "active",
   });
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -127,7 +127,7 @@ const AddCategory = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded"
           >
-            {/* <option value="active">Active</option> */}
+            <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
         </div>

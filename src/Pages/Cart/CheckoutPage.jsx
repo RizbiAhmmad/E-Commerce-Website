@@ -84,7 +84,7 @@ const CheckoutPage = () => {
       };
 
       axiosPublic.post("/incomplete-orders", incomplete);
-    }, 2000);
+    }, 1000);
 
     return () => clearTimeout(timeout);
   }, [fullName, phone, email, district, address, shipping, payment, cartItems]);
@@ -159,39 +159,37 @@ const CheckoutPage = () => {
   //   }
   // };
 
-const handleApplyCoupon = async () => {
-  const code = couponCode.trim();
-  if (!code) {
-    return Swal.fire("Error!", "Please enter a coupon code", "error");
-  }
+  const handleApplyCoupon = async () => {
+    const code = couponCode.trim();
+    if (!code) {
+      return Swal.fire("Error!", "Please enter a coupon code", "error");
+    }
 
-  const cartProductIds = cartItems.map(item => String(item.productId));
+    const cartProductIds = cartItems.map((item) => String(item.productId));
 
-  try {
-    const res = await axiosPublic.post("/apply-coupon", {
-      code,
-      cartProductIds,
-      cartItems,
-      productsMap
-    });
+    try {
+      const res = await axiosPublic.post("/apply-coupon", {
+        code,
+        cartProductIds,
+        cartItems,
+        productsMap,
+      });
 
-    const { discount, code: applied } = res.data;
+      const { discount, code: applied } = res.data;
 
-    setDiscount(discount || 0);
-    setAppliedCoupon({ code: applied });
+      setDiscount(discount || 0);
+      setAppliedCoupon({ code: applied });
 
-    Swal.fire("Success!", `Coupon applied: -৳${discount}`, "success");
-  } catch (error) {
-    const msg = error?.response?.data?.message || "Failed to apply coupon";
-    setDiscount(0);
-    setAppliedCoupon(null);
-    Swal.fire("Invalid!", msg, "error");
-  }
-};
-
+      Swal.fire("Success!", `Coupon applied: -৳${discount}`, "success");
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to apply coupon";
+      setDiscount(0);
+      setAppliedCoupon(null);
+      Swal.fire("Invalid!", msg, "error");
+    }
+  };
 
   const handlePlaceOrder = async () => {
-
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "order_click",
@@ -311,13 +309,11 @@ const handleApplyCoupon = async () => {
 
       Swal.fire("Success!", "Order placed successfully", "success");
       navigate("/myorder", { state: { orderData: savedOrder } });
-
     } catch (err) {
       console.error(err);
       Swal.fire("Error", "Something went wrong", "error");
     }
   };
-
 
   return (
     <div className="min-h-screen dark:bg-black bg-gray-50 dark:text-white py-24">
@@ -532,12 +528,36 @@ const handleApplyCoupon = async () => {
 
           {cartItems.map((item) => {
             const product = productsMap[item.productId];
+
             return (
-              <div key={item._id} className="flex justify-between mb-3 text-sm">
-                <span>
-                  {product?.name} × {item.quantity}
-                </span>
-                <span>৳{(product?.newPrice || 0) * item.quantity}</span>
+              <div
+                key={item.productId}
+                className="flex items-center justify-between gap-3 mb-4"
+              >
+                {/* LEFT: Image + Name */}
+                <div className="flex items-center gap-3 min-w-0">
+                  <img
+                    src={
+                      product?.images?.[0] || "https://via.placeholder.com/60"
+                    }
+                    alt={product?.name}
+                    className="w-14 h-14 rounded-lg object-cover border"
+                  />
+
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {product?.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Qty: {item.quantity}
+                    </p>
+                  </div>
+                </div>
+
+                {/* RIGHT: Price */}
+                <p className="text-sm font-semibold whitespace-nowrap">
+                  ৳{(product?.newPrice || 0) * item.quantity}
+                </p>
               </div>
             );
           })}
@@ -560,8 +580,6 @@ const handleApplyCoupon = async () => {
               <span>-৳{discount}</span>
             </div>
           )}
-
-          
 
           <div className="flex justify-between font-bold text-lg">
             <span>Total</span>

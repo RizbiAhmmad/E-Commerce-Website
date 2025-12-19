@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-// import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 
@@ -184,9 +184,9 @@ const AllReturnProducts = () => {
                   >
                     Set Return Info
                   </button>
-                  {/* <button onClick={() => handleDelete(order._id)}>
+                  <button onClick={() => handleDelete(order._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}

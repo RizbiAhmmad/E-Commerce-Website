@@ -7,7 +7,7 @@ const AddColor = () => {
   const [colorData, setColorData] = useState({
     name: "",
     hex: "#000000",
-    status: "inactive",
+    status: "active",
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -79,7 +79,7 @@ const AddColor = () => {
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded"
           >
-            {/* <option value="active">Active</option> */}
+            <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
         </div>

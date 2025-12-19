@@ -179,9 +179,9 @@ const AllFooterInfo = () => {
                   <button onClick={() => openEditModal(footer)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
-                  {/* <button onClick={() => handleDelete(footer._id)}>
+                  <button onClick={() => handleDelete(footer._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}

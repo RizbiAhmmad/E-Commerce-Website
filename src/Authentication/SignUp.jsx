@@ -97,7 +97,7 @@ const SignUp = () => {
           </div>
 
           {/* Photo URL */}
-          <div>
+          {/* <div>
             <label className="block font-medium text-white">Photo URL</label>
             <input
               type="text"
@@ -105,7 +105,7 @@ const SignUp = () => {
               placeholder="Profile image URL"
               className="w-full px-4 py-2 mt-1 text-white border rounded-lg bg-white/20 backdrop-blur-md border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
-          </div>
+          </div> */}
 
           {/* Email */}
           <div>

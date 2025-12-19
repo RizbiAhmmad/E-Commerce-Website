@@ -36,8 +36,7 @@ export default function Footer() {
     fetchFooterInfo();
   }, [axiosPublic]);
 
-  if (loading)
-    return <Loading></Loading>;
+  if (loading) return <Loading></Loading>;
   if (!footerInfo || Object.keys(footerInfo).length === 0)
     return <p className="text-center text-gray-400">No footer data found.</p>;
 
@@ -206,7 +205,17 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-white/30 mt-12 pt-6 text-center text-sm text-gray-300 relative z-10">
-        © {new Date().getFullYear()} {footerInfo.name}. All rights reserved.
+        © {new Date().getFullYear()} {footerInfo.name}. All rights reserved.{" "}
+        <span className="mx-1">|</span>
+        Powered by{" "}
+        <a
+          href="https://bangladeshiit.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-orange-400 hover:text-orange-500 font-semibold transition"
+        >
+          Bangladeshi IT
+        </a>
       </div>
     </footer>
   );

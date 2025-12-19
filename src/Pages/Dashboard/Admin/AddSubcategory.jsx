@@ -10,7 +10,7 @@ const AddSubcategory = () => {
   const [formData, setFormData] = useState({
     name: "",
     categoryId: "",
-    status: "inactive",
+    status: "active",
   });
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const AddSubcategory = () => {
             onChange={handleChange}
             className="w-full border p-2 rounded"
           >
-            {/* <option value="active">Active</option> */}
+            <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
         </div>

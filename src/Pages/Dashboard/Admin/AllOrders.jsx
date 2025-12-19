@@ -23,6 +23,10 @@ const AllOrders = () => {
   const [selectedCourierName, setSelectedCourierName] = useState("");
   const [specialInstruction, setSpecialInstruction] = useState("");
 
+  const [showFraudModal, setShowFraudModal] = useState(false);
+  const [selectedFraudData, setSelectedFraudData] = useState(null);
+  const [selectedOrderNo, setSelectedOrderNo] = useState("");
+
   // Fetch orders
   const fetchOrders = async () => {
     try {
@@ -562,7 +566,7 @@ const AllOrders = () => {
                   </button>
                 </td>
 
-                <td className="px-2 py-3">
+                {/* <td className="px-2 py-3">
                   {order.fraudCheckStatus && (
                     <div className="mb-1">
                       {order.fraudCheckStatus === "high" && (
@@ -590,33 +594,40 @@ const AllOrders = () => {
                   )}
 
                   {order.courierCheckStatus === "success" &&
-                    order.courierCheckData && (
-                      <div className="mt-1 p-1 bg-gray-50 border border-gray-200 rounded text-[10px]">
-                        <div className="text-blue-600 font-semibold">
-                          Courier Verified ✅
-                        </div>
-                        <div>
-                          Risk:{" "}
-                          <span className="font-semibold">
-                            {order.courierCheckData.risk || "N/A"}
-                          </span>
-                        </div>
-                        <div>
-                          Score:{" "}
-                          <span className="font-semibold">
-                            {order.courierCheckData.score || 0}
-                          </span>
-                        </div>
-                        {order.courierCheckData.message && (
-                          <div>
-                            Message:{" "}
-                            <span className="italic">
-                              {order.courierCheckData.message}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+  order.courierCheckData?.courierData && (
+    <div className="mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-[10px] space-y-1">
+      <div className="text-blue-600 font-semibold">
+        Courier History Found ✅
+      </div>
+
+      {Object.entries(order.courierCheckData.courierData).map(
+        ([courier, data]) =>
+          data?.total_parcel ? (
+            <div key={courier} className="border-t pt-1">
+              <div className="font-semibold capitalize">{courier}</div>
+              <div>Total: {data.total_parcel}</div>
+              <div>Success: {data.success_parcel}</div>
+              <div>Cancelled: {data.cancelled_parcel}</div>
+              <div>
+                Success Ratio:{" "}
+                <span
+                  className={`font-bold ${
+                    data.success_ratio >= 80
+                      ? "text-green-600"
+                      : data.success_ratio >= 50
+                      ? "text-yellow-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {data.success_ratio}%
+                </span>
+              </div>
+            </div>
+          ) : null
+      )}
+    </div>
+  )}
+
 
                   {order.courierCheckStatus === "failed" && (
                     <div className="text-red-500 text-[10px] font-semibold mt-1">
@@ -626,6 +637,27 @@ const AllOrders = () => {
 
                   {!order.fraudCheckStatus && !order.courierCheckStatus && (
                     <div className="text-gray-400 text-xs">Not Checked</div>
+                  )}
+                </td> */}
+
+                <td className="px-2 py-3">
+                  {order.courierCheckStatus === "success" ? (
+                    <button
+                      onClick={() => {
+                        setSelectedFraudData(order.courierCheckData);
+                        setSelectedOrderNo(order._id);
+                        setShowFraudModal(true);
+                      }}
+                      className="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                    >
+                      View Fraud Data
+                    </button>
+                  ) : order.courierCheckStatus === "failed" ? (
+                    <span className="text-red-500 text-xs font-semibold">
+                      Check Failed
+                    </span>
+                  ) : (
+                    <span className="text-gray-400 text-xs">Not Checked</span>
                   )}
                 </td>
               </tr>
@@ -695,7 +727,7 @@ const AllOrders = () => {
                 value={itemWeight}
                 onChange={(e) => setItemWeight(e.target.value)}
                 className="w-full border px-3 py-2 rounded mb-4"
-                placeholder="Enter Weight (g)"
+                placeholder="Enter Weight (kg)"
               />
               <label className="block text-sm mb-1 font-semibold">
                 Special Instruction (Optional)
@@ -722,6 +754,68 @@ const AllOrders = () => {
                   className="px-4 py-2 bg-blue-600 text-white rounded"
                 >
                   Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showFraudModal && selectedFraudData && (
+          <div className="fixed inset-0 bg-white bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 relative">
+              <h2 className="text-xl font-bold mb-2">Courier Fraud Report</h2>
+
+              <p className="text-sm text-gray-500 mb-4">
+                Order No: {selectedOrderNo}
+              </p>
+
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                {Object.entries(selectedFraudData.courierData || {}).map(
+                  ([courier, data]) =>
+                    data?.total_parcel ? (
+                      <div
+                        key={courier}
+                        className="border rounded p-3 bg-gray-50"
+                      >
+                        <div className="font-semibold capitalize mb-1">
+                          {courier}
+                        </div>
+
+                        <div className="text-sm">
+                          Total Parcel: {data.total_parcel}
+                        </div>
+                        <div className="text-sm">
+                          Success: {data.success_parcel}
+                        </div>
+                        <div className="text-sm">
+                          Cancelled: {data.cancelled_parcel}
+                        </div>
+
+                        <div className="text-sm mt-1">
+                          Success Ratio:{" "}
+                          <span
+                            className={`font-bold ${
+                              data.success_ratio >= 80
+                                ? "text-green-600"
+                                : data.success_ratio >= 50
+                                ? "text-yellow-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {data.success_ratio}%
+                          </span>
+                        </div>
+                      </div>
+                    ) : null
+                )}
+              </div>
+
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={() => setShowFraudModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Close
                 </button>
               </div>
             </div>

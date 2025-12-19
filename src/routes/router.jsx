@@ -69,6 +69,7 @@ import OrderSuccess from "@/Pages/Dashboard/User/OrderSuccess";
 import ShippingSettings from "@/Pages/Dashboard/Admin/ShippingSettings";
 import OrderSuccessPage from "@/Pages/Dashboard/User/OrderSuccessPage";
 import GTMSettings from "@/Pages/Dashboard/Admin/GTMSettings";
+import EditProfile from "@/Pages/Dashboard/Admin/EditProfile";
 
 export const router = createBrowserRouter([
   {
@@ -166,6 +167,10 @@ export const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile></Profile>,
+      },
+      {
+        path: "edit-profile",
+        element: <EditProfile></EditProfile>,
       },
       {
         path: "addCategory",

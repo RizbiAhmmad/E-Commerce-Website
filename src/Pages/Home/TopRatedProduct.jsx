@@ -9,8 +9,13 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { Typewriter } from "react-simple-typewriter";
 import { AuthContext } from "@/provider/AuthProvider";
-import { GrView } from "react-icons/gr";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import { HiMiniShoppingBag } from "react-icons/hi2";
+
+const pushGTM = (data) => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(data);
+};
 
 const TopRatedProduct = () => {
   const axiosPublic = useAxiosPublic();
@@ -28,6 +33,7 @@ const TopRatedProduct = () => {
     const { data } = await axiosPublic.get("/reviews");
     return data;
   };
+
   const {
     data: products,
     isLoading,
@@ -50,10 +56,6 @@ const TopRatedProduct = () => {
 
   const [visibleCount, setVisibleCount] = useState(20);
 
-  if (isLoading) return <Loading />;
-  if (isError)
-    return <p className="text-center text-red-500">{error.message}</p>;
-
   const getBrandName = (brandId) => {
     return brands?.find((b) => b._id === brandId)?.name || "Unknown";
   };
@@ -62,6 +64,30 @@ const TopRatedProduct = () => {
     products?.filter(
       (product) => product.variant === "top" && product.status === "active"
     ) || [];
+
+  useEffect(() => {
+    if (!activeProducts.length) return;
+
+    pushGTM({
+      event: "view_item_list",
+      ecommerce: {
+        currency: "BDT",
+        items: activeProducts.slice(0, visibleCount).map((p) => ({
+          item_id: p._id,
+          item_name: p.name,
+          price: Number(p.newPrice),
+          item_brand: getBrandName(p.brandId),
+          discount: p.oldPrice ? Number(p.oldPrice) - Number(p.newPrice) : 0,
+        })),
+      },
+    });
+
+    // console.log("GTM Fired: view_item_list");
+  }, [visibleCount, activeProducts]);
+
+  if (isLoading) return <Loading />;
+  if (isError)
+    return <p className="text-center text-red-500">{error.message}</p>;
 
   const getAverageRating = (productId) => {
     if (!reviews) return 0;
@@ -90,7 +116,7 @@ const TopRatedProduct = () => {
         />
       </motion.h1>
 
-      <div className="grid p-4 gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid p-4 gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {activeProducts.slice(0, visibleCount).map((product, index) => (
           <motion.div
             key={product._id}
@@ -169,10 +195,27 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
         email: user.email,
         productId: product._id,
         quantity: 1,
+        selected: true,
       };
 
       const res = await axiosPublic.post("/cart", cartData);
       if (res.data.insertedId) {
+        pushGTM({
+          event: "add_to_cart",
+          ecommerce: {
+            items: [
+              {
+                item_id: product._id,
+                item_name: product.name,
+                price: Number(product.newPrice),
+                item_brand: brandName,
+                quantity: 1,
+              },
+            ],
+          },
+        });
+        // console.log("GTM Fired: add to cart");
+
         Swal.fire({
           icon: "success",
           title: "Added to cart successfully",
@@ -190,8 +233,59 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
     }
   };
 
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
+
+    pushGTM({
+      event: "begin_checkout",
+      ecommerce: {
+        items: [
+          {
+            item_id: product._id,
+            item_name: product.name,
+            price: Number(product.newPrice),
+            item_brand: brandName,
+            quantity: 1,
+          },
+        ],
+      },
+    });
+
+    const buyItem = {
+      productId: product._id,
+      quantity: 1,
+      selectedColor: "",
+      selectedSize: "",
+    };
+
+    navigate("/checkout", {
+      state: {
+        cartItems: [buyItem],
+        productsMap: {
+          [product._id]: product,
+        },
+      },
+    });
+  };
+
   const handleAddToWhisper = async (e) => {
     e.stopPropagation();
+    pushGTM({
+      event: "add_to_wishlist",
+      ecommerce: {
+        items: [
+          {
+            item_id: product._id,
+            item_name: product.name,
+            price: Number(product.newPrice),
+            item_brand: brandName,
+          },
+        ],
+      },
+    });
+
+    // console.log("GTM Fired: Add to wishlist");
+
     if (!user) {
       Swal.fire({
         icon: "error",
@@ -243,13 +337,29 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
   return (
     <div
-      onClick={() => navigate(`/product/${product._id}`)}
+      onClick={() => {
+        pushGTM({
+          event: "select_item",
+          ecommerce: {
+            items: [
+              {
+                item_id: product._id,
+                item_name: product.name,
+                price: Number(product.newPrice),
+                item_brand: brandName,
+              },
+            ],
+          },
+        });
+
+        navigate(`/product/${product._id}`);
+      }}
       className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer dark:hover:bg-cyan-600 hover:bg-cyan-100 hover:shadow-xl transition-all duration-300 overflow-hidden"
     >
       <div className="relative overflow-hidden rounded-md">
         <motion.img
           whileHover={{ scale: 1.05 }}
-         transition={{ duration: 0.1, ease: "linear" }}
+          transition={{ duration: 0.1, ease: "linear" }}
           alt={product.name}
           src={product.images?.[0] || "https://via.placeholder.com/300"}
           className="w-full aspect-square object-cover rounded-md"
@@ -260,7 +370,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
             initial={{ rotateY: 90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
+            className="absolute top-0 left-0 md:top-2 md:left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
           >
             {discountPercent}% OFF
           </motion.div>
@@ -268,7 +378,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
         <div
           onClick={(e) => e.stopPropagation()}
-          className="p-2 rounded-full bg-gray-100 absolute top-2 right-2"
+          className="p-2 rounded-full bg-gray-100 absolute top-1 right-1 md:top-2 md:right-2"
         >
           {isFavorite ? (
             <IoIosHeart
@@ -285,91 +395,91 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
       </div>
 
       <div className="mt-1 p-1 min-w-0">
-              {/* <h3 className="text-[1.1rem] dark:text-white font-medium">
-                {product.name}
-              </h3> */}
-              <div className="mt-1 mb-1">
-                <h3
-                  className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
-                       leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
-                >
-                  {product.name}
-                </h3>
-              </div>
-      
-              {/* Brand & Review responsive */}
-              <div className="mt-1 md:flex md:items-center md:justify-between">
-                <p className="text-gray-400 text-[0.9rem] truncate">
-                  Brand:{" "}
-                  <span className="text-black dark:text-gray-100">{brandName}</span>
-                </p>
-      
-                <div className="flex items-center gap-1 mt-1 md:mt-0">
-                  {[...Array(5)].map((_, index) => {
-                    const starNumber = index + 1;
-                    return (
-                      <FaStar
-                        key={starNumber}
-                        className={`${
-                          starNumber <= Math.round(averageRating)
-                            ? "text-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                        size={14}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-      
-              <div className="flex items-end justify-between my-1 flex-wrap gap-2">
-                <div>
-                  <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
-                    {!product.stock || Number(product.stock) === 0 ? (
-                      <span className="text-red-500 font-semibold">Out of stock</span>
-                    ) : (
-                      <span className="text-green-500 font-semibold">In Stock</span>
-                    )}
+        {/* <h3 className="text-[1.1rem] dark:text-white font-medium">
+          {product.name}
+        </h3> */}
+        <div className="mt-1 mb-1">
+          <h3
+            className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
+                 leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
+          >
+            {product.name}
+          </h3>
+        </div>
+
+        {/* Brand & Review responsive */}
+        <div className="mt-1 hidden md:flex md:items-center md:justify-between">
+          <p className="text-gray-400 text-[0.9rem] truncate">
+            Brand:{" "}
+            <span className="text-black dark:text-gray-100">{brandName}</span>
+          </p>
+
+          <div className="flex items-center gap-1 mt-1 md:mt-0">
+            {[...Array(5)].map((_, index) => {
+              const starNumber = index + 1;
+              return (
+                <FaStar
+                  key={starNumber}
+                  className={`${
+                    starNumber <= Math.round(averageRating)
+                      ? "text-yellow-400"
+                      : "text-gray-300"
+                  }`}
+                  size={14}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex items-end justify-between flex-wrap gap-2">
+          <div>
+            <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
+              {!product.stock || Number(product.stock) === 0 ? (
+                <span className="text-red-500 font-semibold">Out of stock</span>
+              ) : (
+                <span className="text-green-500 font-semibold">In Stock</span>
+              )}
+            </span>
+
+            <div className="min-h-[30px] flex items-center gap-2 flex-wrap">
+              {hasDiscount ? (
+                <>
+                  <span className="text-red-500 line-through">
+                    {formatPrice(oldPriceNum)}
                   </span>
-      
-                  <div className="mt-1 min-h-[30px] flex items-center gap-2 flex-wrap">
-                    {hasDiscount ? (
-                      <>
-                        <span className="text-red-500 line-through">
-                          {formatPrice(oldPriceNum)}
-                        </span>
-                        <span className="font-bold text-black dark:text-white">
-                          {formatPrice(newPriceNum)}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="font-bold dark:text-white text-black">
-                        {formatPrice(newPriceNum)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-      
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-6 flex-shrink-0"
-                >
-                  <button
-                    onClick={handleAddToCart}
-                    className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-                  >
-                    <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
-                  </button>
-      
-                  <button
-                    onClick={() => navigate(`/product/${product._id}`)}
-                    className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-                  >
-                    <GrView className="text-[1.4rem] text-[#0FABCA] hover:text-white" />
-                  </button>
-                </div>
-              </div>
+                  <span className="font-bold text-black dark:text-white">
+                    {formatPrice(newPriceNum)}
+                  </span>
+                </>
+              ) : (
+                <span className="font-bold dark:text-white text-black">
+                  {formatPrice(newPriceNum)}
+                </span>
+              )}
             </div>
+          </div>
+
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-6 flex-shrink-0"
+          >
+            <button
+              onClick={handleAddToCart}
+              className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+            >
+              <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
+            </button>
+
+            <button
+              onClick={handleBuyNow}
+              className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+            >
+              <HiMiniShoppingBag className="text-[1.6rem] text-[#0FABCA] hover:text-white" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
