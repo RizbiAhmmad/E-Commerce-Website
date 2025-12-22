@@ -20,7 +20,7 @@ const AddCoupon = () => {
     minOrderAmount: "",
     startDate: "",
     expiryDate: "",
-    status: "inactive",
+    status: "active",
     image: "",
   });
 
@@ -245,7 +245,7 @@ const AddCoupon = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 md:col-span-2"
+          className="w-full px-4 py-2 text-white bg-cyan-500 rounded-xl hover:bg-cyan-600 md:col-span-2"
         >
           {loading ? "Submitting..." : "Add Coupon"}
         </button>
