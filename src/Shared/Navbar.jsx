@@ -17,6 +17,7 @@ import { IoIosArrowForward, IoMdHeartEmpty } from "react-icons/io";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import { FaBell } from "react-icons/fa";
+import { MdOutlineLocalShipping } from "react-icons/md";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -36,6 +37,7 @@ const Navbar = () => {
   const [trackId, setTrackId] = useState("");
   const [trackingData, setTrackingData] = useState(null);
   const [showTrackBox, setShowTrackBox] = useState(false);
+  const [trackOpen, setTrackOpen] = useState(false);
 
   const navigate = useNavigate();
   const [role, setRole] = useState(null);
@@ -192,26 +194,25 @@ const Navbar = () => {
   //     Swal.fire("Not Found", "Invalid Order ID", "error");
   //   }
   // };
-const handleTrack = async () => {
-  if (!trackId.trim()) {
-    return Swal.fire("Error", "Enter Order ID", "warning");
-  }
+  const handleTrack = async () => {
+    if (!trackId.trim()) {
+      return Swal.fire("Error", "Enter Order ID", "warning");
+    }
 
-  try {
-    const res = await axiosPublic.get(`/orders/${trackId}`);
-    const orderData = res.data;
+    try {
+      const res = await axiosPublic.get(`/orders/${trackId}`);
+      const orderData = res.data;
 
-    // Close mobile menu & search
-    setIsOpen(false);
-    setSearchOpen(false);
+      // Close mobile menu & search
+      setIsOpen(false);
+      setSearchOpen(false);
 
-    // Navigate
-    navigate("/myorder", { state: { orderData } });
-  } catch (error) {
-    Swal.fire("Not Found", "Invalid Order ID", "error");
-  }
-};
-
+      // Navigate
+      navigate("/myorder", { state: { orderData } });
+    } catch (error) {
+      Swal.fire("Not Found", "Invalid Order ID", "error");
+    }
+  };
 
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
@@ -220,7 +221,7 @@ const handleTrack = async () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="leading-tight text-lg md:text-xl items-center flex gap-1 md:gap-2 font-bold text-cyan-500 dark:text-cyan-300"
+          className="leading-tight text-lg md:text-xl items-center flex gap-1 md:gap-2 font-bold text-black dark:text-white"
         >
           {footerInfo?.logo && (
             <img
@@ -322,6 +323,17 @@ const handleTrack = async () => {
             className="md:hidden hover:text-cyan-500"
           >
             <FaSearch />
+          </button>
+
+          {/* Mobile Track Icon */}
+          <button
+            onClick={() => {
+              setTrackOpen(!trackOpen);
+              setSearchOpen(false); // search বন্ধ
+            }}
+            className="md:hidden hover:text-cyan-500"
+          >
+            <MdOutlineLocalShipping />
           </button>
 
           {/* Cart */}
@@ -484,6 +496,42 @@ const handleTrack = async () => {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {trackOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="md:hidden bg-white dark:bg-gray-900 border-t px-4 py-3"
+          >
+            <div className="flex gap-2">
+              <input
+                value={trackId}
+                onChange={(e) => setTrackId(e.target.value)}
+                placeholder="Enter Order ID"
+                className="flex-1 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-black dark:text-white outline-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleTrack();
+                    setTrackOpen(false);
+                  }
+                }}
+              />
+
+              <button
+                onClick={() => {
+                  handleTrack();
+                  setTrackOpen(false);
+                }}
+                className="px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700"
+              >
+                Track
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
@@ -572,32 +620,6 @@ const handleTrack = async () => {
                   ))}
                 </div>
               )}
-
-              <div className="mt-4 px-2 flex gap-1">
-                <input
-                  value={trackId}
-                  onChange={(e) => setTrackId(e.target.value)}
-                  placeholder="Order ID"
-                  className="flex-1 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white outline-none"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleTrack();
-                    }
-                  }}
-                />
-
-                <button
-                  onClick={handleTrack}
-                  className="px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700"
-                >
-                  Track
-                </button>
-              </div>
-
-              {/* Theme Toggle */}
-              {/* <div className="mt-3">
-          <ThemeChange />
-        </div> */}
 
               {/* Auth Buttons */}
               {user ? (

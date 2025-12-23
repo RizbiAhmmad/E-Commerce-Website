@@ -69,8 +69,17 @@ const OrderSuccessPage = () => {
     }
   };
 
+  const statusSteps = [
+    { key: "pending", label: "Pending", icon: FaBoxOpen },
+    { key: "processing", label: "Processing", icon: FaShippingFast },
+    { key: "shipped", label: "Shipped", icon: FaTruck },
+    { key: "delivered", label: "Delivered", icon: FaCheckCircle },
+  ];
+
+  const currentStepIndex = statusSteps.findIndex((s) => s.key === order.status);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-cyan-50 py-20 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-cyan-50 py-24 px-4">
       <motion.div
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -78,24 +87,51 @@ const OrderSuccessPage = () => {
         className="max-w-3xl mx-auto bg-white rounded-3xl shadow-2xl p-10"
       >
         {/* HEADER */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-12">
+          {/* SUCCESS ICON */}
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ duration: 0.5 }}
+            transition={{ type: "spring", stiffness: 120 }}
+            className="mx-auto w-24 h-24 rounded-full bg-green-100 flex items-center justify-center shadow-lg"
           >
-            <FaCheckCircle className="mx-auto text-green-500 text-7xl mb-4" />
+            <FaCheckCircle className="text-green-500 text-6xl" />
           </motion.div>
 
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-green-500 to-cyan-500 bg-clip-text text-transparent">
+          {/* TITLE */}
+          <h1 className="mt-6 text-4xl font-extrabold bg-gradient-to-r from-green-500 to-cyan-500 bg-clip-text text-transparent">
             Order Placed Successfully!
           </h1>
-          <p className="text-gray-600 mt-2 text-lg">
+
+          <p className="text-gray-600 mt-3 text-lg">
             Your order has been confirmed. Thank you for shopping with us 🎉
           </p>
-          <span className="inline-block mt-3 px-4 py-1 rounded-full bg-cyan-100 text-cyan-800 font-medium">
-            Order ID: {order._id}
-          </span>
+
+          {/* ORDER ID */}
+          <div className="mt-5 flex justify-center">
+            <span className="px-5 py-2 rounded-full bg-cyan-100 text-cyan-800 font-semibold tracking-wide">
+              Order ID: {order._id}
+            </span>
+          </div>
+
+          {/* ORDER STATUS BADGE */}
+          <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-5 flex justify-center"
+          >
+            <div
+              className={`flex items-center gap-2 px-5 py-2 rounded-full shadow-md text-sm font-semibold capitalize
+        ${getStatusColor(order.status)}
+      `}
+            >
+              {/* status dot */}
+              <span className="w-2.5 h-2.5 rounded-full bg-current opacity-70"></span>
+
+              <span>{order.status}</span>
+            </div>
+          </motion.div>
         </div>
 
         {/* CUSTOMER & ORDER INFO */}
@@ -108,19 +144,17 @@ const OrderSuccessPage = () => {
             value={order.address}
             className="sm:col-span-2"
           />
-          <Info icon={<FaTruck />} label="Shipping Method" value={order.shipping} />
+          <Info
+            icon={<FaTruck />}
+            label="Shipping Method"
+            value={order.shipping}
+          />
           <Info icon={<FaCreditCard />} label="Payment" value={order.payment} />
-          <Info icon={<FaShippingFast />} label="Shipping Charge" value={`৳${order.shippingCost || 0}`} />
-          <div className="flex items-center gap-2">
-            <span className="font-semibold">Status:</span>
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold capitalize ${getStatusColor(
-                order.status
-              )}`}
-            >
-              {order.status}
-            </span>
-          </div>
+          <Info
+            icon={<FaShippingFast />}
+            label="Shipping Charge"
+            value={`৳${order.shippingCost || 0}`}
+          />
 
           {/* Courier Info */}
           {order.courier && (
@@ -171,7 +205,8 @@ const OrderSuccessPage = () => {
                 <div className="flex-1">
                   <p className="font-semibold text-lg">{item.productName}</p>
                   <p className="text-gray-500 text-sm">
-                    Color: {item.color} | Size: {item.size} | Qty: {item.quantity}
+                    Color: {item.color} | Size: {item.size} | Qty:{" "}
+                    {item.quantity}
                   </p>
                 </div>
                 <p className="font-bold text-green-600 text-lg">
@@ -190,11 +225,67 @@ const OrderSuccessPage = () => {
           </span>
         </div>
 
+        {/* ORDER STATUS TIMELINE */}
+        <div className="mt-8">
+          <h3 className="text-xl font-bold mb-6 text-center text-gray-800">
+            Order Progress
+          </h3>
+          <div className="flex items-center justify-between">
+            {statusSteps.map((step, index) => {
+              const Icon = step.icon;
+              const isCompleted = index < currentStepIndex;
+              const isActive = index === currentStepIndex;
+
+              return (
+                <div key={step.key} className="flex-1 flex items-center">
+                  {/* Step */}
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`
+                w-12 h-12 rounded-full flex items-center justify-center
+                ${
+                  isCompleted
+                    ? "bg-green-500 text-white"
+                    : isActive
+                    ? "bg-cyan-500 text-white animate-pulse"
+                    : "bg-gray-200 text-gray-500"
+                }
+              `}
+                    >
+                      <Icon className="text-xl" />
+                    </div>
+                    <span
+                      className={`mt-2 text-sm font-semibold ${
+                        isCompleted || isActive
+                          ? "text-gray-800"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {step.label}
+                    </span>
+                  </div>
+
+                  {/* Line */}
+                  {index !== statusSteps.length - 1 && (
+                    <div
+                      className={`flex-1 h-1 mx-2 rounded ${
+                        index < currentStepIndex
+                          ? "bg-green-500"
+                          : "bg-gray-300"
+                      }`}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* ACTION BUTTON */}
         <div className="flex justify-center mt-10">
           <Link
             to="/"
-            className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-cyan-600 text-white font-semibold text-lg shadow-lg hover:bg-cyan-700 transition"
+            className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-cyan-600 text-white font-semibold text-lg shadow-lg hover:bg-cyan-700 transition"
           >
             <FaHome /> Continue Shopping
           </Link>

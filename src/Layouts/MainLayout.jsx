@@ -12,10 +12,12 @@ const MainLayout = () => {
   return (
     <div>
       <ScrollToTop />
-      {!noHeaderFooter && <Navbar />}
+      {/* {!noHeaderFooter && <Navbar />} */}
+      <Navbar />
       <GTMPageView></GTMPageView>
       <Outlet />
-      {!noHeaderFooter && <Footer />}
+      {/* {!noHeaderFooter && <Footer />} */}
+      <Footer />
       <FloatingChatMenu />
     </div>
   );

@@ -26,6 +26,7 @@ const AllOrders = () => {
   const [showFraudModal, setShowFraudModal] = useState(false);
   const [selectedFraudData, setSelectedFraudData] = useState(null);
   const [selectedOrderNo, setSelectedOrderNo] = useState("");
+  const [footerInfo, setFooterInfo] = useState(null);
 
   // Fetch orders
   const fetchOrders = async () => {
@@ -48,10 +49,20 @@ const AllOrders = () => {
       setCouriers([]);
     }
   };
+  const fetchFooterInfo = async () => {
+    try {
+      const res = await axiosPublic.get("/footer");
+      // যদি একটাই footer info থাকে
+      setFooterInfo(res.data[0]);
+    } catch (err) {
+      console.error("Footer info fetch failed", err);
+    }
+  };
 
   useEffect(() => {
     fetchOrders();
     fetchCouriers();
+    fetchFooterInfo();
   }, []);
 
   // Delete order
@@ -208,125 +219,189 @@ const AllOrders = () => {
 
   const handlePrint = (order) => {
     const printWindow = window.open("", "_blank");
+
     const htmlContent = `
-    <html>
-      <head>
-        <title>Order Invoice - ${order._id}</title>
-        <style>
-          body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-          h2 { text-align: center; margin-bottom: 20px; }
-          .section { margin-bottom: 20px; }
-          .info-line { margin: 4px 0; }
-          .items-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-          .items-table th, .items-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-          }
-          .items-table th { background-color: #f5f5f5; }
-          .total-box { margin-top: 20px; float: right; width: 320px; }
-          .total-box table { width: 100%; border-collapse: collapse; }
-          .total-box td { padding: 6px 8px; }
-          .total-box tr td:first-child { text-align: left; }
-          .total-box tr td:last-child { text-align: right; }
-          .grand-total {
-            font-weight: bold;
-            font-size: 18px;
-            border-top: 2px solid #333;
-            padding-top: 10px;
-          }
-          .footer { text-align: center; margin-top: 60px; color: gray; font-size: 12px; }
-        </style>
-      </head>
-      <body>
-        <h2>Order Invoice</h2>
+  <html>
+    <head>
+      <title>Invoice - ${order._id}</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #f5f5f5;
+        }
+        .invoice {
+          max-width: 800px;
+          margin: 20px auto;
+          background: #fff;
+          padding: 30px;
+          border: 1px solid #ddd;
+        }
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          border-bottom: 2px solid #000;
+          padding-bottom: 20px;
+        }
+        .logo img {
+          height: 70px;
+        }
+        .from {
+          text-align: right;
+          font-size: 13px;
+          line-height: 1.5;
+        }
+        .invoice-title {
+          margin: 30px 0 10px;
+          font-size: 26px;
+          font-weight: bold;
+        }
+        .bill-section {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 25px;
+        }
+        .bill-box {
+          font-size: 14px;
+          line-height: 1.6;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 14px;
+        }
+        th, td {
+          border: 1px solid #ddd;
+          padding: 10px;
+          text-align: left;
+        }
+        th {
+          background: #f2f2f2;
+        }
+        .total-box {
+          width: 300px;
+          margin-left: auto;
+          margin-top: 20px;
+        }
+        .total-box td {
+          padding: 8px;
+        }
+        .grand {
+          font-weight: bold;
+          font-size: 16px;
+          border-top: 2px solid #000;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 50px;
+          font-size: 13px;
+          color: gray;
+        }
+      </style>
+    </head>
 
-        <div class="section">
-          <div class="info-line"><strong>Order ID:</strong> ${order._id}</div>
-          <div class="info-line"><strong>Customer:</strong> ${
-            order.fullName
-          }</div>
-          <div class="info-line"><strong>Phone:</strong> ${order.phone}</div>
-          <div class="info-line"><strong>Email:</strong> ${order.email}</div>
-          <div class="info-line"><strong>Address:</strong> ${
-            order.address
-          }</div>
-          <div class="info-line"><strong>Shipping:</strong> ${
-            order.shipping === "inside" ? "Inside Dhaka" : "Outside Dhaka"
-          }</div>
-          <div class="info-line"><strong>Payment:</strong> ${
-            order.payment
-          }</div>
-          <div class="info-line"><strong>Date:</strong> ${new Date(
-            order.createdAt
-          ).toLocaleString()}</div>
-          <div class="info-line"><strong>Status:</strong> ${
-            order.status || "Pending"
-          }</div>
-        </div>
+    <body>
+      <div class="invoice">
 
-        <div class="section">
-          <table class="items-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Size</th>
-                <th>Color</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${order.cartItems
-                ?.map(
-                  (item) => `
-                <tr>
-                  <td>${item.productName}</td>
-                  <td>${item.size || "-"}</td>
-                  <td>${item.color || "-"}</td>
-                  <td>${item.quantity}</td>
-                  <td>৳${item.price}</td>
-                  <td>৳${(item.price * item.quantity).toFixed(2)}</td>
-                </tr>`
-                )
-                .join("")}
-            </tbody>
-          </table>
-
-          <div class="total-box">
-            <table>
-              <tr>
-                <td>Subtotal:</td>
-                <td>৳${order.subtotal?.toFixed(2) || "0.00"}</td>
-              </tr>
-              <tr>
-                <td>Shipping Cost:</td>
-                <td>৳${order.shippingCost?.toFixed(2) || "0.00"}</td>
-              </tr>
-              ${
-                order.discount > 0
-                  ? `<tr><td>Discount${
-                      order.coupon ? ` (${order.coupon})` : ""
-                    }:</td><td>- ৳${order.discount.toFixed(2)}</td></tr>`
-                  : ""
-              }
-              <tr class="grand-total">
-                <td>Grand Total:</td>
-                <td>৳${order.total?.toFixed(2) || "0.00"}</td>
-              </tr>
-            </table>
+        <!-- Header -->
+        <div class="header">
+          <div class="logo">
+            ${footerInfo?.logo ? `<img src="${footerInfo.logo}" />` : ""}
           </div>
-          <div style="clear:both;"></div>
+
+          <div class="from">
+            <strong>${footerInfo?.name || ""}</strong><br/>
+            ${footerInfo?.address || ""}<br/>
+            Phone: ${footerInfo?.phone || ""}<br/>
+            ${footerInfo?.email || ""}
+          </div>
         </div>
 
-        <div class="footer">
-          Thank you for shopping with us ❤️<br/>
-          <small>Printed on ${new Date().toLocaleString()}</small>
+        <div class="invoice-title">INVOICE</div>
+
+        <!-- Billing Info -->
+        <div class="bill-section">
+          <div class="bill-box">
+            <strong>Bill To</strong><br/>
+            ${order.fullName}<br/>
+            ${order.address}<br/>
+            Phone: ${order.phone}
+          </div>
+
+          <div class="bill-box">
+            <strong>Invoice No:</strong> ${order._id}<br/>
+            <strong>Date:</strong> ${new Date(
+              order.createdAt
+            ).toLocaleDateString()}<br/>
+            <strong>Payment:</strong> ${order.payment}<br/>
+            <strong>Shipping:</strong> ${
+              order.shipping === "inside" ? "Inside Dhaka" : "Outside Dhaka"
+            }
+          </div>
         </div>
-      </body>
-    </html>
+
+        <!-- Products -->
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Size</th>
+              <th>Color</th>
+              <th>Qty</th>
+              <th>Unit Price</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${order.cartItems
+              .map(
+                (item) => `
+              <tr>
+                <td>${item.productName}</td>
+                <td>${item.size || "-"}</td>
+                <td>${item.color || "-"}</td>
+                <td>${item.quantity}</td>
+                <td>৳${item.price}</td>
+                <td>৳${(item.price * item.quantity).toFixed(2)}</td>
+              </tr>
+            `
+              )
+              .join("")}
+          </tbody>
+        </table>
+
+        <!-- Totals -->
+        <table class="total-box">
+          <tr>
+            <td>Subtotal</td>
+            <td align="right">৳${order.subtotal || 0}</td>
+          </tr>
+          <tr>
+            <td>Shipping</td>
+            <td align="right">৳${order.shippingCost || 0}</td>
+          </tr>
+          ${
+            order.discount > 0
+              ? `<tr><td>Discount</td><td align="right">-৳${order.discount}</td></tr>`
+              : ""
+          }
+          <tr class="grand">
+            <td>Grand Total</td>
+            <td align="right">৳${order.total}</td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+          Thanks for choosing ${footerInfo?.name || "us"} ❤️<br/>
+          Printed on ${new Date().toLocaleString()}
+        </div>
+
+      </div>
+    </body>
+  </html>
   `;
+
     printWindow.document.write(htmlContent);
     printWindow.document.close();
     printWindow.focus();
@@ -565,80 +640,6 @@ const AllOrders = () => {
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
                   </button>
                 </td>
-
-                {/* <td className="px-2 py-3">
-                  {order.fraudCheckStatus && (
-                    <div className="mb-1">
-                      {order.fraudCheckStatus === "high" && (
-                        <span className="px-2 py-1 text-xs font-bold bg-red-100 text-red-700 rounded">
-                          HIGH RISK
-                        </span>
-                      )}
-                      {order.fraudCheckStatus === "medium" && (
-                        <span className="px-2 py-1 text-xs font-bold bg-yellow-100 text-yellow-700 rounded">
-                          MEDIUM
-                        </span>
-                      )}
-                      {order.fraudCheckStatus === "low" && (
-                        <span className="px-2 py-1 text-xs font-bold bg-green-100 text-green-700 rounded">
-                          SAFE
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {order.fraudMessage && (
-                    <div className="text-[10px] text-gray-500 mb-1">
-                      {order.fraudMessage}
-                    </div>
-                  )}
-
-                  {order.courierCheckStatus === "success" &&
-  order.courierCheckData?.courierData && (
-    <div className="mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-[10px] space-y-1">
-      <div className="text-blue-600 font-semibold">
-        Courier History Found ✅
-      </div>
-
-      {Object.entries(order.courierCheckData.courierData).map(
-        ([courier, data]) =>
-          data?.total_parcel ? (
-            <div key={courier} className="border-t pt-1">
-              <div className="font-semibold capitalize">{courier}</div>
-              <div>Total: {data.total_parcel}</div>
-              <div>Success: {data.success_parcel}</div>
-              <div>Cancelled: {data.cancelled_parcel}</div>
-              <div>
-                Success Ratio:{" "}
-                <span
-                  className={`font-bold ${
-                    data.success_ratio >= 80
-                      ? "text-green-600"
-                      : data.success_ratio >= 50
-                      ? "text-yellow-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {data.success_ratio}%
-                </span>
-              </div>
-            </div>
-          ) : null
-      )}
-    </div>
-  )}
-
-
-                  {order.courierCheckStatus === "failed" && (
-                    <div className="text-red-500 text-[10px] font-semibold mt-1">
-                      Courier Check Failed ❌
-                    </div>
-                  )}
-
-                  {!order.fraudCheckStatus && !order.courierCheckStatus && (
-                    <div className="text-gray-400 text-xs">Not Checked</div>
-                  )}
-                </td> */}
 
                 <td className="px-2 py-3">
                   {order.courierCheckStatus === "success" ? (

@@ -63,7 +63,7 @@ const NewArrival = () => {
   const activeProducts =
     products?.filter(
       (product) => product.variant === "new" && product.status === "active"
-    ) || [];
+    ).reverse() || [];
 
   useEffect(() => {
     if (!activeProducts.length) return;

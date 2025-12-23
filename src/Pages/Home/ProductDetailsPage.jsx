@@ -322,7 +322,7 @@ const ProductDetailsPage = () => {
               <div className="relative h-full">
                 <Lens
                   zoomFactor={1.5}
-                  lensSize={150}
+                  lensSize={2000}
                   className="w-full h-full rounded-md relative"
                 >
                   <img
@@ -346,7 +346,7 @@ const ProductDetailsPage = () => {
                         }
                         className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white z-20"
                       >
-                        <BiChevronLeft className="w-6 h-6" />
+                        <BiChevronLeft className="w-6 h-6 text-black" />
                       </button>
                       <button
                         onClick={() =>
@@ -354,9 +354,8 @@ const ProductDetailsPage = () => {
                             (prev) => (prev + 1) % product.images.length
                           )
                         }
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white z-20"
-                      >
-                        <BiChevronRight className="w-6 h-6" />
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white z-20">
+                        <BiChevronRight className="w-6 h-6 text-black" />
                       </button>
                     </>
                   )}

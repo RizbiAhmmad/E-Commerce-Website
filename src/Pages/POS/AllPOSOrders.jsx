@@ -210,15 +210,15 @@ const AllPOSOrders = () => {
           max-width: 80mm;
           padding: 10px;
           margin: 0 auto;
-          font-size: 11px;
-          line-height: 1.3;
+          font-size: 12px;
+          line-height: 1.5;
         }
 
         .center { text-align: center; }
         .bold { font-weight: bold; }
         .flex-between { display: flex; justify-content: space-between; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        td { padding: 3px 0; }
+        td { padding: 4px 0; }
         hr { border: none; border-top: 1px dashed #000; margin: 6px 0; }
       }
       </style>
