@@ -357,7 +357,7 @@ const AllOrders = () => {
               .map(
                 (item) => `
               <tr>
-                <td>${item.productName}</td>
+                <td>${item.productName} ${item.barcode ? `(${item.barcode})` : ""}</td>
                 <td>${item.size || "-"}</td>
                 <td>${item.color || "-"}</td>
                 <td>${item.quantity}</td>
@@ -393,8 +393,7 @@ const AllOrders = () => {
 
         <!-- Footer -->
         <div class="footer">
-          Thanks for choosing ${footerInfo?.name || "us"} ❤️<br/>
-          Printed on ${new Date().toLocaleString()}
+          Thank You ❤️<br/>
         </div>
 
       </div>

@@ -132,7 +132,7 @@ const CheckoutPage = () => {
       },
     });
 
-    console.log("GTM Fired: begin_checkout");
+    // console.log("GTM Fired: begin_checkout");
   }, []);
 
   // const handleApplyCoupon = async () => {
@@ -200,7 +200,7 @@ const CheckoutPage = () => {
       },
     });
 
-    console.log("GTM Fired: order_click");
+    // console.log("GTM Fired: order_click");
 
     if (!fullName || !phone || !address) {
       return Swal.fire("Error", "Please fill all required fields", "error");

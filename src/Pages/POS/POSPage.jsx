@@ -251,7 +251,7 @@ const POSPage = () => {
         change: change,
       },
       orderId: `#${Date.now()}`,
-      isReturned : false
+      isReturned: false,
     };
 
     try {
@@ -454,20 +454,26 @@ const POSPage = () => {
         <div className="mb-4">
           <input
             type="text"
+            name="name"
+            autoComplete="name"
             placeholder="Customer Name"
             className="border p-2 rounded-xl w-full mb-2"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
           />
           <input
-            type="number"
-            placeholder="Number"
+            type="tel"
+            name="tel"
+            autoComplete="tel"
+            placeholder="01XXXXXXXXX"
             className="border p-2 rounded-xl w-full mb-2"
             value={customerPhone}
             onChange={(e) => setCustomerPhone(e.target.value)}
           />
           <input
             type="text"
+            name="street-address"
+            autoComplete="street-address"
             placeholder="Address"
             className="border p-2 rounded-xl w-full mb-2"
             value={customerAddress}
@@ -916,9 +922,9 @@ const POSPage = () => {
               </div>
 
               {/* Company Name & Footer info */}
-              <h2 className="font-bold text-md text-center">
+              {/* <h2 className="font-bold text-md text-center">
                 {footerInfo?.name}
-              </h2>
+              </h2> */}
               <p className="text-xs text-center">{footerInfo?.address}</p>
               <p className="text-xs text-center">{footerInfo?.phone}</p>
             </div>
@@ -969,6 +975,7 @@ const POSPage = () => {
                 <div key={i} className="flex justify-between">
                   <div>
                     <div>{it.productName}</div>
+                    <div>{it.barCode}</div>
                     <div className="text-xs text-gray-500">
                       {it.color ? ` ${it.color}` : ""}
                       {it.size ? ` | ${it.size}` : ""}
@@ -1041,7 +1048,7 @@ const POSPage = () => {
             </div>
 
             <div className="text-center mt-4 text-sm">
-              <div>Thank You</div>
+              <div>Thank You ❤️</div>
               <div>Please Come Again</div>
             </div>
           </div>

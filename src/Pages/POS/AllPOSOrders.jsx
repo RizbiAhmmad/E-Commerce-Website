@@ -179,7 +179,7 @@ const AllPOSOrders = () => {
 
     const companyInfo = footerInfo
       ? `
-        <div class="center bold">${footerInfo?.name || ""}</div>
+     
         <div class="center" style="font-size:10px;">${
           footerInfo?.address || ""
         }</div>
@@ -230,15 +230,18 @@ const AllPOSOrders = () => {
         ${companyLogo}
         ${companyInfo}
 
-        <hr />
+ <hr />   
 
         <div><b>Order ID:</b> ${order.orderId}</div>
+               <div><b>Date:</b> ${new Date(
+                 order.createdAt
+               ).toLocaleString()}</div>
+ <hr />
         <div><b>Name:</b> ${order.customer?.name || ""}</div>
         <div><b>Phone:</b> ${order.customer?.phone || ""}</div>
         <div><b>Address:</b> ${order.customer?.address || ""}</div>
         <div><b>District:</b> ${order.customer?.district || ""}</div>
         <div><b>Note:</b> ${order.customer?.note || ""}</div>
-        <div><b>Date:</b> ${new Date(order.createdAt).toLocaleString()}</div>
 
         <hr />
 
@@ -248,6 +251,7 @@ const AllPOSOrders = () => {
               ?.map(
                 (item) => `
               <tr><td colspan="2"><b>${item.productName}</b></td></tr>
+              <tr><td colspan="2">${item.barCode}</td></tr>
               <tr>
                 <td>Qty: ${item.quantity} × ৳${item.price}</td>
                 <td style="text-align:right;">৳${

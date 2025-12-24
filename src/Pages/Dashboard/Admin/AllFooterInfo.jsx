@@ -239,7 +239,6 @@ const AllFooterInfo = () => {
                 onChange={handleChange}
                 placeholder="Company Name"
                 className="w-full p-2 border rounded"
-                required
               />
               <textarea
                 name="description"

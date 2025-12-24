@@ -130,7 +130,6 @@ const AddFooterInfo = () => {
           value={formData.name}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
-          required
         />
         <textarea
           name="description"

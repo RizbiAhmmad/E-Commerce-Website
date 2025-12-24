@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { GiCash } from "react-icons/gi";
 import { TbCashRegister, TbTruckReturn } from "react-icons/tb";
 import { RiFileDamageFill } from "react-icons/ri";
+import { motion } from "framer-motion";
 import {
   FaBalanceScale,
   FaChartBar,
@@ -125,15 +126,32 @@ const Dashboard = () => {
             {userRole === "admin" && (
               <>
                 {footerInfo?.logo && (
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 bg-transparent rounded-full shadow-lg">
-                      <img
-                        src={footerInfo.logo}
-                        alt="Company Logo"
-                        className="object-contain w-10 h-10"
-                      />
-                    </div>
-                  </div>
+                  // <div className="flex justify-center mb-6">
+                  //   <div className="p-4 bg-transparent rounded-full shadow-lg">
+                  //     <img
+                  //       src={footerInfo.logo}
+                  //       alt="Company Logo"
+                  //       className="object-contain w-10 h-10"
+                  //     />
+                  //   </div>
+                  // </div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-4"
+                  >
+                    {footerInfo?.logo && (
+                      <div className="w-full">
+                        <img
+                          src={footerInfo.logo}
+                          alt={footerInfo.name || "Logo"}
+                          className="h-15  w-auto object-contain rounded"
+                        />
+                      </div>
+                    )}
+                  </motion.div>
                 )}
 
                 <li>

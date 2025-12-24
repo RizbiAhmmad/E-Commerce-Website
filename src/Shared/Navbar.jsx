@@ -13,11 +13,11 @@ import {
 import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
 import { AuthContext } from "@/provider/AuthProvider";
-import { IoIosArrowForward, IoMdHeartEmpty } from "react-icons/io";
+import { IoMdHeartEmpty } from "react-icons/io";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import { FaBell } from "react-icons/fa";
-import { MdOutlineLocalShipping } from "react-icons/md";
+import { MdLocalShipping } from "react-icons/md";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -216,9 +216,9 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
-      <div className="max-w-7xl mx-auto flex justify-between items-center py-3">
+      <div className="max-w-7xl mx-auto flex justify-between items-center py-1">
         {/* Logo */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="leading-tight text-lg md:text-xl items-center flex gap-1 md:gap-2 font-bold text-black dark:text-white"
@@ -232,6 +232,24 @@ const Navbar = () => {
           )}
 
           <Link to="/">{footerInfo?.name}</Link>
+        </motion.div> */}
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center"
+        >
+          {footerInfo?.logo && (
+            <Link to="/" className="cursor-pointer">
+              <div className="bg-white p-1 rounded-full flex items-center">
+                <img
+                  src={footerInfo.logo}
+                  alt="Logo"
+                  className="h-15 md:h-18 w-auto object-contain"
+                />
+              </div>
+            </Link>
+          )}
         </motion.div>
 
         {/* Desktop Search + Categories */}
@@ -329,11 +347,11 @@ const Navbar = () => {
           <button
             onClick={() => {
               setTrackOpen(!trackOpen);
-              setSearchOpen(false); // search বন্ধ
+              setSearchOpen(false);
             }}
             className="md:hidden hover:text-cyan-500"
           >
-            <MdOutlineLocalShipping />
+            <MdLocalShipping />
           </button>
 
           {/* Cart */}

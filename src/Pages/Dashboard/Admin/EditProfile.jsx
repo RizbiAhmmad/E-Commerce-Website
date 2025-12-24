@@ -43,14 +43,13 @@ const EditProfile = () => {
       await updateUserProfile(name, imageUrl);
 
       Swal.fire("Success", "Profile updated successfully", "success");
-    navigate("/dashboard/profile");
+      navigate("/dashboard/profile");
     } catch (err) {
       console.error(err);
       Swal.fire("Error", "Profile update failed", "error");
     } finally {
       setLoading(false);
     }
-    
   };
 
   return (
@@ -76,11 +75,45 @@ const EditProfile = () => {
         /> */}
 
         {/* Image */}
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files[0])}
-        />
+        {/* Profile Image */}
+<div>
+  <label className="block mb-1 text-sm font-medium">Profile Image</label>
+
+  <div className="flex items-center gap-4">
+    <label
+      htmlFor="profileImage"
+      className="px-4 py-2 text-white bg-cyan-500 rounded cursor-pointer hover:bg-cyan-600"
+    >
+      Choose File
+    </label>
+
+    <span className="text-sm text-gray-600">
+      {imageFile ? imageFile.name : "Keep current image"}
+    </span>
+  </div>
+
+  <input
+    id="profileImage"
+    type="file"
+    accept="image/*"
+    onChange={(e) => setImageFile(e.target.files[0])}
+    className="hidden"
+  />
+
+  {/* Current / Preview Image */}
+  {(imageFile || user?.photoURL) && (
+    <img
+      src={
+        imageFile
+          ? URL.createObjectURL(imageFile)
+          : user?.photoURL
+      }
+      alt="profile"
+      className="w-20 h-20 mt-3 rounded object-cover border"
+    />
+  )}
+</div>
+
 
         <button
           disabled={loading}

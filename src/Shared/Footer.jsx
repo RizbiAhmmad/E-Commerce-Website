@@ -58,10 +58,29 @@ export default function Footer() {
             <img
               src={footerInfo.logo}
               alt={footerInfo.name || "Logo"}
-              className="h-12 w-auto rounded-lg shadow-lg"
+              className="h-15 md:h-18 w-auto "
             />
-            <h1 className="text-3xl font-bold">{footerInfo.name}</h1>
+            {/* <h1 className="text-3xl font-bold">{footerInfo.name}</h1> */}
           </div>
+
+          {/* Footer Logo */}
+          {/* <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-4"
+          >
+            {footerInfo?.logo && (
+              <div className="w-full">
+                <img
+                  src={footerInfo.logo}
+                  alt={footerInfo.name || "Logo"}
+                  className=" h-15 w-auto object-contain rounded"
+                />
+              </div>
+            )}
+          </motion.div> */}
+
           <p className="text-gray-200">{footerInfo.description}</p>
           <div className="flex gap-4 mt-2">
             {footerInfo.facebook && (
