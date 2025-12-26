@@ -281,16 +281,25 @@ const ProductDetailsPage = () => {
   const getEmbedUrl = (url) => {
     if (!url) return "";
 
-    // YouTube
-    if (url.includes("youtube") || url.includes("youtu.be")) {
-      if (url.includes("youtu.be")) {
-        const id = url.split("youtu.be/")[1].split("?")[0];
-        return `https://www.youtube.com/embed/${id}`;
-      }
-      return url.replace("watch?v=", "embed/");
+    // YouTube Shorts
+    if (url.includes("youtube.com/shorts/")) {
+      const id = url.split("youtube.com/shorts/")[1].split("?")[0];
+      return `https://www.youtube.com/embed/${id}`;
     }
 
-    // Facebook
+    // youtu.be
+    if (url.includes("youtu.be/")) {
+      const id = url.split("youtu.be/")[1].split("?")[0];
+      return `https://www.youtube.com/embed/${id}`;
+    }
+
+    // Normal YouTube
+    if (url.includes("youtube.com/watch")) {
+      const id = new URL(url).searchParams.get("v");
+      return `https://www.youtube.com/embed/${id}`;
+    }
+
+    // Facebook video
     if (url.includes("facebook.com")) {
       return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
         url
@@ -337,24 +346,28 @@ const ProductDetailsPage = () => {
                   {product.images?.length > 1 && (
                     <>
                       <button
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setCurrentImageIndex(
                             (prev) =>
                               (prev - 1 + product.images.length) %
                               product.images.length
-                          )
-                        }
-                        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white z-20"
+                          );
+                        }}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg z-20"
                       >
                         <BiChevronLeft className="w-6 h-6 text-black" />
                       </button>
+
                       <button
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setCurrentImageIndex(
                             (prev) => (prev + 1) % product.images.length
-                          )
-                        }
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg hover:bg-[#0FABCA] hover:text-white z-20">
+                          );
+                        }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white shadow-lg z-20"
+                      >
                         <BiChevronRight className="w-6 h-6 text-black" />
                       </button>
                     </>
@@ -571,13 +584,15 @@ const ProductDetailsPage = () => {
                       Product Video
                     </h2>
 
-                    <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-                      <iframe
-                        src={getEmbedUrl(product.videoUrl)}
-                        title="Product Video"
-                        allowFullScreen
-                        className="w-full h-full"
-                      ></iframe>
+                    <div className="mt-8 flex justify-center">
+                      <div className="w-full max-w-3xl aspect-video rounded-lg overflow-hidden shadow-lg">
+                        <iframe
+                          src={getEmbedUrl(product.videoUrl)}
+                          title="Product Video"
+                          allowFullScreen
+                          className="w-full h-full"
+                        ></iframe>
+                      </div>
                     </div>
                   </div>
                 )}

@@ -23,6 +23,7 @@ const LandingPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [shipping, setShipping] = useState(60);
   const navigate = useNavigate();
+  const [isOrdering, setIsOrdering] = useState(false);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -73,7 +74,7 @@ const LandingPage = () => {
     if (!sessionId) return;
 
     const timeout = setTimeout(() => {
-      if (!name && !phone && !address && !district) return; // skip empty
+      if (!name && !phone && !address && !district) return;
 
       const incompleteOrder = {
         sessionId,
@@ -107,7 +108,7 @@ const LandingPage = () => {
       };
 
       axiosPublic.post("/incomplete-orders", incompleteOrder);
-    }, 2000); // delay 2s
+    }, 1000);
 
     return () => clearTimeout(timeout);
   }, [
@@ -156,12 +157,22 @@ const LandingPage = () => {
   const getEmbedUrl = (url) => {
     if (!url) return "";
 
-    if (url.includes("youtube") || url.includes("youtu.be")) {
-      if (url.includes("youtu.be")) {
-        const id = url.split("youtu.be/")[1].split("?")[0];
-        return `https://www.youtube.com/embed/${id}`;
-      }
-      return url.replace("watch?v=", "embed/");
+    // YouTube Shorts
+    if (url.includes("youtube.com/shorts/")) {
+      const id = url.split("youtube.com/shorts/")[1].split("?")[0];
+      return `https://www.youtube.com/embed/${id}`;
+    }
+
+    // youtu.be
+    if (url.includes("youtu.be/")) {
+      const id = url.split("youtu.be/")[1].split("?")[0];
+      return `https://www.youtube.com/embed/${id}`;
+    }
+
+    // Normal YouTube
+    if (url.includes("youtube.com/watch")) {
+      const id = new URL(url).searchParams.get("v");
+      return `https://www.youtube.com/embed/${id}`;
     }
 
     if (url.includes("facebook.com")) {
@@ -174,6 +185,7 @@ const LandingPage = () => {
   };
 
   const handleOrderSubmit = async () => {
+    if (isOrdering) return;
     if (!name || !phone || !address || !district) {
       return Swal.fire("Error!", "Please fill all required fields", "error");
     }
@@ -185,6 +197,7 @@ const LandingPage = () => {
         "error"
       );
     }
+    setIsOrdering(true);
 
     const productData = {
       productId: product?._id,
@@ -225,7 +238,7 @@ const LandingPage = () => {
 
     try {
       const res = await axiosPublic.post("/orders", orderData);
-      const orderId = res.data.insertedId; // Assuming your backend returns insertedId
+      const orderId = res.data.insertedId;
       localStorage.setItem("pendingOrderId", orderId);
 
       const savedOrder = { ...orderData, _id: orderId };
@@ -256,6 +269,8 @@ const LandingPage = () => {
     } catch (err) {
       console.error(err);
       Swal.fire("Error!", "Something went wrong", "error");
+    } finally {
+      setIsOrdering(false);
     }
   };
 
@@ -267,7 +282,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-16">
+    <div className="max-w-6xl mx-auto py-24 space-y-16">
       {/* Header */}
       <motion.div
         variants={fadeUp}
@@ -279,7 +294,7 @@ const LandingPage = () => {
           <img
             src={footerInfo.logo}
             alt="Company Logo"
-            className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-4 rounded-full shadow-lg"
+            className="w-20 h-20 p-1 md:w-24 md:h-24 mx-auto mb-4 rounded-full shadow-lg"
           />
         )}
 
@@ -946,9 +961,22 @@ ${
                 {/* ORDER BUTTON */}
                 <button
                   onClick={handleOrderSubmit}
-                  className="w-full bg-cyan-500 text-white py-3 rounded-lg font-bold hover:bg-cyan-600 transition"
+                  disabled={isOrdering}
+                  className={`w-full py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition
+    ${
+      isOrdering
+        ? "bg-cyan-400 cursor-not-allowed"
+        : "bg-cyan-500 hover:bg-cyan-600"
+    } text-white`}
                 >
-                  {page.orderButtonText}
+                  {isOrdering ? (
+                    <>
+                      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      Processing...
+                    </>
+                  ) : (
+                    page.orderButtonText
+                  )}
                 </button>
               </div>
             </div>

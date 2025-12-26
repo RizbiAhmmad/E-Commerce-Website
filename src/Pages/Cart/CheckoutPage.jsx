@@ -29,6 +29,7 @@ const CheckoutPage = () => {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const axiosPublic = useAxiosPublic();
   const [localCartItems, setLocalCartItems] = useState([]);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   useEffect(() => {
     if (state?.cartItems) {
@@ -36,12 +37,41 @@ const CheckoutPage = () => {
     }
   }, [state]);
 
+  // useEffect(() => {
+  //   if (user) {
+  //     setFullName(user.displayName || "");
+  //     setEmail(user.email || "");
+  //   }
+  // }, [user]);
+
   useEffect(() => {
-    if (user) {
-      setFullName(user.displayName || "");
-      setEmail(user.email || "");
-    }
-  }, [user]);
+    if (!user?.email) return;
+
+    let isMounted = true;
+
+    const fetchUserProfile = async () => {
+      try {
+        const res = await axiosPublic.get(`/users/profile?email=${user.email}`);
+
+        if (!isMounted) return;
+
+        const profile = res.data || {};
+
+        setFullName(profile.name ?? user.displayName ?? "");
+        setEmail(profile.email ?? user.email ?? "");
+        setPhone(profile.phone ?? "");
+        setAddress(profile.address ?? "");
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUserProfile();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.email, axiosPublic]);
 
   useEffect(() => {
     const fetchShipping = async () => {
@@ -67,6 +97,7 @@ const CheckoutPage = () => {
   }, []);
 
   useEffect(() => {
+    if (isPlacingOrder) return;
     const sessionId = localStorage.getItem("checkoutSessionId");
     if (!sessionId) return;
 
@@ -202,7 +233,7 @@ const CheckoutPage = () => {
 
     // console.log("GTM Fired: order_click");
 
-    if (!fullName || !phone || !address) {
+    if (!fullName || !phone || !district || !address) {
       return Swal.fire("Error", "Please fill all required fields", "error");
     }
 
@@ -213,6 +244,7 @@ const CheckoutPage = () => {
         "error"
       );
     }
+    setIsPlacingOrder(true);
 
     const outOfStockItems = cartItems.filter((item) => {
       const product = productsMap[item.productId];
@@ -312,6 +344,8 @@ const CheckoutPage = () => {
     } catch (err) {
       console.error(err);
       Swal.fire("Error", "Something went wrong", "error");
+    } finally {
+      setIsPlacingOrder(false);
     }
   };
 
@@ -606,9 +640,23 @@ const CheckoutPage = () => {
           {/* ORDER BUTTON */}
           <button
             onClick={handlePlaceOrder}
-            className="mt-6 w-full bg-cyan-600 text-white py-3 rounded-xl hover:bg-cyan-700 shadow-lg transition"
+            disabled={isPlacingOrder}
+            className={`mt-6 w-full py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2
+    ${
+      isPlacingOrder
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-cyan-600 hover:bg-cyan-700"
+    }
+  `}
           >
-            Place Order
+            {isPlacingOrder ? (
+              <>
+                <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                Placing Order...
+              </>
+            ) : (
+              "Place Order"
+            )}
           </button>
         </div>
       </div>

@@ -305,14 +305,14 @@ const Navbar = () => {
           </div>
 
           {/* Search */}
-          <div className="flex items-center w-2/3 relative">
+          <div className="flex items-center w-full relative min-w-0">
             <FaSearch className="absolute left-3 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
-              placeholder="Search products by name or barcode..."
+              placeholder="Search by name or barcode"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full rounded-md bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none"
+              className="pl-10 pr-4 py-2 w-full min-w-0 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none"
             />
             {searchResults.length > 0 && (
               <div className="absolute top-12 left-0 w-full bg-white dark:bg-gray-800 border rounded-md shadow-md max-h-60 overflow-y-auto z-50">

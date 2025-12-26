@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/provider/AuthProvider";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
@@ -13,6 +13,30 @@ const EditProfile = () => {
   const [address, setAddress] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [phone, setPhone] = useState("");
+
+useEffect(() => {
+  if (!user?.email) return;
+
+  const fetchProfile = async () => {
+    try {
+      const res = await axiosPublic.get(
+        `/users/profile?email=${user.email}`
+      );
+
+      const profile = res.data;
+
+      setName(profile?.name || user.displayName || "");
+      setAddress(profile?.address || "");
+      setPhone(profile?.phone || "");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchProfile();
+}, [user]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,6 +62,7 @@ const EditProfile = () => {
         name,
         photoURL: imageUrl,
         address,
+        phone,
       });
 
       await updateUserProfile(name, imageUrl);
@@ -67,53 +92,59 @@ const EditProfile = () => {
         />
 
         {/* Address */}
-        {/* <input
+        <input
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder="Your Address"
           className="w-full border px-4 py-2 rounded"
-        /> */}
+        />
 
-        {/* Image */}
+        <input
+          value={phone}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^\d{0,11}$/.test(value)) setPhone(value);
+          }}
+          placeholder="Phone Number"
+          className="w-full border px-4 py-2 rounded"
+        />
+
         {/* Profile Image */}
-<div>
-  <label className="block mb-1 text-sm font-medium">Profile Image</label>
+        <div>
+          <label className="block mb-1 text-sm font-medium">
+            Profile Image
+          </label>
 
-  <div className="flex items-center gap-4">
-    <label
-      htmlFor="profileImage"
-      className="px-4 py-2 text-white bg-cyan-500 rounded cursor-pointer hover:bg-cyan-600"
-    >
-      Choose File
-    </label>
+          <div className="flex items-center gap-4">
+            <label
+              htmlFor="profileImage"
+              className="px-4 py-2 text-white bg-cyan-500 rounded cursor-pointer hover:bg-cyan-600"
+            >
+              Choose File
+            </label>
 
-    <span className="text-sm text-gray-600">
-      {imageFile ? imageFile.name : "Keep current image"}
-    </span>
-  </div>
+            <span className="text-sm text-gray-600">
+              {imageFile ? imageFile.name : "Keep current image"}
+            </span>
+          </div>
 
-  <input
-    id="profileImage"
-    type="file"
-    accept="image/*"
-    onChange={(e) => setImageFile(e.target.files[0])}
-    className="hidden"
-  />
+          <input
+            id="profileImage"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files[0])}
+            className="hidden"
+          />
 
-  {/* Current / Preview Image */}
-  {(imageFile || user?.photoURL) && (
-    <img
-      src={
-        imageFile
-          ? URL.createObjectURL(imageFile)
-          : user?.photoURL
-      }
-      alt="profile"
-      className="w-20 h-20 mt-3 rounded object-cover border"
-    />
-  )}
-</div>
-
+          {/* Current / Preview Image */}
+          {(imageFile || user?.photoURL) && (
+            <img
+              src={imageFile ? URL.createObjectURL(imageFile) : user?.photoURL}
+              alt="profile"
+              className="w-20 h-20 mt-3 rounded object-cover border"
+            />
+          )}
+        </div>
 
         <button
           disabled={loading}
