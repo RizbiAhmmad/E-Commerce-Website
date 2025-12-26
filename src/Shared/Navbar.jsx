@@ -9,6 +9,7 @@ import {
   FaTimes,
   FaChevronDown,
   FaHome,
+  FaShippingFast,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import ThemeChange from "@/components/ThemeChange";
@@ -17,7 +18,7 @@ import { IoMdHeartEmpty } from "react-icons/io";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import { FaBell } from "react-icons/fa";
-import { MdLocalShipping } from "react-icons/md";
+
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -38,6 +39,7 @@ const Navbar = () => {
   const [trackingData, setTrackingData] = useState(null);
   const [showTrackBox, setShowTrackBox] = useState(false);
   const [trackOpen, setTrackOpen] = useState(false);
+  const closeTimeout = useRef(null);
 
   const navigate = useNavigate();
   const [role, setRole] = useState(null);
@@ -181,19 +183,6 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, [role]);
 
-  // const handleTrack = async () => {
-  //   if (!trackId.trim()) {
-  //     return Swal.fire("Error", "Enter Order ID", "warning");
-  //   }
-
-  //   try {
-  //     const res = await axiosPublic.get(`/orders/${trackId}`);
-  //     setTrackingData(res.data);
-  //     setShowTrackBox(true);
-  //   } catch (error) {
-  //     Swal.fire("Not Found", "Invalid Order ID", "error");
-  //   }
-  // };
   const handleTrack = async () => {
     if (!trackId.trim()) {
       return Swal.fire("Error", "Enter Order ID", "warning");
@@ -245,7 +234,7 @@ const Navbar = () => {
                 <img
                   src={footerInfo.logo}
                   alt="Logo"
-                  className="h-15 md:h-18 w-auto object-contain"
+                  className="h-15 md:h-16 w-auto object-contain"
                 />
               </div>
             </Link>
@@ -255,54 +244,56 @@ const Navbar = () => {
         {/* Desktop Search + Categories */}
         <div className="hidden md:flex items-center  relative gap-4">
           {/* Categories */}
-          <div className="relative group">
-            <button
-              onMouseEnter={() => setOpenCategory(true)}
-              className="flex items-center text-xl gap-1 text-black dark:text-gray-200 hover:text-cyan-500"
+         <div
+  className="relative"
+  onMouseEnter={() => {
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    setOpenCategory(true);
+  }}
+  onMouseLeave={() => {
+    closeTimeout.current = setTimeout(() => setOpenCategory(false), 150); // 150ms delay
+  }}
+>
+  <button className="flex items-center text-xl gap-1 text-black dark:text-gray-200 hover:text-cyan-500">
+    Category <FaChevronDown className="text-sm mt-0.5" />
+  </button>
+
+  {openCategory && (
+    <div className="absolute left-0 top-full mt-2 bg-white dark:bg-gray-900 border shadow-xl w-[700px] rounded-md z-50 p-6">
+      <div className="grid grid-cols-4 gap-6">
+        {menuData.map((cat) => (
+          <div key={cat._id}>
+            <h3
+              className="font-bold text-black dark:text-white mb-3 cursor-pointer hover:text-cyan-500"
+              onClick={() => {
+                navigate(`/category/${cat._id}`);
+                setOpenCategory(false);
+              }}
             >
-              Category <FaChevronDown className="text-sm mt-0.5" />
-            </button>
+              {cat.name}
+            </h3>
 
-            {openCategory && (
-              <div
-                onMouseLeave={() => setOpenCategory(false)}
-                className="absolute left-0 top-full mt-2 bg-white dark:bg-gray-900 border shadow-xl w-[700px] rounded-md z-50 p-6"
-              >
-                <div className="grid grid-cols-4 gap-6">
-                  {menuData.map((cat) => (
-                    <div key={cat._id}>
-                      {/* Category (Bold) */}
-                      <h3
-                        className="font-bold text-black dark:text-white mb-3 cursor-pointer hover:text-cyan-500"
-                        onClick={() => {
-                          navigate(`/category/${cat._id}`);
-                          setOpenCategory(false);
-                        }}
-                      >
-                        {cat.name}
-                      </h3>
-
-                      {/* Subcategories */}
-                      <ul className="space-y-1">
-                        {cat.subcategories.map((sub) => (
-                          <li
-                            key={sub._id}
-                            className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 cursor-pointer"
-                            onClick={() => {
-                              navigate(`/subcategory/${sub._id}`);
-                              setOpenCategory(false);
-                            }}
-                          >
-                            {sub.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <ul className="space-y-1">
+              {cat.subcategories.map((sub) => (
+                <li
+                  key={sub._id}
+                  className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 cursor-pointer"
+                  onClick={() => {
+                    navigate(`/subcategory/${sub._id}`);
+                    setOpenCategory(false);
+                  }}
+                >
+                  {sub.name}
+                </li>
+              ))}
+            </ul>
           </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
+
 
           {/* Search */}
           <div className="flex items-center w-full relative min-w-0">
@@ -338,7 +329,7 @@ const Navbar = () => {
           {/* Mobile Search */}
           <button
             onClick={() => setSearchOpen(!searchOpen)}
-            className="md:hidden hover:text-cyan-500"
+            className="lg:hidden hover:text-cyan-500"
           >
             <FaSearch />
           </button>
@@ -351,7 +342,7 @@ const Navbar = () => {
             }}
             className="md:hidden hover:text-cyan-500"
           >
-            <MdLocalShipping />
+            <FaShippingFast />
           </button>
 
           {/* Cart */}
@@ -381,7 +372,7 @@ const Navbar = () => {
           </Link>
 
           {/* ORDER TRACKER */}
-          <div className="hidden md:flex items-center border rounded-xl overflow-hidden">
+          <div className="hidden lg:flex items-center border rounded-xl overflow-hidden">
             <input
               value={trackId}
               onChange={(e) => setTrackId(e.target.value)}
@@ -515,40 +506,39 @@ const Navbar = () => {
       </AnimatePresence>
 
       <AnimatePresence>
-        {trackOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-white dark:bg-gray-900 border-t px-4 py-3"
-          >
-            <div className="flex gap-2">
-              <input
-                value={trackId}
-                onChange={(e) => setTrackId(e.target.value)}
-                placeholder="Enter Order ID"
-                className="flex-1 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-black dark:text-white outline-none"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleTrack();
-                    setTrackOpen(false);
-                  }
-                }}
-              />
-
-              <button
-                onClick={() => {
-                  handleTrack();
-                  setTrackOpen(false);
-                }}
-                className="px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700"
-              >
-                Track
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+  {trackOpen && (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      className="lg:hidden bg-white dark:bg-gray-900 border-t px-4 py-3"
+    >
+      <div className="flex gap-2">
+        <input
+          value={trackId}
+          onChange={(e) => setTrackId(e.target.value)}
+          placeholder="Enter Order ID"
+          className="flex-1 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-black dark:text-white outline-none"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleTrack();
+              setTrackOpen(false);
+            }
+          }}
+        />
+        <button
+          onClick={() => {
+            handleTrack();
+            setTrackOpen(false);
+          }}
+          className="px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700"
+        >
+          Track
+        </button>
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
       {/* Mobile Menu */}
       <AnimatePresence>

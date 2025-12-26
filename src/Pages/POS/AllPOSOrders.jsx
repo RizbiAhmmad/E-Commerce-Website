@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Swal from "sweetalert2";
 import { FaTrashAlt, FaSearch, FaPrint } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import * as XLSX from "xlsx";
+import { AuthContext } from "@/provider/AuthProvider";
 
 const AllPOSOrders = () => {
+  const { user } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -61,6 +63,9 @@ const AllPOSOrders = () => {
 
   // delete POS order
   const handleDelete = (id) => {
+     if (user.role !== "admin") {
+      return Swal.fire("Permission Denied", "Only admins can delete orders", "error");
+    }
     Swal.fire({
       title: "Are you sure?",
       text: "This POS order will be deleted!",
@@ -363,9 +368,11 @@ const AllPOSOrders = () => {
       </h2>
 
       {/* Search */}
-      <div className="flex justify-between mb-4">
-        <div className="relative w-100">
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+      <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Search */}
+        <div className="relative w-full sm:max-w-md">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
           <input
             type="text"
             placeholder="Search by Order ID, Customer, Phone, Payment..."
@@ -377,14 +384,14 @@ const AllPOSOrders = () => {
             className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
         </div>
-        <div className="">
-          <button
-            onClick={exportPOSOrdersToExcel}
-            className="px-4 py-2 bg-green-500 text-white rounded-xl shadow"
-          >
-            📥 Export POS Orders
-          </button>
-        </div>
+
+        {/* Export Button */}
+        <button
+          onClick={exportPOSOrdersToExcel}
+          className="px-4 py-2 bg-green-500 text-white rounded-xl shadow w-full sm:w-auto"
+        >
+          📥 Export POS Orders
+        </button>
       </div>
 
       {/* Table */}
@@ -392,24 +399,24 @@ const AllPOSOrders = () => {
         <table className="w-full text-sm text-left table-auto">
           <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
             <tr>
-              <th className="px-3 py-3">#</th>
-              <th className="px-3 py-3">Order ID</th>
-              <th className="px-3 py-3">Customer</th>
-              <th className="px-3 py-3">Payment</th>
-              <th className="px-3 py-3">Products</th>
-              <th className="px-3 py-3">Discount</th>
-              <th className="px-3 py-3">Total</th>
-              <th className="px-3 py-3">Courier</th>
-              <th className="px-3 py-3">Date & Time</th>
-              <th className="px-3 py-3">Actions</th>
+              <th className="px-2 py-2">#</th>
+              <th className="px-2 py-2">Order ID</th>
+              <th className="px-2 py-2">Customer</th>
+              <th className="px-2 py-2">Payment</th>
+              <th className="px-2 py-2">Products</th>
+              <th className="px-2 py-2">Discount</th>
+              <th className="px-2 py-2">Total</th>
+              <th className="px-2 py-2">Courier</th>
+              <th className="px-2 py-2">Date & Time</th>
+              <th className="px-2 py-2">Actions</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-200">
             {currentOrders.map((order, index) => (
               <tr key={order._id} className="hover:bg-gray-50">
-                <td className="px-3 py-3">{indexOfFirstOrder + index + 1}</td>
-                <td className="px-3 py-3 font-semibold">
+                <td className="px-2 py-2">{indexOfFirstOrder + index + 1}</td>
+                <td className="px-2 py-2 font-semibold">
                   OrderID: {order.orderId}
                   <br />
                   MongoID: {order._id}
@@ -421,7 +428,7 @@ const AllPOSOrders = () => {
                   )}
                 </td>
 
-                <td className="px-3 py-3">
+                <td className="px-2 py-2">
                   <div className="font-semibold text-gray-800">
                     {order.customer?.name}
                   </div>
@@ -433,11 +440,11 @@ const AllPOSOrders = () => {
                   <div className="text-gray-600">{order.customer?.phone}</div>
                 </td>
 
-                <td className="px-3 py-3 capitalize">
+                <td className="px-2 py-2 capitalize">
                   {order.payment?.method || "-"}
                 </td>
 
-                <td className="px-3 py-3">
+                <td className="px-2 py-2">
                   {order.cartItems?.map((item, i) => (
                     <div key={i} className="flex items-center gap-2 mb-2">
                       <img
@@ -456,11 +463,11 @@ const AllPOSOrders = () => {
                   ))}
                 </td>
 
-                <td className="px-3 py-3 font-bold">৳{order.discount}</td>
-                <td className="px-3 py-3 font-bold">৳{order.total}</td>
+                <td className="px-2 py-2 font-bold">৳{order.discount}</td>
+                <td className="px-2 py-2 font-bold">৳{order.total}</td>
 
                 {/* Courier */}
-                <td className="px-3 py-3">
+                <td className="px-2 py-2">
                   <select
                     value={order.courier || ""}
                     onChange={(e) => {
@@ -482,7 +489,7 @@ const AllPOSOrders = () => {
                   </select>
                 </td>
 
-                <td className="px-3 py-3">
+                <td className="px-2 py-2">
                   {new Date(order.createdAt).toLocaleDateString()}{" "}
                   {new Date(order.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
@@ -491,7 +498,7 @@ const AllPOSOrders = () => {
                 </td>
 
                 {/* Actions */}
-                <td className="flex gap-4 px-3 py-3">
+                <td className="flex gap-4 px-2 py-2">
                   <button onClick={() => handlePrint(order)}>
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
@@ -530,7 +537,7 @@ const AllPOSOrders = () => {
               </p>
 
               <label className="block text-sm mb-1 font-semibold">
-                Delivery Type (24 / 48 hours)
+                Delivery Type (12 / 48 hours)
               </label>
               <input
                 type="number"

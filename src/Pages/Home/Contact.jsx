@@ -35,7 +35,7 @@ const Contact = () => {
         <motion.img
           src={footerInfo.logo}
           alt="Company Logo"
-          className="w-24 h-24 mx-auto mb-4 rounded-full shadow-lg"
+          className="w-24 h-24 mx-auto mb-4 "
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
         />
@@ -84,12 +84,14 @@ const Contact = () => {
         <div className="overflow-hidden rounded-2xl shadow-lg">
           <iframe
             title="Company Location"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.8430431062523!2d90.37425557450427!3d23.750885988671!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755bf57a540c4a1%3A0xabd58adf33a9d8c1!2sDhaka!5e0!3m2!1sen!2sbd!4v1693669144491!5m2!1sen!2sbd"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.142086501096!2d90.42166437484764!3d23.813545986349958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c62fb95f16c1%3A0xb333248370356dee!2sJamuna%20Future%20Park!5e0!3m2!1sen!2sbd!4v1766750023940!5m2!1sen!2sbd"
             width="100%"
             height="400"
             allowFullScreen=""
             loading="lazy"
           ></iframe>
+
+          {/* <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.142086501096!2d90.42166437484764!3d23.813545986349958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c62fb95f16c1%3A0xb333248370356dee!2sJamuna%20Future%20Park!5e0!3m2!1sen!2sbd!4v1766750023940!5m2!1sen!2sbd" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> */}
         </div>
       </section>
 

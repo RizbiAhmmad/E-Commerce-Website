@@ -38,6 +38,8 @@ const POSPage = () => {
 
   const [manualTax, setManualTax] = useState(0);
   const [shippingCharge, setShippingCharge] = useState(0);
+  const [returningCustomer, setReturningCustomer] = useState(null);
+  const [checkingCustomer, setCheckingCustomer] = useState(false);
 
   // NEW: Receipt modal state
   const [receiptData, setReceiptData] = useState(null);
@@ -72,6 +74,39 @@ const POSPage = () => {
       })
       .catch(() => setFooterInfo(null));
   }, []);
+
+  useEffect(() => {
+    if (customerPhone.length < 11) {
+      setReturningCustomer(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        setCheckingCustomer(true);
+
+        const res = await axiosPublic.get(
+          `/pos/customers/check?phone=${customerPhone}`
+        );
+
+        if (res.data.exists) {
+          setReturningCustomer(res.data);
+
+          setCustomerName(res.data.customer.name || "");
+          setCustomerAddress(res.data.customer.address || "");
+          setCustomerDistrict(res.data.customer.district || "");
+        } else {
+          setReturningCustomer(null);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setCheckingCustomer(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [customerPhone]);
 
   // Fetch POS cart
   const fetchPosCart = () => {
@@ -462,14 +497,26 @@ const POSPage = () => {
             onChange={(e) => setCustomerName(e.target.value)}
           />
           <input
-            type="tel"
-            name="tel"
-            autoComplete="tel"
+            type="number"
             placeholder="01XXXXXXXXX"
-            className="border p-2 rounded-xl w-full mb-2"
+            className="border p-2 rounded-xl w-full mb-1"
             value={customerPhone}
             onChange={(e) => setCustomerPhone(e.target.value)}
           />
+
+          {checkingCustomer && (
+            <p className="text-xs text-gray-500">Checking customer...</p>
+          )}
+
+          {returningCustomer && (
+            <div className="mt-1 text-sm text-green-600 font-semibold">
+              ✅ Returning Customer
+              <span className="ml-2 text-xs text-gray-500">
+                ({returningCustomer.totalOrders} previous orders)
+              </span>
+            </div>
+          )}
+
           <input
             type="text"
             name="street-address"

@@ -37,12 +37,12 @@ const CheckoutPage = () => {
     }
   }, [state]);
 
-  // useEffect(() => {
-  //   if (user) {
-  //     setFullName(user.displayName || "");
-  //     setEmail(user.email || "");
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    if (user) {
+      setFullName(user.displayName || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!user?.email) return;
@@ -220,6 +220,13 @@ const CheckoutPage = () => {
     }
   };
 
+  const requiredFields = {
+    fullName: "Full Name",
+    phone: "Phone Number",
+    district: "District",
+    address: "Delivery Address",
+  };
+
   const handlePlaceOrder = async () => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -230,6 +237,25 @@ const CheckoutPage = () => {
         items: formatGtmItems(),
       },
     });
+
+    const fieldValues = {
+      fullName,
+      phone,
+      district,
+      address,
+    };
+
+    const missingFieldKey = Object.keys(requiredFields).find(
+      (key) => !fieldValues[key] || fieldValues[key].toString().trim() === ""
+    );
+
+    if (missingFieldKey) {
+      return Swal.fire(
+        "Missing Required Field",
+        `${requiredFields[missingFieldKey]} is required`,
+        "error"
+      );
+    }
 
     // console.log("GTM Fired: order_click");
 
@@ -645,7 +671,7 @@ const CheckoutPage = () => {
     ${
       isPlacingOrder
         ? "bg-gray-400 cursor-not-allowed"
-        : "bg-cyan-600 hover:bg-cyan-700"
+        : "bg-cyan-500 hover:bg-cyan-600"
     }
   `}
           >

@@ -218,11 +218,13 @@ const AllProducts = () => {
     }));
   };
 
-  const filteredProducts = [...currentProductsData].reverse().filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.barcode?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = [...currentProductsData]
+    .reverse()
+    .filter(
+      (p) =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.barcode?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -348,12 +350,11 @@ const AllProducts = () => {
       )}
 
       {/* Add Product Button */}
-      <div className="flex justify-between mb-4">
-        <div className="relative w-80">
-          {/* Search Icon */}
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+      <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Search */}
+        <div className="relative w-full sm:w-80">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
 
-          {/* Input */}
           <input
             type="text"
             placeholder="Search by product name or barcode..."
@@ -365,9 +366,11 @@ const AllProducts = () => {
             className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
         </div>
+
+        {/* Button */}
         <button
           onClick={() => navigate("/dashboard/addProduct")}
-          className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
+          className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 w-full sm:w-auto"
         >
           <FaPlus /> Add Product
         </button>

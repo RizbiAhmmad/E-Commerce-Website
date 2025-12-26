@@ -8,16 +8,17 @@ import { Outlet, useLocation } from "react-router-dom";
 const MainLayout = () => {
   const location = useLocation();
   const noHeaderFooter =
-    location.pathname.includes("login") || location.pathname.includes("signup") || location.pathname.includes("landing-page");
+    // location.pathname.includes("login") || location.pathname.includes("signup") || location.pathname.includes("landing-page");
+ location.pathname.includes("landing-page");
   return (
     <div>
       <ScrollToTop />
-      {/* {!noHeaderFooter && <Navbar />} */}
-      <Navbar />
+      {!noHeaderFooter && <Navbar />}
+      {/* <Navbar /> */}
       <GTMPageView></GTMPageView>
       <Outlet />
-      {/* {!noHeaderFooter && <Footer />} */}
-      <Footer />
+      {!noHeaderFooter && <Footer />}
+      {/* <Footer /> */}
       <FloatingChatMenu />
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import { motion } from "framer-motion";
@@ -282,7 +282,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-24 space-y-16">
+    <div className="max-w-6xl mx-auto py-6 space-y-16">
       {/* Header */}
       <motion.div
         variants={fadeUp}
@@ -291,11 +291,13 @@ const LandingPage = () => {
         className="text-center"
       >
         {footerInfo.logo && (
-          <img
-            src={footerInfo.logo}
-            alt="Company Logo"
-            className="w-20 h-20 p-1 md:w-24 md:h-24 mx-auto mb-4 rounded-full shadow-lg"
-          />
+          <Link to="/">
+            <img
+              src={footerInfo.logo}
+              alt="Company Logo"
+              className="w-20 h-20 md:w-24 md:h-24 mx-auto p-1 mb-4 cursor-pointer"
+            />
+          </Link>
         )}
 
         <h1 className="text-3xl font-extrabold">{page.campaignTitle}</h1>
@@ -438,7 +440,7 @@ const LandingPage = () => {
         </motion.div>
       )}
 
-      {page.regularPrice && page.offerPrice && (
+      {product?.oldPrice && product?.newPrice && (
         <section className="bg-white py-12 px-4">
           <div className="max-w-3xl mx-auto text-center relative">
             {/* Old Price with Animated Cross */}

@@ -105,7 +105,7 @@ const Dashboard = () => {
         </button>
       </div>
 
-      <div className="flex min-h-screen">
+      <div className="flex h-screen">
         {/* Sidebar */}
         {/* <div
           className={`${
@@ -115,7 +115,7 @@ const Dashboard = () => {
 
         <div
           className={`${
-            isSidebarOpen ? "w-64" : "w-0 md:w-64"
+            isSidebarOpen ? "w-60" : "w-0 md:w-60"
           } bg-black text-white md:bg-gray-100 md:text-black transition-all duration-300 flex flex-col justify-between`}
         >
           <ul
@@ -483,7 +483,7 @@ const Dashboard = () => {
         </div>
 
         {/* Dashboard Content */}
-        <div className="flex-1 p-4">
+        <div className="flex-1 overflow-y-auto p-4">
           {user && (
             <div className="p-4 mb-4 text-center text-blue-800 bg-gray-100 rounded-lg shadow">
               <h1 className="text-xl font-semibold">

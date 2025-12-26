@@ -52,7 +52,6 @@ const AllOrders = () => {
   const fetchFooterInfo = async () => {
     try {
       const res = await axiosPublic.get("/footer");
-      // যদি একটাই footer info থাকে
       setFooterInfo(res.data[0]);
     } catch (err) {
       console.error("Footer info fetch failed", err);
@@ -449,56 +448,58 @@ const AllOrders = () => {
       </h2>
 
       {/*  Search & Filter */}
-      <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex justify-start mb-4">
-          <div className="relative w-90">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by name, email, phone or product..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            />
-          </div>
-        </div>
+      <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+  {/*  Search */}
+  <div className="relative w-full md:max-w-md">
+    <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+    <input
+      type="text"
+      placeholder="Search by name, email, phone or product..."
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+      }}
+      className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+    />
+  </div>
 
-        <div className="flex items-center">
-          <label
-            htmlFor="statusFilter"
-            className="mr-2 text-lg font-medium text-gray-700"
-          >
-            Filter by Status:
-          </label>
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border border-gray-300 rounded px-3 py-2 text-sm shadow-sm"
-          >
-            <option value="all">All Status</option>
-            <option value="initiated">Initiated</option>
-            <option value="pending">Pending</option>
-            <option value="processing">Processing</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
-            <option value="returned">Returned</option>
-          </select>
+  {/*  Filter + Export */}
+  <div className="flex flex-col gap-2 sm:flex-row sm:items-center w-full md:w-auto">
+    <label
+      htmlFor="statusFilter"
+      className="text-sm font-medium text-gray-700"
+    >
+      Filter by Status
+    </label>
 
-          <button
-            onClick={exportOrdersToExcel}
-            className="px-4 py-2 ml-2 bg-green-500 text-white rounded-xl shadow"
-          >
-            📥 Export All Orders
-          </button>
-        </div>
-      </div>
+    <select
+      value={statusFilter}
+      onChange={(e) => {
+        setStatusFilter(e.target.value);
+        setCurrentPage(1);
+      }}
+      className="border rounded px-3 py-2 text-sm shadow-sm w-full sm:w-auto"
+    >
+      <option value="all">All Status</option>
+      <option value="initiated">Initiated</option>
+      <option value="pending">Pending</option>
+      <option value="processing">Processing</option>
+      <option value="shipped">Shipped</option>
+      <option value="delivered">Delivered</option>
+      <option value="cancelled">Cancelled</option>
+      <option value="returned">Returned</option>
+    </select>
+
+    <button
+      onClick={exportOrdersToExcel}
+      className="px-4 py-2 bg-green-500 text-white rounded-xl shadow w-full sm:w-auto"
+    >
+      📥 Export All Orders
+    </button>
+  </div>
+</div>
+
 
       {/* Orders Table */}
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">

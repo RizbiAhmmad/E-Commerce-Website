@@ -25,7 +25,7 @@ const AllExpense = () => {
     name: "",
     price: "",
     note: "",
-    date: "",    
+    date: "",
   });
 
   //  Search
@@ -124,8 +124,9 @@ const AllExpense = () => {
       </h2>
 
       {/* Search + Add Expense Button */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-3">
-        <div className="flex items-center w-full md:w-1/4 border rounded px-3 py-2">
+      <div className="flex flex-col gap-3 mb-4 md:flex-row md:items-center md:justify-between">
+        {/*  Search */}
+        <div className="flex items-center w-full md:w-1/2 border rounded px-3 py-2">
           <FaSearch className="text-gray-400 mr-2" />
           <input
             type="text"
@@ -139,9 +140,10 @@ const AllExpense = () => {
           />
         </div>
 
+        {/*  Add Expense Button */}
         <button
           onClick={() => navigate("/dashboard/addExpense")}
-          className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
+          className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 w-full md:w-auto"
         >
           <FaPlus /> Add Expense
         </button>

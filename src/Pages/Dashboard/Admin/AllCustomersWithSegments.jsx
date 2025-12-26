@@ -85,7 +85,7 @@ const AllCustomersWithSegments = () => {
       </h2>
 
       {/* Search + Filter Bar */}
-      <div className="mb-4 flex justify-between items-center gap-4">
+      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         {/* Search Bar */}
         <input
           type="text"
@@ -95,7 +95,7 @@ const AllCustomersWithSegments = () => {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="border border-gray-300 rounded-xl px-4 py-2 text-sm shadow-sm w-64"
+          className="border border-gray-300 rounded-xl px-4 py-2 text-sm shadow-sm w-full md:w-64"
         />
 
         {/* District Filter */}
@@ -105,10 +105,9 @@ const AllCustomersWithSegments = () => {
             setDistrictFilter(e.target.value);
             setCurrentPage(1);
           }}
-          className="border border-gray-300 rounded-xl px-4 py-2 text-sm shadow-sm"
+          className="border border-gray-300 rounded-xl px-4 py-2 text-sm shadow-sm w-full md:w-auto"
         >
           <option value="">All Districts</option>
-
           <option value="Bagerhat">Bagerhat</option>
           <option value="Bandarban">Bandarban</option>
           <option value="Barguna">Barguna</option>
@@ -182,7 +181,7 @@ const AllCustomersWithSegments = () => {
             setSegmentFilter(e.target.value);
             setCurrentPage(1);
           }}
-          className="border border-gray-300 rounded-xl px-4 py-2 text-sm shadow-sm"
+          className="border border-gray-300 rounded-xl px-4 py-2 text-sm shadow-sm w-full md:w-auto"
         >
           <option value="">All Segments</option>
           <option value="Loyal">Loyal</option>

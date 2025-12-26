@@ -320,6 +320,7 @@ const SalesReport = () => {
         </div>
 
         {/* TABLE */}
+        {/* TABLE */}
         <div className="overflow-x-auto">
           <table className="table-auto min-w-[800px] w-full border border-gray-200 text-sm">
             <thead className="bg-gray-100">
@@ -351,7 +352,6 @@ const SalesReport = () => {
                         )}
                       </div>
                     </td>
-
                     <td className="px-4 py-2 border">৳{p.price}</td>
                     <td className="px-4 py-2 border">{p.quantity}</td>
                     <td className="px-4 py-2 border">
@@ -368,42 +368,27 @@ const SalesReport = () => {
                   </tr>
                 ))
               )}
+
+              {/* Grand Total Row */}
+              {(() => {
+                const sum = getSalesSummary();
+                return (
+                  <tr className="font-semibold bg-gray-100">
+                    <td className="border px-4 py-2">Grand Total</td>
+                    <td className="border px-4 py-2">৳{sum.price}</td>
+                    <td className="border px-4 py-2">{sum.quantity}</td>
+                    <td className="border px-4 py-2">৳{sum.total}</td>
+                    <td className="border px-4 py-2">৳{sum.discount}</td>
+                    <td className="border px-4 py-2">
+                      ৳{Number(sum.tax).toFixed(2)}
+                    </td>
+                    <td className="border px-4 py-2"></td>
+                    <td className="border px-4 py-2"></td>
+                  </tr>
+                );
+              })()}
             </tbody>
           </table>
-
-          {/* SUMMARY TABLE */}
-          <div className="mt-6 overflow-x-auto">
-            <table className="table-auto w-full border border-gray-300 text-sm">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="border px-4 py-2 text-left">Summary</th>
-                  <th className="border px-4 py-2">Price</th>
-                  <th className="border px-4 py-2">Quantity</th>
-                  <th className="border px-4 py-2">Total</th>
-                  <th className="border px-4 py-2">Discount</th>
-                  <th className="border px-4 py-2">Tax</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {(() => {
-                  const sum = getSalesSummary();
-                  return (
-                    <tr className="font-semibold bg-white">
-                      <td className="border px-4 py-2">Grand Total</td>
-                      <td className="border px-4 py-2">৳{sum.price}</td>
-                      <td className="border px-4 py-2">{sum.quantity}</td>
-                      <td className="border px-4 py-2">৳{sum.total}</td>
-                      <td className="border px-4 py-2">৳{sum.discount}</td>
-                      <td className="border px-4 py-2">
-                        ৳{Number(sum.tax).toFixed(2)}
-                      </td>
-                    </tr>
-                  );
-                })()}
-              </tbody>
-            </table>
-          </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 mt-10">

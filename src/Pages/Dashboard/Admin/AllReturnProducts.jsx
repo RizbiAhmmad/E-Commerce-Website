@@ -101,21 +101,21 @@ const AllReturnProducts = () => {
         All Returned Orders
       </h2>
 
-      <div className="mb-4 flex justify-between items-center">
-        <div className="flex justify-start mb-4">
-          <div className="relative w-90">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by name, email, phone, or product..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            />
-          </div>
+      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center">
+        {/*  Search */}
+        <div className="relative w-full md:max-w-md">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+          <input
+            type="text"
+            placeholder="Search by name, email, phone, or product..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          />
         </div>
       </div>
 

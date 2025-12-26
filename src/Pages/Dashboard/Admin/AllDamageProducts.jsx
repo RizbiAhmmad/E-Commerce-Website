@@ -10,9 +10,7 @@ const AllDamageProducts = () => {
   const { data: damageProducts = [], refetch } = useQuery({
     queryKey: ["damageProducts"],
     queryFn: async () => {
-      const res = await axiosPublic.get(
-        "/damage-products"
-      );
+      const res = await axiosPublic.get("/damage-products");
       return res.data;
     },
   });
@@ -125,10 +123,10 @@ const AllDamageProducts = () => {
         setUploading(false);
       }
 
-      await axiosPublic.put(
-        `/damage-products/${selectedProduct._id}`,
-        { ...formData, image: imageUrl }
-      );
+      await axiosPublic.put(`/damage-products/${selectedProduct._id}`, {
+        ...formData,
+        image: imageUrl,
+      });
 
       Swal.fire("Updated!", "Damage product has been updated.", "success");
       setIsModalOpen(false);
@@ -152,16 +150,12 @@ const AllDamageProducts = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axiosPublic
-          .delete(
-            `/damage-products/${id}`
-          )
-          .then((res) => {
-            if (res.data.deletedCount > 0) {
-              refetch();
-              Swal.fire("Deleted!", "Product removed.", "success");
-            }
-          });
+        axiosPublic.delete(`/damage-products/${id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            refetch();
+            Swal.fire("Deleted!", "Product removed.", "success");
+          }
+        });
       }
     });
   };
@@ -173,26 +167,26 @@ const AllDamageProducts = () => {
       </h2>
 
       {/* Top Controls */}
-      <div className="flex flex-col items-center justify-between gap-4 mb-4 md:flex-row">
-        <div className="flex justify-start mb-4">
-          <div className="relative w-80">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by name, barcode, or note..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            />
-          </div>
+      <div className="flex flex-col gap-3 mb-4 md:flex-row md:items-center md:justify-between">
+        {/*  Search */}
+        <div className="relative w-full md:max-w-sm">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search by name, barcode, or note..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          />
         </div>
 
+        {/*  Button */}
         <button
           onClick={() => navigate("/dashboard/addDamageProduct")}
-          className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
+          className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 w-full md:w-auto"
         >
           <FaPlus /> Add Product
         </button>
