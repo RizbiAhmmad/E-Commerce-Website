@@ -121,8 +121,8 @@ const CourierSettings = () => {
         <select name="courierName" value={formData.courierName} onChange={handleChange} className="border p-2 rounded" required>
           <option value="">Select Courier</option>
           <option value="pathao">Pathao</option>
-          <option value="steadfast">Steadfast</option>
-          <option value="redx">RedX</option>
+          {/* <option value="steadfast">Steadfast</option>
+          <option value="redx">RedX</option> */}
         </select>
 
         <select name="status" value={formData.status} onChange={handleChange} className="border p-2 rounded">

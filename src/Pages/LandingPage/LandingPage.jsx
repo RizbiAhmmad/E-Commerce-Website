@@ -184,10 +184,30 @@ const LandingPage = () => {
     return url;
   };
 
+  const requiredFields = [
+    { key: "name", label: "Full Name", value: name },
+    { key: "phone", label: "Phone Number", value: phone },
+    { key: "address", label: "Address", value: address },
+    { key: "district", label: "District", value: district },
+  ];
+
   const handleOrderSubmit = async () => {
     if (isOrdering) return;
-    if (!name || !phone || !address || !district) {
-      return Swal.fire("Error!", "Please fill all required fields", "error");
+    const missingFields = requiredFields
+      .filter((field) => !field.value || field.value.toString().trim() === "")
+      .map((field) => field.label);
+
+    if (missingFields.length > 0) {
+      return Swal.fire({
+        icon: "error",
+        title: "Missing Required Fields",
+        html: `
+      <p>Please fill the following required field(s):</p>
+      <ul style="text-align:left;margin-top:8px;">
+        ${missingFields.map((f) => `<li>• ${f}</li>`).join("")}
+      </ul>
+    `,
+      });
     }
 
     if (!/^01\d{9}$/.test(phone)) {
@@ -234,6 +254,7 @@ const LandingPage = () => {
       tran_id: `order_${Date.now()}`,
       createdAt: new Date(),
       orderType: "Online",
+      orderSource: "landing",
     };
 
     try {

@@ -479,6 +479,207 @@ const Dashboard = () => {
                 </li>
               </>
             )}
+
+
+            {userRole === "pos" && (
+              <>
+                <li>
+                  <NavLink to="/" className="flex items-center py-2 space-x-3">
+                    <FaHome /> <span>Home</span>
+                  </NavLink>
+                </li>
+
+                 {/* POS & Orders */}
+                <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
+                  POS & ORDERS
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/pos"
+                    className="flex px-2 items-center py-2 space-x-3"
+                  >
+                    <BsCashCoin /> <span>POS</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/posOrders"
+                    className="flex px-2 items-center py-2 space-x-3"
+                  >
+                    <IoIosCash /> <span>POS Orders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allOrders"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaReceipt /> <span>Online Orders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/incompleteOrders"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <MdIncompleteCircle /> <span>Incomplete Orders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allDamageProducts"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <RiFileDamageFill /> <span>Damage Products</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allReturnProducts"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <TbTruckReturn /> <span>Return Orders</span>
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/dashboard/profile"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <CgProfile /> <span>Profile</span>
+                  </NavLink>
+                </li>
+              </>
+            )}
+
+
+            {userRole === "manager" && (
+              <>
+                <li>
+                  <NavLink to="/" className="flex items-center py-2 space-x-3">
+                    <FaHome /> <span>Home</span>
+                  </NavLink>
+                </li>
+
+                {/* Product & Stock */}
+                <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
+                  PRODUCT & STOCK
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allProducts"
+                    className="px-2 flex items-center py-2 space-x-3"
+                  >
+                    <MdInventory /> <span>Products</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allCategories"
+                    className="flex px-2 items-center py-2 space-x-3"
+                  >
+                    <FaListAlt /> <span>Categories</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allSubCategories"
+                    className="flex px-2 items-center py-2 space-x-3"
+                  >
+                    <FaThList /> <span>SubCategories</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allBrands"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <SiBrandfolder /> <span>Brands</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allSizes"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaRulerCombined /> <span>Sizes</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allColors"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaPalette /> <span>Colors</span>
+                  </NavLink>
+                </li>
+
+                 {/* POS & Orders */}
+                <li className=" pt-4 pb-1 text-xs font-semibold md:text-gray-500 uppercase">
+                  POS & ORDERS
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/pos"
+                    className="flex px-2 items-center py-2 space-x-3"
+                  >
+                    <BsCashCoin /> <span>POS</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/posOrders"
+                    className="flex px-2 items-center py-2 space-x-3"
+                  >
+                    <IoIosCash /> <span>POS Orders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allOrders"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <FaReceipt /> <span>Online Orders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/incompleteOrders"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <MdIncompleteCircle /> <span>Incomplete Orders</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allDamageProducts"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <RiFileDamageFill /> <span>Damage Products</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/allReturnProducts"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <TbTruckReturn /> <span>Return Orders</span>
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/dashboard/profile"
+                    className="flex items-center py-2 space-x-3"
+                  >
+                    <CgProfile /> <span>Profile</span>
+                  </NavLink>
+                </li>
+              </>
+            )}
+
+            
           </ul>
         </div>
 

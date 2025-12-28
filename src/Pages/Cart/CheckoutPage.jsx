@@ -330,6 +330,7 @@ const CheckoutPage = () => {
       tran_id: `order_${Date.now()}`,
       createdAt: new Date(),
       orderType: "Online",
+      orderSource: "website",
     };
 
     try {

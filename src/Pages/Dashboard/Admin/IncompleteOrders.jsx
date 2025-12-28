@@ -12,6 +12,7 @@ const IncompleteOrders = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+    const [currentUserRole, setCurrentUserRole] = useState(null);
 
   const { data: products = [] } = useQuery({
     queryKey: ["products"],
@@ -21,7 +22,7 @@ const IncompleteOrders = () => {
     },
   });
 
-  // 🔥 Fetch Incomplete Orders
+  //  Fetch Incomplete Orders
   const { data: incompleteOrders = [], refetch } = useQuery({
     queryKey: ["incompleteOrders"],
     queryFn: async () => {
@@ -29,8 +30,22 @@ const IncompleteOrders = () => {
       return res.data;
     },
   });
+    
+  useEffect(() => {
+    if (user?.email) {
+      axiosPublic
+        .get(`/users/role?email=${user.email}`)
+        .then((res) => {
+          setCurrentUserRole(res.data.role);
+        })
+        .catch(() => {
+          setCurrentUserRole("user");
+        });
+    }
+  }, [user, axiosPublic]);
 
-  // 🔥 Flatten data for table (each order may have multiple cart items)
+
+  //  Flatten data for table (each order may have multiple cart items)
   const flatData = incompleteOrders.flatMap((order) =>
     order.cartItems?.map((item) => {
       const product = products.find((p) => p._id === item.productId);
@@ -55,7 +70,7 @@ const IncompleteOrders = () => {
     })
   );
 
-  // 🔍 Search
+  //  Search
   const filtered = flatData.filter((item) =>
     `${item.fullName} ${item.email} ${item.productName}`
       .toLowerCase()
@@ -72,7 +87,7 @@ const IncompleteOrders = () => {
     if (p >= 1 && p <= totalPages) setCurrentPage(p);
   };
 
-  // 🔥 Delete incomplete order (whole session)
+  //  Delete incomplete order (whole session)
   const handleDelete = (sessionId) => {
     Swal.fire({
       title: "Delete Incomplete Order?",
@@ -163,9 +178,11 @@ const IncompleteOrders = () => {
                 </td>
 
                 <td className="px-4 py-3">
+                   {currentUserRole === "admin" && (
                   <button onClick={() => handleDelete(item.sessionId)}>
                     <FaTrashAlt className="text-red-500 text-lg hover:text-red-700" />
                   </button>
+                   )}
                 </td>
               </tr>
             ))}

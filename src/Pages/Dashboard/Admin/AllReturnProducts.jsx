@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { FaTrashAlt } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import { AuthContext } from "@/provider/AuthProvider";
 
 const AllReturnProducts = () => {
   const [returnOrders, setReturnOrders] = useState([]);
@@ -10,6 +11,8 @@ const AllReturnProducts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const axiosPublic = useAxiosPublic();
+  const { user } = useContext(AuthContext);
+  const [currentUserRole, setCurrentUserRole] = useState(null);
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,6 +39,19 @@ const AllReturnProducts = () => {
   useEffect(() => {
     fetchReturnOrders();
   }, []);
+
+  useEffect(() => {
+    if (user?.email) {
+      axiosPublic
+        .get(`/users/role?email=${user.email}`)
+        .then((res) => {
+          setCurrentUserRole(res.data.role);
+        })
+        .catch(() => {
+          setCurrentUserRole("user");
+        });
+    }
+  }, [user, axiosPublic]);
 
   // Delete order
   const handleDelete = (id) => {
@@ -184,9 +200,11 @@ const AllReturnProducts = () => {
                   >
                     Set Return Info
                   </button>
-                  <button onClick={() => handleDelete(order._id)}>
-                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  {currentUserRole === "admin" && (
+                    <button onClick={() => handleDelete(order._id)}>
+                      <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

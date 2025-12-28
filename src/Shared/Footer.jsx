@@ -13,6 +13,7 @@ import {
 import { motion } from "framer-motion";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import Loading from "./Loading";
+import logo from "../../public/Logo_white.png"
 
 export default function Footer() {
   const [footerInfo, setFooterInfo] = useState(null);
@@ -56,9 +57,9 @@ export default function Footer() {
         >
           <div className="flex items-center gap-3">
             <img
-              src={footerInfo.logo}
-              alt={footerInfo.name || "Logo"}
-              className="h-15 md:h-18 w-auto "
+              src={logo}
+              alt="Logo Dark"
+              className="h-14 md:h-16 w-auto object-contain"
             />
             {/* <h1 className="text-3xl font-bold">{footerInfo.name}</h1> */}
           </div>

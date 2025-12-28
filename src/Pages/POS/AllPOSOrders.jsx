@@ -23,6 +23,7 @@ const AllPOSOrders = () => {
   const [itemWeight, setItemWeight] = useState("");
   const [selectedCourierName, setSelectedCourierName] = useState("");
   const [specialInstruction, setSpecialInstruction] = useState("");
+  const [currentUserRole, setCurrentUserRole] = useState(null);
 
   // Fetch couriers
   const fetchCouriers = async () => {
@@ -60,11 +61,28 @@ const AllPOSOrders = () => {
       })
       .catch(() => setFooterInfo(null));
   }, []);
+  
+  useEffect(() => {
+    if (user?.email) {
+      axiosPublic
+        .get(`/users/role?email=${user.email}`)
+        .then((res) => {
+          setCurrentUserRole(res.data.role);
+        })
+        .catch(() => {
+          setCurrentUserRole("user");
+        });
+    }
+  }, [user, axiosPublic]);
 
   // delete POS order
   const handleDelete = (id) => {
-     if (user.role !== "admin") {
-      return Swal.fire("Permission Denied", "Only admins can delete orders", "error");
+    if (user.role !== "admin") {
+      return Swal.fire(
+        "Permission Denied",
+        "Only admins can delete orders",
+        "error"
+      );
     }
     Swal.fire({
       title: "Are you sure?",
@@ -153,11 +171,14 @@ const AllPOSOrders = () => {
   // search filter
   const filteredOrders = orders.filter((order) => {
     const term = searchTerm.toLowerCase();
+    const isReturnedStr = order.isReturned ? "yes" : "no";
+
     return (
       order.orderId?.toLowerCase().includes(term) ||
       order._id?.toLowerCase().includes(term) ||
       order.customer?.name?.toLowerCase().includes(term) ||
       order.customer?.phone?.toLowerCase().includes(term) ||
+      isReturnedStr.includes(term) ||
       order.payment?.method?.toLowerCase().includes(term)
     );
   });
@@ -503,9 +524,12 @@ const AllPOSOrders = () => {
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
 
-                  <button onClick={() => handleDelete(order._id)}>
-                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  {currentUserRole === "admin" && (
+                    <button onClick={() => handleDelete(order._id)}>
+                      <FaTrashAlt className="text-red-500 text-xl hover:text-red-700" />
+                    </button>
+                  )}
+
                   {!order.isReturned && (
                     <button
                       onClick={() => handleReturn(order._id)}

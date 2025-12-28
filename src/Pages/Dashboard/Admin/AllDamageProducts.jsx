@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaSearch, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import { AuthContext } from "@/provider/AuthProvider";
 
 const AllDamageProducts = () => {
   const { data: damageProducts = [], refetch } = useQuery({
@@ -32,11 +33,25 @@ const AllDamageProducts = () => {
   });
   const [newImageFile, setNewImageFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-
+  const { user } = useContext(AuthContext);
+  const [currentUserRole, setCurrentUserRole] = useState(null);
   // Search + Pagination
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+
+  useEffect(() => {
+    if (user?.email) {
+      axiosPublic
+        .get(`/users/role?email=${user.email}`)
+        .then((res) => {
+          setCurrentUserRole(res.data.role);
+        })
+        .catch(() => {
+          setCurrentUserRole("user");
+        });
+    }
+  }, [user, axiosPublic]);
 
   // Fetch all products for dropdown
   useEffect(() => {
@@ -238,9 +253,11 @@ const AllDamageProducts = () => {
                   <button onClick={() => openEditModal(product)}>
                     <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
                   </button>
-                  <button onClick={() => handleDelete(product._id)}>
-                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
+                  {currentUserRole === "admin" && (
+                    <button onClick={() => handleDelete(product._id)}>
+                      <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

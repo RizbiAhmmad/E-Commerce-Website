@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Swal from "sweetalert2";
 import { FaPrint, FaSearch, FaTrashAlt } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import * as XLSX from "xlsx";
+import { AuthContext } from "@/provider/AuthProvider";
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -27,7 +28,8 @@ const AllOrders = () => {
   const [selectedFraudData, setSelectedFraudData] = useState(null);
   const [selectedOrderNo, setSelectedOrderNo] = useState("");
   const [footerInfo, setFooterInfo] = useState(null);
-
+  const [currentUserRole, setCurrentUserRole] = useState(null);
+  const { user } = useContext(AuthContext);
   // Fetch orders
   const fetchOrders = async () => {
     try {
@@ -63,6 +65,21 @@ const AllOrders = () => {
     fetchCouriers();
     fetchFooterInfo();
   }, []);
+
+    
+  useEffect(() => {
+    if (user?.email) {
+      axiosPublic
+        .get(`/users/role?email=${user.email}`)
+        .then((res) => {
+          setCurrentUserRole(res.data.role);
+        })
+        .catch(() => {
+          setCurrentUserRole("user");
+        });
+    }
+  }, [user, axiosPublic]);
+
 
   // Delete order
   const handleDelete = (id) => {
@@ -182,6 +199,26 @@ const AllOrders = () => {
     }
   };
 
+  const getOrderSourceBadge = (source) => {
+    if (source === "landing") {
+      return (
+        <span className="ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-pink-100 text-pink-700 border border-pink-300">
+          Landing
+        </span>
+      );
+    }
+
+    if (source === "website") {
+      return (
+        <span className="ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-cyan-100 text-cyan-700 border border-cyan-300">
+          Website
+        </span>
+      );
+    }
+
+    return null;
+  };
+
   // Search + Filter Orders
   const searchedOrders = orders.filter((order) => {
     const term = searchTerm.toLowerCase();
@@ -190,6 +227,7 @@ const AllOrders = () => {
       order.email?.toLowerCase().includes(term) ||
       order.phone?.toLowerCase().includes(term) ||
       order._id?.toLowerCase().includes(term) ||
+      order.orderSource?.toLowerCase().includes(term) ||
       order.cartItems.some((item) =>
         item.productName?.toLowerCase().includes(term)
       )
@@ -356,7 +394,9 @@ const AllOrders = () => {
               .map(
                 (item) => `
               <tr>
-                <td>${item.productName} ${item.barcode ? `(${item.barcode})` : ""}</td>
+                <td>${item.productName} ${
+                  item.barcode ? `(${item.barcode})` : ""
+                }</td>
                 <td>${item.size || "-"}</td>
                 <td>${item.color || "-"}</td>
                 <td>${item.quantity}</td>
@@ -449,57 +489,56 @@ const AllOrders = () => {
 
       {/*  Search & Filter */}
       <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-  {/*  Search */}
-  <div className="relative w-full md:max-w-md">
-    <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-    <input
-      type="text"
-      placeholder="Search by name, email, phone or product..."
-      value={searchTerm}
-      onChange={(e) => {
-        setSearchTerm(e.target.value);
-        setCurrentPage(1);
-      }}
-      className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
-    />
-  </div>
+        {/*  Search */}
+        <div className="relative w-full md:max-w-md">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search by name, email, phone or product..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          />
+        </div>
 
-  {/*  Filter + Export */}
-  <div className="flex flex-col gap-2 sm:flex-row sm:items-center w-full md:w-auto">
-    <label
-      htmlFor="statusFilter"
-      className="text-sm font-medium text-gray-700"
-    >
-      Filter by Status
-    </label>
+        {/*  Filter + Export */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center w-full md:w-auto">
+          <label
+            htmlFor="statusFilter"
+            className="text-sm font-medium text-gray-700"
+          >
+            Filter by Status
+          </label>
 
-    <select
-      value={statusFilter}
-      onChange={(e) => {
-        setStatusFilter(e.target.value);
-        setCurrentPage(1);
-      }}
-      className="border rounded px-3 py-2 text-sm shadow-sm w-full sm:w-auto"
-    >
-      <option value="all">All Status</option>
-      <option value="initiated">Initiated</option>
-      <option value="pending">Pending</option>
-      <option value="processing">Processing</option>
-      <option value="shipped">Shipped</option>
-      <option value="delivered">Delivered</option>
-      <option value="cancelled">Cancelled</option>
-      <option value="returned">Returned</option>
-    </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border rounded px-3 py-2 text-sm shadow-sm w-full sm:w-auto"
+          >
+            <option value="all">All Status</option>
+            <option value="initiated">Initiated</option>
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="returned">Returned</option>
+          </select>
 
-    <button
-      onClick={exportOrdersToExcel}
-      className="px-4 py-2 bg-green-500 text-white rounded-xl shadow w-full sm:w-auto"
-    >
-      📥 Export All Orders
-    </button>
-  </div>
-</div>
-
+          <button
+            onClick={exportOrdersToExcel}
+            className="px-4 py-2 bg-green-500 text-white rounded-xl shadow w-full sm:w-auto"
+          >
+            📥 Export All Orders
+          </button>
+        </div>
+      </div>
 
       {/* Orders Table */}
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
@@ -536,7 +575,19 @@ const AllOrders = () => {
                   <div className="text-gray-500">Order No: {order._id}</div>
                 </td>
                 <td className="px-2 py-3">{order.address}</td>
-                <td className="px-2 py-3">{order.shipping}</td>
+                <td className="px-2 py-3">
+                  <div className="flex flex-col gap-1">
+                    <span className="capitalize">
+                      {order.shipping === "inside"
+                        ? "Inside Dhaka"
+                        : "Outside Dhaka"}
+                    </span>
+
+                    {/*  Order Source Badge (next line) */}
+                    {getOrderSourceBadge(order.orderSource)}
+                  </div>
+                </td>
+
                 <td className="px-2 py-3">
                   <div className="font-semibold">{order.payment}</div>
 
@@ -636,9 +687,11 @@ const AllOrders = () => {
                   <button onClick={() => handlePrint(order)}>
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
+                   {currentUserRole === "admin" && (
                   <button onClick={() => handleDelete(order._id)}>
                     <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
                   </button>
+                   )}
                 </td>
 
                 <td className="px-2 py-3">
