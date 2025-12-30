@@ -13,7 +13,7 @@ import {
 import { motion } from "framer-motion";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import Loading from "./Loading";
-import logo from "../../public/Logo_white.png"
+import logo from "../../src/assets/Logo_white.png";
 
 export default function Footer() {
   const [footerInfo, setFooterInfo] = useState(null);

@@ -18,7 +18,7 @@ import { IoMdHeartEmpty } from "react-icons/io";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import { FaBell } from "react-icons/fa";
-import logo from "../../public/Logo_white.png"
+import logo from "../../src/assets/Logo_white.png";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -192,9 +192,12 @@ const Navbar = () => {
       const res = await axiosPublic.get(`/orders/${trackId}`);
       const orderData = res.data;
 
-      // Close mobile menu & search
+      setTrackId("");
+
+      // Close UI
       setIsOpen(false);
       setSearchOpen(false);
+      setTrackOpen(false);
 
       // Navigate
       navigate("/myorder", { state: { orderData } });
@@ -273,7 +276,7 @@ const Navbar = () => {
                   {menuData.map((cat) => (
                     <div key={cat._id}>
                       <h3
-                        className="font-bold text-black dark:text-white mb-3 cursor-pointer hover:text-cyan-500"
+                        className="font-bold text-black dark:text-white mb-3 cursor-pointer hover:text-cyan-500 dark:hover:text-cyan-400"
                         onClick={() => {
                           navigate(`/category/${cat._id}`);
                           setOpenCategory(false);
@@ -286,7 +289,7 @@ const Navbar = () => {
                         {cat.subcategories.map((sub) => (
                           <li
                             key={sub._id}
-                            className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 cursor-pointer"
+                            className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 dark:hover:text-cyan-400 cursor-pointer"
                             onClick={() => {
                               navigate(`/subcategory/${sub._id}`);
                               setOpenCategory(false);
@@ -336,7 +339,10 @@ const Navbar = () => {
 
           {/* Mobile Search */}
           <button
-            onClick={() => setSearchOpen(!searchOpen)}
+            onClick={() => {
+              setSearchOpen((prev) => !prev);
+              setTrackOpen(false);
+            }}
             className="lg:hidden hover:text-cyan-500"
           >
             <FaSearch />
@@ -380,21 +386,17 @@ const Navbar = () => {
           </Link>
 
           {/* ORDER TRACKER */}
-          <div className="hidden lg:flex items-center border rounded-xl overflow-hidden">
+          <div className="hidden lg:flex items-center border rounded-lg overflow-hidden">
             <input
               value={trackId}
               onChange={(e) => setTrackId(e.target.value)}
               placeholder="Order ID"
-              className="px-3 py-2 text-sm outline-none dark:bg-gray-800"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleTrack();
-                }
-              }}
+              className="w-[120px] px-2 py-2 text-sm outline-none dark:bg-gray-800"
+              onKeyDown={(e) => e.key === "Enter" && handleTrack()}
             />
             <button
               onClick={handleTrack}
-              className="bg-cyan-500 text-white px-3 py-2 text-sm hover:bg-cyan-600"
+              className="bg-cyan-500 text-white px-2 py-2 text-sm hover:bg-cyan-600"
             >
               Track
             </button>

@@ -407,8 +407,17 @@ const ProfitLossReport = () => {
                   return (
                     <tr key={`${order._id}-${idx}`}>
                       <td className="px-4 py-2 border font-medium">
-                        {p.productName || p.name || p.title}
+                        <div>
+                          <p>{p.productName || p.name || p.title}</p>
+
+                          {p.barcode && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Barcode: {p.barcode}
+                            </p>
+                          )}
+                        </div>
                       </td>
+
                       <td className="px-4 py-2 border">
                         ৳{p.purchasePrice || 0}
                       </td>

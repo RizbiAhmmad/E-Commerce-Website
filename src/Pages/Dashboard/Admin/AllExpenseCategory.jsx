@@ -85,7 +85,7 @@ const AllExpenseCategory = () => {
       <div className="flex justify-end mb-4">
         <button
           onClick={() => navigate("/dashboard/addExpenseCategory")}
-          className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
+          className="flex items-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded-xl hover:bg-cyan-600"
         >
           <FaPlus /> Add Expense Category
         </button>

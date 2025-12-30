@@ -500,7 +500,7 @@ const AllOrders = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="border pl-10 pr-4 py-2 rounded-xl w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
         </div>
 
@@ -519,7 +519,7 @@ const AllOrders = () => {
               setStatusFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="border rounded px-3 py-2 text-sm shadow-sm w-full sm:w-auto"
+            className="border rounded-xl px-3 py-2 text-sm shadow-sm w-full sm:w-auto"
           >
             <option value="all">All Status</option>
             <option value="initiated">Initiated</option>

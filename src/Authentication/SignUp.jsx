@@ -6,6 +6,7 @@ import SocialLogin from "./SocialLogin";
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { AuthContext } from "@/provider/AuthProvider";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import bglogo from "../../src/assets/Login-BG.png";
 
 const SignUp = () => {
   const {
@@ -62,9 +63,9 @@ const SignUp = () => {
     <div
       className="flex items-center justify-center min-h-screen px-4 bg-center bg-cover"
       style={{
-        backgroundImage:
-          "url('https://t3.ftcdn.net/jpg/16/13/79/42/360_F_1613794244_KlUIXWBf734TJR9DITsl2chsMrMi932E.jpg')",
-      }}
+              backgroundImage:
+                `url(${bglogo})`,
+            }}
     >
       <div className="w-full mt-16 max-w-md p-6 shadow-xl bg-white/20 backdrop-blur-lg rounded-xl sm:p-8">
         {/*  Back Button */}

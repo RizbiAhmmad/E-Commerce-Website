@@ -6,10 +6,15 @@ function ThemeChange() {
   const { theme, setTheme } = useTheme();
   const themes = ["light", "dark"];
 
+  // const handleThemeChange = () => {
+  //   const newTheme = themes[(themes.indexOf(theme) + 1) % themes.length];
+  //   setTheme(newTheme);
+  // };
+
   const handleThemeChange = () => {
-    const newTheme = themes[(themes.indexOf(theme) + 1) % themes.length];
-    setTheme(newTheme);
-  };
+  setTheme(theme === "dark" ? "light" : "dark");
+};
+
   return (
     <span className="flex items-center ml-2 justify-center rounded-full bg-popover text-popover-foreground w-fit">
       <button onClick={handleThemeChange}>

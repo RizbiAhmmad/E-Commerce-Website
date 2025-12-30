@@ -194,14 +194,14 @@ const AllDamageProducts = () => {
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
-            className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="border pl-10 pr-4 py-2 rounded-xl w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
         </div>
 
         {/*  Button */}
         <button
           onClick={() => navigate("/dashboard/addDamageProduct")}
-          className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600 w-full md:w-auto"
+          className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded-xl hover:bg-cyan-600 w-full md:w-auto"
         >
           <FaPlus /> Add Product
         </button>

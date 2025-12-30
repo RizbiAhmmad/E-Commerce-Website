@@ -539,7 +539,7 @@ const CheckoutPage = () => {
           </div>
 
           {/* PAYMENT */}
-          <div className="bg-white dark:bg-neutral-900 shadow-xl rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
+          {/* <div className="bg-white dark:bg-neutral-900 shadow-xl rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
             <h2 className="font-semibold text-xl mb-5">
               Select Payment Method
             </h2>
@@ -578,6 +578,66 @@ const CheckoutPage = () => {
                 />
                 <FaCreditCard className="icon" />
                 <span>Online Payment</span>
+              </label>
+            </div>
+          </div> */}
+
+          {/* PAYMENT */}
+          <div className="bg-white dark:bg-neutral-900 shadow-xl rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
+            <h2 className="font-semibold text-xl mb-5">
+              Select Payment Method
+            </h2>
+
+            <div className="grid gap-4">
+              {/* CASH ON DELIVERY */}
+              <label
+                className={`shipping-card ${
+                  payment === "cash on delivery" ? "selected" : ""
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={payment === "cash on delivery"}
+                  onChange={() => setPayment("cash on delivery")}
+                  className="hidden"
+                />
+
+                <div className="flex items-center gap-3">
+                  <FaMoneyBillWave className="text-xl" />
+                  <div>
+                    <p className="font-semibold">Cash on Delivery</p>
+                    <p className="text-sm text-gray-500">
+                      Pay after receiving the product
+                    </p>
+                  </div>
+                </div>
+              </label>
+
+              {/* ONLINE PAYMENT */}
+              <label
+                className={`shipping-card opacity-60 cursor-not-allowed ${
+                  payment === "online" ? "selected" : ""
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={payment === "online"}
+                  onChange={() => setPayment("online")}
+                  className="hidden"
+                  disabled
+                />
+
+                <div className="flex items-center gap-3">
+                  <FaCreditCard className="text-xl" />
+                  <div>
+                    <p className="font-semibold">Online Payment</p>
+                    <p className="text-sm text-gray-500">
+                      Currently unavailable
+                    </p>
+                  </div>
+                </div>
               </label>
             </div>
           </div>

@@ -6,6 +6,7 @@ import { AuthContext } from "@/provider/AuthProvider";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { app } from "@/firebase/firebase.config";
+import bglogo from "../../src/assets/Login-BG.png";
 
 
 const auth = getAuth(app);
@@ -75,7 +76,7 @@ const Login = () => {
       className="min-h-screen flex justify-center items-center bg-cover bg-center"
       style={{
         backgroundImage:
-          "url('https://t3.ftcdn.net/jpg/16/13/79/42/360_F_1613794244_KlUIXWBf734TJR9DITsl2chsMrMi932E.jpg')",
+          `url(${bglogo})`,
       }}
     >
       <div className="bg-white/20 backdrop-blur-lg shadow-xl rounded-xl p-8 max-w-md w-full">

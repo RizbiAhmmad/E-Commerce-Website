@@ -1,10 +1,12 @@
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
-import { FaTrashAlt } from "react-icons/fa";
+import { useState } from "react";
+import { FaSearch, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const AllUsers = () => {
   const axiosPublic = useAxiosPublic();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { data: users = [], refetch } = useQuery({
     queryKey: ["users"],
@@ -59,12 +61,35 @@ const AllUsers = () => {
       }
     });
   };
+  const filteredUsers = users.filter((user) => {
+    const term = searchTerm.toLowerCase();
+
+    return (
+      user.name?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term) ||
+      user.role?.toLowerCase().includes(term)
+    );
+  });
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="text-4xl font-bold text-center mb-8 border-b-2 border-gray-200 pb-4">
         All Users
       </h2>
+      <div className="mb-4 flex justify-start">
+        <div className="relative w-full sm:w-80">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+          <input
+            type="text"
+            placeholder="Search by name, email or role..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border pl-10 pr-4 py-2 rounded-xl w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          />
+        </div>
+      </div>
+
       <div className="overflow-x-auto rounded-lg shadow-lg bg-white">
         <table className="w-full text-sm text-left table-auto">
           <thead className="bg-gray-100 text-gray-700 uppercase tracking-wider">
@@ -77,7 +102,7 @@ const AllUsers = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {users.map((user, index) => (
+            {filteredUsers.map((user, index) => (
               <tr
                 key={user._id}
                 className="hover:bg-gray-50 transition duration-200"

@@ -11,9 +11,7 @@ const MyOrders = () => {
   useEffect(() => {
     if (user?.email) {
       axiosPublic
-        .get(
-          `/orders?email=${user.email}`
-        )
+        .get(`/orders?email=${user.email}`)
         .then((res) => setOrders(res.data))
         .catch((err) => console.error(err));
     }
@@ -22,36 +20,38 @@ const MyOrders = () => {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100";
       case "processing":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100";
       case "shipped":
-        return "bg-purple-100 text-purple-800";
+        return "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100";
       case "delivered":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100";
       case "cancelled":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100";
       case "returned":
-        return "bg-orange-100 text-orange-800";
+        return "bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-100";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100";
     }
   };
 
   return (
-    <div className="max-w-5xl dark:bg-black dark:text-white mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold mb-8 text-black dark:text-white">
+    <div className="min-h-screen bg-white dark:bg-black dark:text-white px-4 py-12">
+      <h2 className="text-3xl font-bold mb-8 text-center text-black dark:text-white">
         My Orders
       </h2>
 
       {orders.length === 0 ? (
-        <p className="text-gray-500">No orders found.</p>
+        <p className="text-gray-500 dark:text-gray-400 text-center">
+          No orders found.
+        </p>
       ) : (
         <div className="space-y-8">
           {orders.map((order) => (
             <div
               key={order._id}
-              className="bg-white shadow-lg hover:shadow-2xl rounded-xl overflow-hidden transition transform hover:-translate-y-1 duration-300"
+              className="bg-white dark:bg-gray-900 shadow-lg hover:shadow-2xl rounded-xl overflow-hidden transition transform hover:-translate-y-1 duration-300"
             >
               {/* Header */}
               <div className="bg-gradient-to-r from-cyan-500 to-blue-400 text-white px-4 md:px-6 py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
@@ -80,7 +80,7 @@ const MyOrders = () => {
                 {order.cartItems?.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex flex-col sm:flex-row sm:items-center gap-4 border-b pb-3 last:border-b-0"
+                    className="flex flex-col sm:flex-row sm:items-center gap-4 border-b border-gray-200 dark:border-gray-700 pb-3 last:border-b-0"
                   >
                     <img
                       src={item.productImage}
@@ -89,18 +89,18 @@ const MyOrders = () => {
                     />
 
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800 break-words">
+                      <h4 className="font-semibold text-gray-800 dark:text-gray-100 break-words">
                         {item.productName}
                       </h4>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         Color: <span className="capitalize">{item.color}</span>{" "}
                         | Size: {item.size}
                       </p>
-                      <p className="text-sm text-gray-700 font-medium">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                         Qty: {item.quantity} × ৳{item.price}
                       </p>
                     </div>
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-gray-900 dark:text-white">
                       ৳{item.price * item.quantity}
                     </span>
                   </div>
@@ -108,28 +108,28 @@ const MyOrders = () => {
               </div>
 
               {/* Courier Info */}
-              <div className="px-4 md:px-6 py-4 border-t">
+              <div className="px-4 md:px-6 py-4 border-t border-gray-200 dark:border-gray-700">
                 {order.courier ? (
                   <div className="space-y-1">
-                    <p className="text-sm">
+                    <p className="text-sm dark:text-gray-300">
                       Courier:{" "}
                       <span className="capitalize font-medium">
                         {order.courier}
                       </span>
                     </p>
                     {order.courierTrackingId && (
-                      <p className="text-sm text-blue-600 hover:underline cursor-pointer break-all">
+                      <p className="text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer break-all">
                         Tracking ID: {order.courierTrackingId}
                       </p>
                     )}
                     {order.courierStatus && (
-                      <p className="text-sm">
+                      <p className="text-sm dark:text-gray-300">
                         Status:{" "}
                         <span
                           className={
                             order.courierStatus === "delivered"
-                              ? "text-green-600 font-medium"
-                              : "text-purple-600 font-medium"
+                              ? "text-green-600 dark:text-green-400 font-medium"
+                              : "text-purple-600 dark:text-purple-400 font-medium"
                           }
                         >
                           {order.courierStatus}
@@ -138,19 +138,21 @@ const MyOrders = () => {
                     )}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500">Courier info: </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Courier info: N/A
+                  </p>
                 )}
               </div>
 
               {/* Footer / Total */}
-              <div className="bg-gray-50 px-4 md:px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-t">
-                <p className="text-sm text-gray-600">
+              <div className="bg-gray-50 dark:bg-gray-800 px-4 md:px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   Payment:{" "}
                   <span className="font-semibold">
                     {(order.payment || "Not Specified").toUpperCase()}
                   </span>
                 </p>
-                <p className="font-bold text-gray-900 text-lg">
+                <p className="font-bold text-gray-900 dark:text-white text-lg">
                   Total (With delivery charges) : ৳{order.total}
                 </p>
               </div>

@@ -118,7 +118,7 @@ const CartPage = () => {
   if (loading) return <p className="p-6 text-center">Loading cart...</p>;
   if (!cartItems.length)
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center text-center">
+    <div className="min-h-screen dark:bg-black flex flex-col items-center justify-center text-center">
       <h2 className="text-3xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600">
         🛒 Your Cart is Empty
       </h2>

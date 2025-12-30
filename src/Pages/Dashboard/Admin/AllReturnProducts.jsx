@@ -130,7 +130,7 @@ const AllReturnProducts = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="border pl-10 pr-4 py-2 rounded w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            className="border pl-10 pr-4 py-2 rounded-xl w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
         </div>
       </div>
