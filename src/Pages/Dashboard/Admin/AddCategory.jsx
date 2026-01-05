@@ -23,6 +23,49 @@ const AddCategory = () => {
     setImageFile(e.target.files[0]);
   };
 
+  const optimizeCategoryImage = (file, maxSize = 400, quality = 0.8) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+
+        // keep aspect ratio
+        if (width > height) {
+          if (width > maxSize) {
+            height = Math.round((height * maxSize) / width);
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = Math.round((width * maxSize) / height);
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            const optimizedFile = new File([blob], file.name, {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            });
+            resolve(optimizedFile);
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -34,9 +77,12 @@ const AddCategory = () => {
 
     try {
       // Upload image to Cloudinary
+      const optimizedImage = await optimizeCategoryImage(imageFile, 300, 0.8);
+
       const cloudinaryData = new FormData();
-      cloudinaryData.append("file", imageFile);
+      cloudinaryData.append("file", optimizedImage);
       cloudinaryData.append("upload_preset", "eCommerce");
+      cloudinaryData.append("folder", "categories");
 
       const cloudinaryRes = await axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
@@ -71,7 +117,10 @@ const AddCategory = () => {
         Swal.fire("Error", "Server error. Category not added.", "error");
       }
     } catch (err) {
-      console.error("❌ Add Category Error:", err.response?.data || err.message);
+      console.error(
+        "❌ Add Category Error:",
+        err.response?.data || err.message
+      );
       Swal.fire("Error", "Something went wrong", "error");
     } finally {
       setLoading(false);

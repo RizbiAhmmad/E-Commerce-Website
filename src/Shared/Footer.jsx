@@ -57,11 +57,11 @@ export default function Footer() {
         >
           <div className="flex items-center gap-3">
             <img
-              src={logo}
-              alt="Logo Dark"
-              className="h-14 md:h-16 w-auto object-contain"
+              src={footerInfo.logo || logo}
+              alt="Logo"
+              className="h-12 w-auto object-contain rounded-full"
             />
-            {/* <h1 className="text-3xl font-bold">{footerInfo.name}</h1> */}
+            <h1 className="text-2xl font-bold">{footerInfo.name}</h1>
           </div>
 
           {/* Footer Logo */}

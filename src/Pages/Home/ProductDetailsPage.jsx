@@ -676,7 +676,7 @@ const ProductDetailsPage = () => {
                           key={r._id || r.id}
                           className="border p-4 rounded-md bg-gray-50"
                         >
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex dark:text-black items-center gap-2 mb-2">
                             <strong>{r.name || "Anonymous"}</strong>
                           </div>
                           <div className="flex items-center gap-2 mb-2">

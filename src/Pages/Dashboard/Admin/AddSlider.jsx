@@ -17,6 +17,35 @@ const AddSlider = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const optimizeSliderImage = (file, maxWidth = 1700, quality = 0.85) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+
+        const scale = maxWidth / img.width;
+        canvas.width = maxWidth;
+        canvas.height = Math.round(img.height * scale);
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(
+          (blob) => {
+            const optimizedFile = new File([blob], file.name, {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            });
+            resolve(optimizedFile);
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+    });
+  };
 
   const handleImageChange = (e) => {
     setImageFile(e.target.files[0]);
@@ -33,9 +62,12 @@ const AddSlider = () => {
 
     try {
       // Upload image to Cloudinary
+      const optimizedImage = await optimizeSliderImage(imageFile, 1700, 0.85);
+
       const cloudinaryData = new FormData();
-      cloudinaryData.append("file", imageFile);
+      cloudinaryData.append("file", optimizedImage);
       cloudinaryData.append("upload_preset", "eCommerce");
+      cloudinaryData.append("folder", "sliders");
 
       const cloudinaryRes = await axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
@@ -82,7 +114,9 @@ const AddSlider = () => {
       <h2 className="mb-6 text-2xl font-bold text-center">Add New Slider</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block mb-1 font-semibold">Image (1700 x 600 px)</label>
+          <label className="block mb-1 font-semibold">
+            Image (1700 x 600 px)
+          </label>
           <div className="flex items-center gap-4">
             <label
               htmlFor="image"

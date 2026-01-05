@@ -208,9 +208,9 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white dark:bg-black text-black dark:text-white border-b dark:border-gray-700 fixed w-full z-50 px-4 md:px-8 shadow-sm">
-      <div className="max-w-7xl mx-auto flex justify-between items-center py-1">
+      <div className="max-w-7xl mx-auto flex justify-between items-center py-2">
         {/* Logo */}
-        {/* <motion.div
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="leading-tight text-lg md:text-xl items-center flex gap-1 md:gap-2 font-bold text-black dark:text-white"
@@ -224,23 +224,23 @@ const Navbar = () => {
           )}
 
           <Link to="/">{footerInfo?.name}</Link>
-        </motion.div> */}
+        </motion.div>
 
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="flex items-center"
         >
           {footerInfo?.logo && (
             <Link to="/" className="cursor-pointer flex items-center">
-              {/* Light mode logo */}
+        
               <img
                 src={footerInfo?.logo || "/logo-light.png"}
                 alt="Logo"
                 className="h-14 md:h-16 w-auto object-contain dark:hidden"
               />
 
-              {/* Dark mode logo (hardcoded) */}
+         
               <img
                 src={logo}
                 alt="Logo Dark"
@@ -248,7 +248,7 @@ const Navbar = () => {
               />
             </Link>
           )}
-        </motion.div>
+        </motion.div> */}
 
         {/* Desktop Search + Categories */}
         <div className="hidden md:flex items-center  relative gap-4">

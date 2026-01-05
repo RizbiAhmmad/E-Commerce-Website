@@ -77,32 +77,32 @@ const AllPOSOrders = () => {
 
   // delete POS order
   const handleDelete = (id) => {
-    if (user.role !== "admin") {
-      return Swal.fire(
-        "Permission Denied",
-        "Only admins can delete orders",
-        "error"
-      );
+  if (currentUserRole !== "admin") {
+    return Swal.fire(
+      "Permission Denied",
+      "Only admins can delete orders",
+      "error"
+    );
+  }
+
+  Swal.fire({
+    title: "Are you sure?",
+    text: "This POS order will be deleted!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      axiosPublic.delete(`/pos/orders/${id}`).then((res) => {
+        if (res.data.deletedCount > 0) {
+          fetchOrders();
+          Swal.fire("Deleted!", "Order removed.", "success");
+        }
+      });
     }
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This POS order will be deleted!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axiosPublic.delete(`/pos/orders/${id}`).then((res) => {
-          if (res.data.deletedCount > 0) {
-            fetchOrders();
-            Swal.fire("Deleted!", "Order removed.", "success");
-          }
-        });
-      }
-    });
-  };
+  });
+};
+
 
   // courier assign
   const submitCourierData = async () => {

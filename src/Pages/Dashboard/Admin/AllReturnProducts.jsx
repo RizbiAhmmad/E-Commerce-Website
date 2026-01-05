@@ -25,11 +25,8 @@ const AllReturnProducts = () => {
   // Fetch orders with status === "returned"
   const fetchReturnOrders = async () => {
     try {
-      const res = await axiosPublic.get("/orders");
-      const returned = res.data.filter(
-        (order) => order.status?.toLowerCase() === "returned"
-      );
-      setReturnOrders(returned);
+      const res = await axiosPublic.get("/returned-orders");
+      setReturnOrders(res.data);
     } catch (error) {
       console.error(error);
       setReturnOrders([]);
@@ -200,11 +197,11 @@ const AllReturnProducts = () => {
                   >
                     Set Return Info
                   </button>
-                  {currentUserRole === "admin" && (
+                  {/* {currentUserRole === "admin" && (
                     <button onClick={() => handleDelete(order._id)}>
                       <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
                     </button>
-                  )}
+                  )} */}
                 </td>
               </tr>
             ))}
@@ -258,10 +255,13 @@ const AllReturnProducts = () => {
               onSubmit={async (e) => {
                 e.preventDefault();
                 try {
-                  await axiosPublic.patch(
-                    `/orders/${selectedOrder._id}/return`,
-                    returnData
-                  );
+                  const endpoint =
+                    selectedOrder.source === "pos"
+                      ? `/pos/orders/${selectedOrder._id}/return-info`
+                      : `/orders/${selectedOrder._id}/return`;
+
+                  await axiosPublic.patch(endpoint, returnData);
+
                   Swal.fire("Saved!", "Return info updated.", "success");
                   setIsModalOpen(false);
                   fetchReturnOrders();

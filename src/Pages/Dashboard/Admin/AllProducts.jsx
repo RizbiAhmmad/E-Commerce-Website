@@ -157,17 +157,51 @@ const AllProducts = () => {
     }
   };
 
+  const resizeImage = (file, maxWidth = 1024, quality = 0.7) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const scale = maxWidth / img.width;
+
+        canvas.width = maxWidth;
+        canvas.height = img.height * scale;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(
+          (blob) => {
+            resolve(new File([blob], file.name, { type: "image/jpeg" }));
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+    });
+  };
+
   // Upload images to Cloudinary and return URLs
   const uploadImages = async (files) => {
-    const uploadPromises = files.map((file) => {
-      const cloudinaryData = new FormData();
-      cloudinaryData.append("file", file);
-      cloudinaryData.append("upload_preset", "eCommerce");
+    const optimizedFiles = await Promise.all(
+      files.map((file) => resizeImage(file))
+    );
+
+    const uploadPromises = optimizedFiles.map((file) => {
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", "eCommerce");
+      data.append("folder", "products");
+
+      //  MUST return this promise
       return axiosPublic.post(
         "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
-        cloudinaryData
+        data
       );
     });
+
     const responses = await Promise.all(uploadPromises);
     return responses.map((res) => res.data.secure_url);
   };

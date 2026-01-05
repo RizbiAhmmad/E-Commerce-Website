@@ -638,12 +638,12 @@ const POSPage = () => {
 
             {/* Manual TAX */}
             <div className="my-2 flex gap-2">
-              <span className="mt-2 font-semibold text-lg">Tax:</span>
+              <span className="mt-2 font-semibold text-lg">VAT:</span>
               <input
                 type="number"
                 value={manualTax}
                 onChange={(e) => setManualTax(e.target.value)}
-                placeholder="Enter TAX %"
+                placeholder="Enter VAT %"
                 className="border p-2 w-full rounded"
               />
             </div>
@@ -667,7 +667,7 @@ const POSPage = () => {
 
             <button
               onClick={() => setPaymentModalOpen(true)}
-              className="w-full bg-cyan-500 text-white py-2 rounded hover:bg-cyan-600"
+              className="w-full bg-cyan-500 text-white py-2 rounded-xl hover:bg-cyan-600"
             >
               Order Now
             </button>
@@ -963,15 +963,15 @@ const POSPage = () => {
                   <img
                     src={footerInfo.logo}
                     alt="Company Logo"
-                    className="w-18 h-auto"
+                    className="w-15 h-auto"
                   />
                 )}
               </div>
 
               {/* Company Name & Footer info */}
-              {/* <h2 className="font-bold text-md text-center">
+              <h2 className="font-bold text-md text-center">
                 {footerInfo?.name}
-              </h2> */}
+              </h2>
               <p className="text-xs text-center">{footerInfo?.address}</p>
               <p className="text-xs text-center">{footerInfo?.phone}</p>
             </div>
@@ -1044,9 +1044,17 @@ const POSPage = () => {
               <span>৳{fmt(receiptData.discount || 0)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>TAX:</span>
+              <span>VAT:</span>
               <span>৳{fmt(receiptData.tax || 0)}</span>
             </div>
+
+            {Number(receiptData.shippingCharge) > 0 && (
+              <div className="flex justify-between text-sm">
+                <span>SHIPPING:</span>
+                <span>৳{fmt(receiptData.shippingCharge)}</span>
+              </div>
+            )}
+
             <div className="flex justify-between font-semibold text-base mt-1">
               <span>TOTAL:</span>
               <span>৳{fmt(receiptData.total)}</span>

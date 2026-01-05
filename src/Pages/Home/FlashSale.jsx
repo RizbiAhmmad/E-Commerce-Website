@@ -354,7 +354,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
         navigate(`/product/${product._id}`);
       }}
-      className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer dark:hover:bg-cyan-600 hover:bg-cyan-100 hover:shadow-xl transition-all duration-300 overflow-hidden"
+      className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer dark:hover:bg-gray-900 hover:bg-cyan-100 hover:shadow-xl transition-all duration-300 overflow-hidden"
     >
       <div className="relative overflow-hidden rounded-md">
         <motion.img
@@ -365,16 +365,32 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           className="w-full aspect-square object-cover rounded-md"
         />
 
-        {hasDiscount && (
-          <motion.div
-            initial={{ rotateY: 90, opacity: 0 }}
-            animate={{ rotateY: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="absolute top-0 left-0 md:top-2 md:left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
-          >
-            {discountPercent}% OFF
-          </motion.div>
-        )}
+        <div className="absolute top-0 left-0 md:top-2 md:left-2 z-10 flex flex-col gap-1">
+          {/* Discount Badge */}
+          {hasDiscount && (
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg"
+            >
+              {discountPercent}% OFF
+            </motion.div>
+          )}
+
+          {/* Free Shipping Badge */}
+          {product.freeShipping && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-red-500 text-white text-[10px] font-semibold 
+                 px-2 py-[2px] rounded-md shadow-md flex items-center gap-1"
+            >
+              🚚 Free Shipping
+            </motion.div>
+          )}
+        </div>
 
         <div
           onClick={(e) => e.stopPropagation()}

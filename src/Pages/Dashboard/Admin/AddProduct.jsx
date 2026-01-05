@@ -81,6 +81,49 @@ const AddProduct = () => {
     setImageFiles([...e.target.files]);
   };
 
+  const optimizeImageFile = (file, maxSize = 1200, quality = 0.8) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+
+        // keep aspect ratio
+        if (width > height) {
+          if (width > maxSize) {
+            height = Math.round((height * maxSize) / width);
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = Math.round((width * maxSize) / height);
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            const optimizedFile = new File([blob], file.name, {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            });
+            resolve(optimizedFile);
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!imageFiles.length)
@@ -89,10 +132,13 @@ const AddProduct = () => {
 
     try {
       // Upload all images
-      const imageUploadPromises = imageFiles.map((file) => {
+      const imageUploadPromises = imageFiles.map(async (file) => {
+        const optimizedFile = await optimizeImageFile(file, 1200, 0.8);
+
         const cloudinaryData = new FormData();
-        cloudinaryData.append("file", file);
+        cloudinaryData.append("file", optimizedFile);
         cloudinaryData.append("upload_preset", "eCommerce");
+
         return axiosPublic.post(
           "https://api.cloudinary.com/v1_1/dt3bgis04/image/upload",
           cloudinaryData

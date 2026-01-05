@@ -13,39 +13,46 @@ const CartPage = () => {
   const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
-  if (!user?.email) {
-    setLoading(false);
-    return;
-  }
+    if (!user?.email) {
+      setLoading(false);
+      return;
+    }
 
-  setLoading(true);
-  axiosPublic
-    .get(`/cart?email=${user.email}`)
-    .then(async (res) => {
-      const items = res.data;
-      const productIds = items.map((item) => item.productId);
+    setLoading(true);
+    axiosPublic
+      .get(`/cart?email=${user.email}`)
+      .then(async (res) => {
+        const items = res.data;
+        const productIds = items.map((item) => item.productId);
 
-      const productDetails = await Promise.all(
-        productIds.map((id) =>
-          axiosPublic.get(`/products/${id}`).then((res) => res.data)
-        )
-      );
+        const productResults = await Promise.allSettled(
+          productIds.map((id) => axiosPublic.get(`/products/${id}`))
+        );
 
-      const map = {};
-      productDetails.forEach((product) => {
-        map[product._id] = product;
+        const map = {};
+        const validProductIds = new Set();
+
+        productResults.forEach((result) => {
+          if (result.status === "fulfilled") {
+            const product = result.value.data;
+            map[product._id] = product;
+            validProductIds.add(product._id);
+          }
+        });
+
+        const validCartItems = items.filter((item) =>
+          validProductIds.has(item.productId)
+        );
+
+        setProductsMap(map);
+        setCartItems(validCartItems);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch cart items:", error);
+        setLoading(false);
       });
-
-      setProductsMap(map);
-      setCartItems(items);
-      setLoading(false);
-    })
-    .catch((error) => {
-      console.error("Failed to fetch cart items:", error);
-      setLoading(false);
-    });
-}, [user]);
-
+  }, [user]);
 
   const totalPrice = cartItems.reduce((total, item) => {
     if (!item.selected) return total;
@@ -60,9 +67,7 @@ const CartPage = () => {
     const newSelected = !item.selected;
 
     axiosPublic
-      .patch(`/cart/${itemId}`, {
-        selected: newSelected,
-      })
+      .patch(`/cart/${itemId}`, { selected: newSelected })
       .then(() => {
         setCartItems((prev) =>
           prev.map((i) =>
@@ -77,9 +82,7 @@ const CartPage = () => {
     if (newQty < 1) return;
 
     axiosPublic
-      .patch(`/cart/${itemId}`, {
-        quantity: newQty,
-      })
+      .patch(`/cart/${itemId}`, { quantity: newQty })
       .then(() => {
         setCartItems((prev) =>
           prev.map((item) =>
@@ -87,9 +90,7 @@ const CartPage = () => {
           )
         );
       })
-      .catch((err) => {
-        console.error("Failed to update quantity", err);
-      });
+      .catch((err) => console.error("Failed to update quantity", err));
   };
 
   const deleteItem = (itemId) => {
@@ -99,9 +100,7 @@ const CartPage = () => {
         setCartItems((prev) => prev.filter((item) => item._id !== itemId));
         window.dispatchEvent(new Event("cartUpdated"));
       })
-      .catch((err) => {
-        console.error("Failed to delete item", err);
-      });
+      .catch((err) => console.error("Failed to delete item", err));
   };
 
   const handleCheckout = () => {
