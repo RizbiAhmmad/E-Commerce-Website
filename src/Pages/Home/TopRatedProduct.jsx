@@ -365,7 +365,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
           className="w-full aspect-square object-cover rounded-md"
         />
 
-        <div className="absolute top-0 left-0 md:top-2 md:left-2 z-10 flex flex-col gap-1">
+        <div className="absolute top-0 left-0 md:top-2 md:left-2 z-10 flex flex-col gap-0">
           {/* Discount Badge */}
           {hasDiscount && (
             <motion.div
@@ -394,7 +394,7 @@ const SingleProduct = ({ product, brandName, averageRating }) => {
 
         <div
           onClick={(e) => e.stopPropagation()}
-          className="p-2 rounded-full bg-gray-100 absolute top-1 right-1 md:top-2 md:right-2"
+          className="p-2 rounded-full bg-gray-100 absolute top-0 right-0 md:top-2 md:right-2"
         >
           {isFavorite ? (
             <IoIosHeart

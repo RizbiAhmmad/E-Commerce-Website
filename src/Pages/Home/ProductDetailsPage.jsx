@@ -762,7 +762,7 @@ const ProductDetailsPage = () => {
                           initial={{ rotateY: 90, opacity: 0 }}
                           animate={{ rotateY: 0, opacity: 1 }}
                           transition={{ duration: 0.5 }}
-                          className="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
+                          className="absolute top-0 left-0 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
                         >
                           {discountPercent}% OFF
                         </motion.div>
