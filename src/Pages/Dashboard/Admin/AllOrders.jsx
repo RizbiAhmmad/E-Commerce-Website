@@ -66,7 +66,6 @@ const AllOrders = () => {
     fetchFooterInfo();
   }, []);
 
-    
   useEffect(() => {
     if (user?.email) {
       axiosPublic
@@ -79,7 +78,6 @@ const AllOrders = () => {
         });
     }
   }, [user, axiosPublic]);
-
 
   // Delete order
   const handleDelete = (id) => {
@@ -155,7 +153,7 @@ const AllOrders = () => {
           itemQuantity: Number(itemQuantity),
           itemWeight: Number(itemWeight),
           specialInstruction,
-        }
+        },
       );
 
       if (res.data.success) {
@@ -229,7 +227,7 @@ const AllOrders = () => {
       order._id?.toLowerCase().includes(term) ||
       order.orderSource?.toLowerCase().includes(term) ||
       order.cartItems.some((item) =>
-        item.productName?.toLowerCase().includes(term)
+        item.productName?.toLowerCase().includes(term),
       )
     );
   });
@@ -238,7 +236,7 @@ const AllOrders = () => {
     statusFilter === "all"
       ? searchedOrders
       : searchedOrders.filter(
-          (order) => order.status?.toLowerCase() === statusFilter
+          (order) => order.status?.toLowerCase() === statusFilter,
         );
 
   // Pagination logic
@@ -246,7 +244,7 @@ const AllOrders = () => {
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = filteredOrders.slice(
     indexOfFirstOrder,
-    indexOfLastOrder
+    indexOfLastOrder,
   );
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
@@ -368,7 +366,7 @@ const AllOrders = () => {
           <div class="bill-box">
             <strong>Invoice No:</strong> ${order._id}<br/>
             <strong>Date:</strong> ${new Date(
-              order.createdAt
+              order.createdAt,
             ).toLocaleDateString()}<br/>
             <strong>Payment:</strong> ${order.payment}<br/>
             <strong>Shipping:</strong> ${
@@ -403,7 +401,7 @@ const AllOrders = () => {
                 <td>৳${item.price}</td>
                 <td>৳${(item.price * item.quantity).toFixed(2)}</td>
               </tr>
-            `
+            `,
               )
               .join("")}
           </tbody>
@@ -462,7 +460,7 @@ const AllOrders = () => {
           (item) =>
             `${item.productName} (Size: ${item.size || "-"}, Color: ${
               item.color || "-"
-            }, Qty: ${item.quantity})`
+            }, Qty: ${item.quantity})`,
         )
         .join("; "),
       Subtotal: order.subtotal || 0,
@@ -598,8 +596,8 @@ const AllOrders = () => {
         order.paymentStatus === "paid"
           ? "bg-green-100 text-green-700"
           : order.paymentStatus === "failed"
-          ? "bg-red-100 text-red-700"
-          : "bg-yellow-100 text-yellow-700"
+            ? "bg-red-100 text-red-700"
+            : "bg-yellow-100 text-yellow-700"
       }`}
                     >
                       {(order.paymentStatus || "pending").toUpperCase()}
@@ -637,7 +635,7 @@ const AllOrders = () => {
                   <div className="flex items-center gap-2">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusClasses(
-                        order.status || order.courierStatus
+                        order.status || order.courierStatus,
                       )}`}
                     >
                       {order.status?.toUpperCase() ||
@@ -662,50 +660,79 @@ const AllOrders = () => {
                 </td>
 
                 <td className="px-2 py-3">
-                  <select
-                    value={order.courier || ""}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val) {
-                        setSelectedOrderId(order._id);
-                        setSelectedCourierName(val);
-                        setShowCourierModal(true);
-                      }
-                    }}
-                    className="border border-gray-300 rounded px-2 py-1 text-xs"
-                  >
-                    <option value="">Assign Courier</option>
-                    {couriers.map((c) => (
-                      <option key={c._id} value={c.courierName}>
-                        {c.courierName} ({c.status})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="flex flex-col gap-1">
+                    <select
+                      value={order.courier || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val) {
+                          setSelectedOrderId(order._id);
+                          setSelectedCourierName(val);
+                          setShowCourierModal(true);
+                        }
+                      }}
+                      className="border border-gray-300 rounded px-2 py-1 text-xs"
+                    >
+                      <option value="">Assign Courier</option>
+                      {couriers.map((c) => (
+                        <option key={c._id} value={c.courierName}>
+                          {c.courierName} ({c.status})
+                        </option>
+                      ))}
+                    </select>
+
+                    {/*  Normal Courier Status */}
+                    {order.courierStatus && (
+                      <span className="text-xs text-gray-700">
+                        Status: {order.courierStatus.replaceAll("_", " ")}
+                      </span>
+                    )}
+                    {order.courierTrackingId && (
+                      <span className="text-xs text-gray-700">
+                        Tracking ID: {order.courierTrackingId}
+                      </span>
+                    )}
+                  </div>
                 </td>
 
                 <td className="px-2 py-3 flex items-center justify-center gap-3">
                   <button onClick={() => handlePrint(order)}>
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
-                   {currentUserRole === "admin" && (
-                  <button onClick={() => handleDelete(order._id)}>
-                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                  </button>
-                   )}
+                  {currentUserRole === "admin" && (
+                    <button onClick={() => handleDelete(order._id)}>
+                      <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                    </button>
+                  )}
                 </td>
 
                 <td className="px-2 py-3">
                   {order.courierCheckStatus === "success" ? (
-                    <button
-                      onClick={() => {
-                        setSelectedFraudData(order.courierCheckData);
-                        setSelectedOrderNo(order._id);
-                        setShowFraudModal(true);
-                      }}
-                      className="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-                    >
-                      View Fraud Data
-                    </button>
+                    <div className="flex flex-col gap-1">
+                      <button
+                        onClick={() => {
+                          setSelectedFraudData(order.courierCheckData);
+                          setSelectedOrderNo(order._id);
+                          setShowFraudModal(true);
+                        }}
+                        className="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                      >
+                        View Fraud Data
+                      </button>
+
+                      {order.courierCheckData?.courierData &&
+                        Object.entries(order.courierCheckData.courierData).map(
+                          ([courier, data]) =>
+                            data?.success_ratio ? (
+                              <div
+                                key={courier}
+                                className="text-xs text-gray-700"
+                              >
+                                {courier}: {data.success_ratio}%
+                              </div>
+                            ) : null,
+                        )}
+                    </div>
                   ) : order.courierCheckStatus === "failed" ? (
                     <span className="text-red-500 text-xs font-semibold">
                       Check Failed
@@ -852,15 +879,15 @@ const AllOrders = () => {
                               data.success_ratio >= 80
                                 ? "text-green-600"
                                 : data.success_ratio >= 50
-                                ? "text-yellow-600"
-                                : "text-red-600"
+                                  ? "text-yellow-600"
+                                  : "text-red-600"
                             }`}
                           >
                             {data.success_ratio}%
                           </span>
                         </div>
                       </div>
-                    ) : null
+                    ) : null,
                 )}
               </div>
 

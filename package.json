@@ -20,6 +20,7 @@
     "framer-motion": "^12.23.12",
     "jsbarcode": "^3.12.1",
     "lightswind": "^3.1.12",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.528.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
