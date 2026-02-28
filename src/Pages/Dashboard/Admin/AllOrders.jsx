@@ -4,6 +4,7 @@ import { FaPrint, FaSearch, FaTrashAlt } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import * as XLSX from "xlsx";
 import { AuthContext } from "@/provider/AuthProvider";
+import { FaEdit } from "react-icons/fa";
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -30,6 +31,10 @@ const AllOrders = () => {
   const [footerInfo, setFooterInfo] = useState(null);
   const [currentUserRole, setCurrentUserRole] = useState(null);
   const { user } = useContext(AuthContext);
+const [showEditModal, setShowEditModal] = useState(false);
+const [editingOrder, setEditingOrder] = useState(null);
+
+
   // Fetch orders
   const fetchOrders = async () => {
     try {
@@ -78,6 +83,54 @@ const AllOrders = () => {
         });
     }
   }, [user, axiosPublic]);
+
+  const openEditModal = (order) => {
+  setEditingOrder({ ...order });
+  setShowEditModal(true);
+};
+
+const handleQuantityChange = (index, value) => {
+  const updatedItems = [...editingOrder.cartItems];
+  updatedItems[index].quantity = Number(value);
+
+  setEditingOrder({
+    ...editingOrder,
+    cartItems: updatedItems,
+  });
+};
+
+const removeCartItem = (index) => {
+  const updatedItems = editingOrder.cartItems.filter(
+    (_, i) => i !== index
+  );
+
+  setEditingOrder({
+    ...editingOrder,
+    cartItems: updatedItems,
+  });
+};
+
+const handleUpdateOrder = async () => {
+  try {
+    const res = await axiosPublic.patch(
+      `/orders/${editingOrder._id}`,
+      {
+        cartItems: editingOrder.cartItems,
+        discount: editingOrder.discount || 0,
+        shipping: editingOrder.shipping,
+        shippingCost: editingOrder.shippingCost || 0,
+      }
+    );
+
+    if (res.data.success) {
+      Swal.fire("Updated!", "Order updated successfully", "success");
+      fetchOrders();
+      setShowEditModal(false);
+    }
+  } catch (error) {
+    Swal.fire("Error!", "Update failed", "error");
+  }
+};
 
   // Delete order
   const handleDelete = (id) => {
@@ -606,9 +659,9 @@ const AllOrders = () => {
                 </td>
 
                 <td className="px-2 py-3">
-                  {order.cartItems.map((item) => (
+                  {order.cartItems.map((item,index) => (
                     <div
-                      key={item.productId}
+                     key={`${item.productId}-${index}`}
                       className="flex items-center gap-2 mb-2"
                     >
                       <img
@@ -700,9 +753,15 @@ const AllOrders = () => {
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
                   {currentUserRole === "admin" && (
-                    <button onClick={() => handleDelete(order._id)}>
-                      <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
-                    </button>
+                    <>
+                      <button onClick={() => openEditModal(order)}>
+                        <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
+                      </button>
+
+                      <button onClick={() => handleDelete(order._id)}>
+                        <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                      </button>
+                    </>
                   )}
                 </td>
 
@@ -902,6 +961,87 @@ const AllOrders = () => {
             </div>
           </div>
         )}
+
+        {showEditModal && editingOrder && (
+  <div className="fixed inset-0 bg-gray-100  flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg w-[600px] shadow-lg">
+      <h2 className="text-xl font-bold mb-4">Edit Order</h2>
+
+      {/* Cart Items */}
+      {editingOrder.cartItems.map((item, index) => (
+        <div key={index} className="flex items-center gap-3 mb-3 border-b pb-2">
+          <div className="flex-1">
+            <div className="font-semibold">{item.productName}</div>
+            <div className="text-sm text-gray-500">
+              ৳{item.price} ×
+            </div>
+          </div>
+
+          <input
+            type="number"
+            value={item.quantity}
+            min="1"
+            onChange={(e) =>
+              handleQuantityChange(index, e.target.value)
+            }
+            className="border px-2 py-1 w-20 rounded"
+          />
+
+          <button
+            onClick={() => removeCartItem(index)}
+            className="text-red-500 font-bold"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+
+      {/* Discount */}
+      <label className="block font-semibold mt-4">Discount</label>
+      <input
+        type="number"
+        value={editingOrder.discount || 0}
+        onChange={(e) =>
+          setEditingOrder({
+            ...editingOrder,
+            discount: e.target.value,
+          })
+        }
+        className="border px-3 py-2 w-full rounded mb-3"
+      />
+
+      {/* Shipping */}
+      <label className="block font-semibold">Shipping Cost</label>
+      <input
+        type="number"
+        value={editingOrder.shippingCost || 0}
+        onChange={(e) =>
+          setEditingOrder({
+            ...editingOrder,
+            shippingCost: e.target.value,
+          })
+        }
+        className="border px-3 py-2 w-full rounded mb-4"
+      />
+
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={() => setShowEditModal(false)}
+          className="px-4 py-2 bg-gray-300 rounded"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={handleUpdateOrder}
+          className="px-4 py-2 bg-green-600 text-white rounded"
+        >
+          Update Order
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </div>
 
       <div className="mt-6 flex justify-center items-center gap-4">

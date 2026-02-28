@@ -119,6 +119,7 @@ const ProductDetailsPage = () => {
   }, [product, brands, categories]);
 
   if (!product) return <Loading />;
+  const isOutOfStock = !product.stock || Number(product.stock) <= 0;
 
   const getBrandName = (id) =>
     brands.find((b) => b._id === id)?.name || "Unknown";
@@ -252,31 +253,31 @@ const ProductDetailsPage = () => {
   };
 
   const handleBuyNow = () => {
-    // if (!user) {
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "You must be logged in to continue",
-    //   });
-    //   navigate("/login", { state: { from: location } });
-    //   return;
-    // }
-
-    const buyItem = {
-      productId: product._id,
-      quantity,
-      selectedColor,
-      selectedSize,
-    };
-
-    navigate("/checkout", {
-      state: {
-        cartItems: [buyItem],
-        productsMap: {
-          [product._id]: product,
-        },
-      },
+  if (isOutOfStock) {
+    Swal.fire({
+      icon: "error",
+      title: "Out of Stock",
+      text: "This product is currently unavailable.",
     });
+    return;
+  }
+
+  const buyItem = {
+    productId: product._id,
+    quantity,
+    selectedColor,
+    selectedSize,
   };
+
+  navigate("/checkout", {
+    state: {
+      cartItems: [buyItem],
+      productsMap: {
+        [product._id]: product,
+      },
+    },
+  });
+};
 
   const getEmbedUrl = (url) => {
     if (!url) return "";

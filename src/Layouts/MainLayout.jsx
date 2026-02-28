@@ -2,6 +2,7 @@ import GTMPageView from "@/Pages/Dashboard/Admin/GTMPageView";
 import FloatingChatMenu from "@/Shared/FloatingChatMenu";
 import Footer from "@/Shared/Footer";
 import Navbar from "@/Shared/Navbar";
+import NoticePopup from "@/Shared/NoticePopup";
 import ScrollToTop from "@/Shared/ScrollToTop";
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
@@ -13,6 +14,7 @@ const MainLayout = () => {
   return (
     <div>
       <ScrollToTop />
+      <NoticePopup/>
       {!noHeaderFooter && <Navbar />}
       {/* <Navbar /> */}
       <GTMPageView></GTMPageView>

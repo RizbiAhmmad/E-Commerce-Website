@@ -117,7 +117,7 @@ const ProfitLossReport = () => {
           Date: new Date(order.createdAt).toLocaleDateString(),
           OrderType: order.orderType,
         };
-      })
+      }),
     );
 
     const worksheet = XLSX.utils.json_to_sheet(filteredOrders);
@@ -138,7 +138,7 @@ const ProfitLossReport = () => {
     const ed = new Date(endDate);
 
     const filteredOrders = orders.filter(
-      (o) => new Date(o.createdAt) >= sd && new Date(o.createdAt) <= ed
+      (o) => new Date(o.createdAt) >= sd && new Date(o.createdAt) <= ed,
     );
 
     let sales = 0,
@@ -163,7 +163,7 @@ const ProfitLossReport = () => {
 
     // expense from backend
     const res2 = await axiosPublic.get(
-      `/expenses/report?startDate=${startDate}&endDate=${endDate}`
+      `/expenses/report?startDate=${startDate}&endDate=${endDate}`,
     );
 
     const expenseTotal = res2.data.total || 0;
@@ -367,10 +367,10 @@ const ProfitLossReport = () => {
                 {f === "all"
                   ? "All"
                   : f === "today"
-                  ? "Today"
-                  : f === "week"
-                  ? "This Week"
-                  : "This Month"}
+                    ? "Today"
+                    : f === "week"
+                      ? "This Week"
+                      : "This Month"}
               </button>
             ))}
           </div>
@@ -398,11 +398,22 @@ const ProfitLossReport = () => {
                 (order.cartItems || []).map((p, idx) => {
                   const totalSale = p.price * p.quantity;
                   const totalCost = (p.purchasePrice || 0) * p.quantity;
-                  const profit =
-                    totalSale -
-                    totalCost -
-                    (order.discount || 0) +
-                    (order.tax || 0);
+
+                  // 🔹 Order subtotal calculate
+                  const orderSubtotal = (order.cartItems || []).reduce(
+                    (sum, item) => sum + item.price * item.quantity,
+                    0,
+                  );
+
+                  // 🔹 item ratio
+                  const ratio =
+                    orderSubtotal > 0 ? totalSale / orderSubtotal : 0;
+
+                  // 🔹 distribute discount & tax proportionally
+                  const itemDiscount = (order.discount || 0) * ratio;
+                  const itemTax = (order.tax || 0) * ratio;
+
+                  const profit = totalSale - totalCost - itemDiscount + itemTax;
 
                   return (
                     <tr key={`${order._id}-${idx}`}>
@@ -426,17 +437,17 @@ const ProfitLossReport = () => {
                       <td className="px-4 py-2 border">৳{totalSale}</td>
                       <td className="px-4 py-2 border">৳{totalCost}</td>
                       <td className="px-4 py-2 border">
-                        ৳{order.discount || 0}
+                        ৳{itemDiscount.toFixed(2)}
                       </td>
                       <td className="px-4 py-2 border">
-                        ৳{Number(order.tax || 0).toFixed(2)}
+                        ৳{itemTax.toFixed(2)}
                       </td>
                       <td
                         className={`px-4 py-2 border font-bold ${
                           profit >= 0 ? "text-green-600" : "text-red-600"
                         }`}
                       >
-                        ৳{profit}
+                        ৳{Number(profit || 0).toFixed(2)}
                       </td>
                       <td className="px-4 py-2 border">{order.orderType}</td>
                       <td className="px-4 py-2 border">
@@ -444,7 +455,7 @@ const ProfitLossReport = () => {
                       </td>
                     </tr>
                   );
-                })
+                }),
               )}
             </tbody>
           </table>
@@ -496,7 +507,7 @@ const ProfitLossReport = () => {
           Total Expense: ৳
           {getFilteredExpenses().reduce(
             (sum, exp) => sum + Number(exp.price || 0),
-            0
+            0,
           )}
         </div>
       </div>

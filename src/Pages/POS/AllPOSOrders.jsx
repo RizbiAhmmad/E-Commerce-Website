@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import Swal from "sweetalert2";
-import { FaTrashAlt, FaSearch, FaPrint } from "react-icons/fa";
+import { FaTrashAlt, FaSearch, FaPrint, FaEdit } from "react-icons/fa";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import * as XLSX from "xlsx";
 import { AuthContext } from "@/provider/AuthProvider";
@@ -24,6 +24,63 @@ const AllPOSOrders = () => {
   const [selectedCourierName, setSelectedCourierName] = useState("");
   const [specialInstruction, setSpecialInstruction] = useState("");
   const [currentUserRole, setCurrentUserRole] = useState(null);
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingOrder, setEditingOrder] = useState(null);
+
+  const openEditModal = (order) => {
+    setEditingOrder(JSON.parse(JSON.stringify(order)));
+    setShowEditModal(true);
+  };
+
+  const handleUpdatePOSOrder = async () => {
+    try {
+      const res = await axiosPublic.patch(
+        `/pos/orders/${editingOrder._id}`,
+        editingOrder,
+      );
+
+      if (res.data.success) {
+        Swal.fire("Success", "Order updated", "success");
+        setShowEditModal(false);
+        fetchOrders();
+      }
+    } catch (err) {
+      Swal.fire("Error", "Update failed", "error");
+    }
+  };
+
+  const handleRemoveCartItem = (index) => {
+    Swal.fire({
+      title: "Remove Item?",
+      text: "This product will be removed from the order.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, remove it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedItems = editingOrder.cartItems.filter(
+          (_, i) => i !== index,
+        );
+
+        setEditingOrder({
+          ...editingOrder,
+          cartItems: updatedItems,
+        });
+      }
+    });
+  };
+
+  const subtotal = editingOrder?.cartItems?.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+
+  const grandTotal =
+    subtotal +
+    Number(editingOrder?.shippingCharge || 0) -
+    Number(editingOrder?.discount || 0) +
+    Number(editingOrder?.tax || 0);
 
   // Fetch couriers
   const fetchCouriers = async () => {
@@ -61,7 +118,7 @@ const AllPOSOrders = () => {
       })
       .catch(() => setFooterInfo(null));
   }, []);
-  
+
   useEffect(() => {
     if (user?.email) {
       axiosPublic
@@ -77,32 +134,31 @@ const AllPOSOrders = () => {
 
   // delete POS order
   const handleDelete = (id) => {
-  if (currentUserRole !== "admin") {
-    return Swal.fire(
-      "Permission Denied",
-      "Only admins can delete orders",
-      "error"
-    );
-  }
-
-  Swal.fire({
-    title: "Are you sure?",
-    text: "This POS order will be deleted!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, delete it!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      axiosPublic.delete(`/pos/orders/${id}`).then((res) => {
-        if (res.data.deletedCount > 0) {
-          fetchOrders();
-          Swal.fire("Deleted!", "Order removed.", "success");
-        }
-      });
+    if (currentUserRole !== "admin") {
+      return Swal.fire(
+        "Permission Denied",
+        "Only admins can delete orders",
+        "error",
+      );
     }
-  });
-};
 
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This POS order will be deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosPublic.delete(`/pos/orders/${id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            fetchOrders();
+            Swal.fire("Deleted!", "Order removed.", "success");
+          }
+        });
+      }
+    });
+  };
 
   // courier assign
   const submitCourierData = async () => {
@@ -120,7 +176,7 @@ const AllPOSOrders = () => {
           itemQuantity: Number(itemQuantity),
           itemWeight: Number(itemWeight),
           specialInstruction,
-        }
+        },
       );
 
       if (res.data.success) {
@@ -161,7 +217,7 @@ const AllPOSOrders = () => {
           Swal.fire(
             "Error!",
             err.response?.data?.message || "Return failed",
-            "error"
+            "error",
           );
         }
       }
@@ -188,7 +244,7 @@ const AllPOSOrders = () => {
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = filteredOrders.slice(
     indexOfFirstOrder,
-    indexOfLastOrder
+    indexOfLastOrder,
   );
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
@@ -260,7 +316,7 @@ const AllPOSOrders = () => {
 
         <div><b>Order ID:</b> ${order.orderId}</div>
                <div><b>Date:</b> ${new Date(
-                 order.createdAt
+                 order.createdAt,
                ).toLocaleString()}</div>
  <hr />
         <div><b>Name:</b> ${order.customer?.name || ""}</div>
@@ -288,7 +344,7 @@ const AllPOSOrders = () => {
                 <td colspan="2" style="font-size:10px;color:gray;">
                   Size: ${item.size || "-"} | Color: ${item.color || "-"}
                 </td>
-              </tr>`
+              </tr>`,
               )
               .join("")}
           </tbody>
@@ -362,7 +418,7 @@ const AllPOSOrders = () => {
           (item) =>
             `${item.productName} (Size: ${item.size || "-"}, Color: ${
               item.color || "-"
-            }, Qty: ${item.quantity}, Price: ${item.price})`
+            }, Qty: ${item.quantity}, Price: ${item.price})`,
         )
         .join("; "),
       Subtotal: order.subtotal || 0,
@@ -524,6 +580,10 @@ const AllPOSOrders = () => {
                     <FaPrint className="text-2xl text-blue-500 hover:text-blue-700" />
                   </button>
 
+                  <button onClick={() => openEditModal(order)}>
+                    <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
+                  </button>
+
                   {currentUserRole === "admin" && (
                     <button onClick={() => handleDelete(order._id)}>
                       <FaTrashAlt className="text-red-500 text-xl hover:text-red-700" />
@@ -625,6 +685,213 @@ const AllPOSOrders = () => {
                   className="px-4 py-2 bg-blue-600 text-white rounded"
                 >
                   Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showEditModal && editingOrder && (
+          <div className="fixed inset-0 bg-gray-100 bg-opacity-40 flex items-center justify-center z-50 overflow-y-auto">
+            <div className="bg-white p-6 rounded-lg w-[800px] max-h-[90vh] overflow-y-auto shadow-lg">
+              <h2 className="text-2xl font-bold mb-4 border-b pb-2">
+                Edit POS Order
+              </h2>
+
+              {/* Customer Info */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label className="text-sm font-semibold">Customer Name</label>
+                  <input
+                    type="text"
+                    value={editingOrder.customer?.name || ""}
+                    onChange={(e) =>
+                      setEditingOrder({
+                        ...editingOrder,
+                        customer: {
+                          ...editingOrder.customer,
+                          name: e.target.value,
+                        },
+                      })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold">Phone</label>
+                  <input
+                    type="text"
+                    value={editingOrder.customer?.phone || ""}
+                    onChange={(e) =>
+                      setEditingOrder({
+                        ...editingOrder,
+                        customer: {
+                          ...editingOrder.customer,
+                          phone: e.target.value,
+                        },
+                      })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="text-sm font-semibold">Address</label>
+                  <input
+                    type="text"
+                    value={editingOrder.customer?.address || ""}
+                    onChange={(e) =>
+                      setEditingOrder({
+                        ...editingOrder,
+                        customer: {
+                          ...editingOrder.customer,
+                          address: e.target.value,
+                        },
+                      })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-semibold">Note</label>
+                  <input
+                    type="text"
+                    value={editingOrder.customer?.note || ""}
+                    onChange={(e) =>
+                      setEditingOrder({
+                        ...editingOrder,
+                        customer: {
+                          ...editingOrder.customer,
+                          note: e.target.value,
+                        },
+                      })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+              </div>
+
+              {/* Cart Items */}
+              <h3 className="font-bold mb-3">Products</h3>
+
+              {editingOrder.cartItems?.map((item, index) => (
+                <div
+                  key={index}
+                  className="border p-3 rounded mb-3 flex justify-between items-center"
+                >
+                  <div>
+                    <div className="font-semibold">{item.productName}</div>
+                    <div className="text-sm text-gray-500">
+                      Size: {item.size || "-"} | Color: {item.color || "-"}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      value={item.quantity}
+                      min="1"
+                      onChange={(e) => {
+                        const newItems = [...editingOrder.cartItems];
+                        newItems[index].quantity = Number(e.target.value);
+                        setEditingOrder({
+                          ...editingOrder,
+                          cartItems: newItems,
+                        });
+                      }}
+                      className="w-20 border px-2 py-1 rounded"
+                    />
+
+                    <span className="font-semibold">
+                      ৳{item.price * item.quantity}
+                    </span>
+
+                    {/* 🔥 DELETE ICON */}
+                    <button
+                      onClick={() => handleRemoveCartItem(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <FaTrashAlt className="text-lg" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {/* Financial Section */}
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div>
+                  <label className="text-sm font-semibold">Discount</label>
+                  <input
+                    type="number"
+                    value={editingOrder.discount || 0}
+                    onChange={(e) =>
+                      setEditingOrder({
+                        ...editingOrder,
+                        discount: Number(e.target.value),
+                      })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold">Shipping</label>
+                  <input
+                    type="number"
+                    value={editingOrder.shippingCharge || 0}
+                    onChange={(e) =>
+                      setEditingOrder({
+                        ...editingOrder,
+                        shippingCharge: Number(e.target.value),
+                      })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold">Tax</label>
+                  <input
+                    type="number"
+                    value={editingOrder.tax || 0}
+                    onChange={(e) =>
+                      setEditingOrder({
+                        ...editingOrder,
+                        tax: Number(e.target.value),
+                      })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+              </div>
+
+              {/* Live Calculation */}
+              <div className="mt-6 border-t pt-4 space-y-2 text-right">
+                <div>Subtotal: ৳{subtotal || 0}</div>
+                <div>Discount: ৳{editingOrder.discount || 0}</div>
+                <div>Shipping: ৳{editingOrder.shippingCharge || 0}</div>
+                <div>Tax: ৳{editingOrder.tax || 0}</div>
+
+                <div className="text-xl font-bold text-green-600">
+                  Grand Total: ৳{grandTotal || 0}
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 bg-gray-300 rounded"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleUpdatePOSOrder}
+                  className="px-6 py-2 bg-blue-600 text-white rounded"
+                >
+                  Update Order
                 </button>
               </div>
             </div>

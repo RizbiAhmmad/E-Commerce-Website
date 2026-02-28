@@ -112,22 +112,34 @@ const SalesReport = () => {
     return Object.entries(map).map(([name, total]) => ({ name, total }));
   };
   const exportToExcel = () => {
-    const filteredOrders = getFilteredOrders().flatMap((order) =>
-      (order.cartItems || []).map((p) => ({
-        ProductName: p.productName || p.name || p.title,
-        Price: p.price,
-        Quantity: p.quantity,
-        Total: p.price * p.quantity,
-        Discount: order.discount || 0,
-        Tax: Number(order.tax || 0).toFixed(2),
-        Date: new Date(order.createdAt).toLocaleDateString(),
-        OrderType: order.orderType,
-      }))
-    );
+    const filteredOrders = getFilteredOrders().flatMap((order) => {
+      const orderSubtotal = (order.cartItems || []).reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+
+      return (order.cartItems || []).map((p) => {
+        const itemTotal = p.price * p.quantity;
+        const ratio = orderSubtotal > 0 ? itemTotal / orderSubtotal : 0;
+
+        const itemDiscount = (order.discount || 0) * ratio;
+        const itemTax = (order.tax || 0) * ratio;
+
+        return {
+          ProductName: p.productName || p.name || p.title,
+          Price: p.price,
+          Quantity: p.quantity,
+          Total: itemTotal,
+          Discount: itemDiscount.toFixed(2),
+          Tax: itemTax.toFixed(2),
+          Date: new Date(order.createdAt).toLocaleDateString(),
+          OrderType: order.orderType,
+        };
+      });
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(filteredOrders);
     const workbook = XLSX.utils.book_new();
-
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
     XLSX.writeFile(workbook, "sales_report.xlsx");
   };
@@ -150,19 +162,31 @@ const SalesReport = () => {
     let tax = 0;
 
     filteredOrders.forEach((order) => {
-      discount += Number(order.discount || 0);
-      tax += Number(order.tax || 0);
+      const orderSubtotal = (order.cartItems || []).reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
 
       (order.cartItems || []).forEach((p) => {
+        const itemTotal = p.price * p.quantity;
+        const ratio = orderSubtotal > 0 ? itemTotal / orderSubtotal : 0;
+
         price += Number(p.price || 0);
         quantity += Number(p.quantity || 0);
-        total += Number(p.price || 0) * Number(p.quantity || 0);
+        total += itemTotal;
+        discount += (order.discount || 0) * ratio;
+        tax += (order.tax || 0) * ratio;
       });
     });
 
-    return { price, quantity, total, discount, tax };
+    return {
+      price,
+      quantity,
+      total,
+      discount: Math.round(discount * 100) / 100,
+      tax: Math.round(tax * 100) / 100,
+    };
   };
-
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
       <h2 className="pb-4 mb-8 text-2xl md:text-3xl font-bold text-center border-b-2 border-gray-200">
@@ -320,7 +344,6 @@ const SalesReport = () => {
         </div>
 
         {/* TABLE */}
-        {/* TABLE */}
         <div className="overflow-x-auto">
           <table className="table-auto min-w-[800px] w-full border border-gray-200 text-sm">
             <thead className="bg-gray-100">
@@ -337,57 +360,70 @@ const SalesReport = () => {
             </thead>
 
             <tbody>
-              {getFilteredOrders().flatMap((order) =>
-                (order.cartItems || []).map((p, idx) => (
-                  <tr key={`${order._id}-${idx}`}>
-                    <td className="px-4 py-2 border">
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {p.productName || p.name || p.title}
-                        </span>
-                        {p.barcode && (
-                          <span className="text-xs text-gray-500">
-                            Code: {p.barcode}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 border">৳{p.price}</td>
-                    <td className="px-4 py-2 border">{p.quantity}</td>
-                    <td className="px-4 py-2 border">
-                      ৳{p.price * p.quantity}
-                    </td>
-                    <td className="px-4 py-2 border">৳{order.discount || 0}</td>
-                    <td className="px-4 py-2 border">
-                      ৳{Number(order.tax || 0).toFixed(2)}
-                    </td>
-                    <td className="px-4 py-2 border">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-2 border">{order.orderType}</td>
-                  </tr>
-                ))
-              )}
+  {getFilteredOrders().flatMap((order) => {
+    const orderSubtotal = (order.cartItems || []).reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
 
-              {/* Grand Total Row */}
-              {(() => {
-                const sum = getSalesSummary();
-                return (
-                  <tr className="font-semibold bg-gray-100">
-                    <td className="border px-4 py-2">Grand Total</td>
-                    <td className="border px-4 py-2">৳{sum.price}</td>
-                    <td className="border px-4 py-2">{sum.quantity}</td>
-                    <td className="border px-4 py-2">৳{sum.total}</td>
-                    <td className="border px-4 py-2">৳{sum.discount}</td>
-                    <td className="border px-4 py-2">
-                      ৳{Number(sum.tax).toFixed(2)}
-                    </td>
-                    <td className="border px-4 py-2"></td>
-                    <td className="border px-4 py-2"></td>
-                  </tr>
-                );
-              })()}
-            </tbody>
+    return (order.cartItems || []).map((p, idx) => {
+      const itemTotal = p.price * p.quantity;
+      const ratio = orderSubtotal > 0 ? itemTotal / orderSubtotal : 0;
+
+      const itemDiscount = (order.discount || 0) * ratio;
+      const itemTax = (order.tax || 0) * ratio;
+
+      return (
+        <tr key={`${order._id}-${idx}`}>
+          <td className="px-4 py-2 border">
+            <div className="flex flex-col">
+              <span className="font-medium">
+                {p.productName || p.name || p.title}
+              </span>
+              {p.barcode && (
+                <span className="text-xs text-gray-500">
+                  Code: {p.barcode}
+                </span>
+              )}
+            </div>
+          </td>
+          <td className="px-4 py-2 border">৳{p.price}</td>
+          <td className="px-4 py-2 border">{p.quantity}</td>
+          <td className="px-4 py-2 border">৳{itemTotal}</td>
+          <td className="px-4 py-2 border">
+            ৳{itemDiscount.toFixed(2)}
+          </td>
+          <td className="px-4 py-2 border">
+            ৳{itemTax.toFixed(2)}
+          </td>
+          <td className="px-4 py-2 border">
+            {new Date(order.createdAt).toLocaleDateString()}
+          </td>
+          <td className="px-4 py-2 border">{order.orderType}</td>
+        </tr>
+      );
+    });
+  })}
+
+  {/* Grand Total Row */}
+  {(() => {
+    const sum = getSalesSummary();
+    return (
+      <tr className="font-semibold bg-gray-100">
+        <td className="border px-4 py-2">Grand Total</td>
+        <td className="border px-4 py-2">৳{sum.price}</td>
+        <td className="border px-4 py-2">{sum.quantity}</td>
+        <td className="border px-4 py-2">৳{sum.total}</td>
+        <td className="border px-4 py-2">৳{sum.discount}</td>
+        <td className="border px-4 py-2">
+          ৳{Number(sum.tax).toFixed(2)}
+        </td>
+        <td className="border px-4 py-2"></td>
+        <td className="border px-4 py-2"></td>
+      </tr>
+    );
+  })()}
+</tbody>
           </table>
         </div>
 
