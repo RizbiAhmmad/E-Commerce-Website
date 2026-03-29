@@ -216,7 +216,7 @@ const AllCustomersWithSegments = () => {
                   {c.name || "N/A"}
                 </td>
                 <td className="px-6 py-4 text-gray-600">
-                  <div>{c._id}</div>
+                  <div>{c.email ? c.email :  "-"}</div>
                   <div>{c.phone || "-"}</div>
                 </td>
                 <td className="px-6 py-4 font-medium">{c.totalOrders}</td>

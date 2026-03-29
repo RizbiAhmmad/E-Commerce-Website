@@ -1,75 +1,80 @@
-import Login from "@/Authentication/Login";
-import SignUp from "@/Authentication/SignUp";
-import Dashboard from "@/Layouts/Dashboard";
-import MainLayout from "@/Layouts/MainLayout";
-import CartPage from "@/Pages/Cart/CartPage";
-import AddBrand from "@/Pages/Dashboard/Admin/AddBrand";
-import AddCategory from "@/Pages/Dashboard/Admin/AddCategory";
-import AddColor from "@/Pages/Dashboard/Admin/AddColor";
-import AddProduct from "@/Pages/Dashboard/Admin/AddProduct";
-import AddSize from "@/Pages/Dashboard/Admin/AddSize";
-import AddSubcategory from "@/Pages/Dashboard/Admin/AddSubcategory";
-import AllBrands from "@/Pages/Dashboard/Admin/AllBrands";
-import AllCategories from "@/Pages/Dashboard/Admin/AllCategories";
-import AllColors from "@/Pages/Dashboard/Admin/AllColors";
-import AllProducts from "@/Pages/Dashboard/Admin/AllProducts";
-import AllReviews from "@/Pages/Dashboard/Admin/Allreviews";
-import AllSizes from "@/Pages/Dashboard/Admin/AllSizes";
-import AllSubcategories from "@/Pages/Dashboard/Admin/AllSubcategories";
-import AllUsers from "@/Pages/Dashboard/Admin/AllUsers";
-import Profile from "@/Pages/Dashboard/Admin/Profile";
-import Home from "@/Pages/Home/Home";
-import ProductDetailsPage from "@/Pages/Home/ProductDetailsPage";
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
-import CheckoutPage from "../Pages/Cart/CheckoutPage";
-import AllOrders from "@/Pages/Dashboard/Admin/AllOrders";
-import MyOrders from "@/Pages/Dashboard/User/MyOrders";
-import DashboardHome from "@/Layouts/DashboardHome";
-import AddCoupon from "@/Pages/Dashboard/Admin/AddCoupon";
-import AllCoupons from "@/Pages/Dashboard/Admin/AllCoupons";
-import PaymentSuccess from "@/Pages/Cart/PaymentSuccess";
-import PaymentCancel from "@/Pages/Cart/PaymentCancel";
-import CategoryProducts from "@/Pages/Home/CategoryProducts";
-import POSPage from "@/Pages/POS/PosPage";
-import AllPOSOrders from "@/Pages/POS/AllPOSOrders";
-import StockReport from "@/Pages/Dashboard/Admin/StockReport";
-import SalesReport from "@/Pages/Dashboard/Admin/SalesReport";
-import AddExpenseCategory from "@/Pages/Dashboard/Admin/AddExpenseCategory";
-import AllExpenseCategory from "@/Pages/Dashboard/Admin/AllExpenseCategory";
-import AddExpense from "@/Pages/Dashboard/Admin/AddExpense";
-import AllExpense from "@/Pages/Dashboard/Admin/AllExpense";
-import ExpenseReport from "@/Pages/Dashboard/Admin/ExpenseReport";
-import AllCustomersWithSegments from "@/Pages/Dashboard/Admin/AllCustomersWithSegments";
-import AddDamageProduct from "@/Pages/Dashboard/Admin/AddDamageProduct";
-import AllDamageProducts from "@/Pages/Dashboard/Admin/AllDamageProducts";
-import AddReturnProduct from "@/Pages/Dashboard/Admin/AddReturnProduct";
-import AllReturnProducts from "@/Pages/Dashboard/Admin/AllReturnProducts";
-import AddSlider from "@/Pages/Dashboard/Admin/AddSlider";
-import AllSliders from "@/Pages/Dashboard/Admin/AllSliders";
-import AllFooterInfo from "@/Pages/Dashboard/Admin/AllFooterInfo";
-import AddFooterInfo from "@/Pages/Dashboard/Admin/AddFooterInfo";
-import SubcategoryProducts from "@/Pages/Home/SubcategoryProducts";
-import About from "@/Pages/Home/About";
-import Contact from "@/Pages/Home/Contact";
-import AddOffer from "@/Pages/Dashboard/Admin/AddOffer";
-import AllOffers from "@/Pages/Dashboard/Admin/AllOffers";
-import CourierSettings from "@/Pages/Courier/CourierSettings";
-import Favourite from "@/Pages/Dashboard/User/Favourite";
-import ProfitLossReport from "@/Pages/Dashboard/Admin/ProfitLossReport";
-import AddPolicy from "@/Pages/Dashboard/Admin/AddPolicy";
-import AllPolicies from "@/Pages/Dashboard/Admin/AllPolicies";
-import PrivacyPolicy from "@/Shared/PrivacyPolicy";
-import RefundPolicy from "@/Shared/RefundPolicy";
-import TermsConditions from "@/Shared/TermsConditions";
-import IncompleteOrders from "@/Pages/Dashboard/Admin/IncompleteOrders";
-import AddLandingPage from "@/Pages/Dashboard/Admin/AddLandingPage";
-import AllLandingPages from "@/Pages/Dashboard/Admin/AllLandingPages";
-import LandingPage from "@/Pages/LandingPage/LandingPage";
-import OrderSuccess from "@/Pages/Dashboard/User/OrderSuccess";
-import ShippingSettings from "@/Pages/Dashboard/Admin/ShippingSettings";
-import OrderSuccessPage from "@/Pages/Dashboard/User/OrderSuccessPage";
-import GTMSettings from "@/Pages/Dashboard/Admin/GTMSettings";
-import EditProfile from "@/Pages/Dashboard/Admin/EditProfile";
+
+// Lazy load components
+const Login = lazy(() => import("@/Authentication/Login"));
+const SignUp = lazy(() => import("@/Authentication/SignUp"));
+const Dashboard = lazy(() => import("@/Layouts/Dashboard"));
+const MainLayout = lazy(() => import("@/Layouts/MainLayout"));
+const CartPage = lazy(() => import("@/Pages/Cart/CartPage"));
+const AddBrand = lazy(() => import("@/Pages/Dashboard/Admin/AddBrand"));
+const AddCategory = lazy(() => import("@/Pages/Dashboard/Admin/AddCategory"));
+const AddColor = lazy(() => import("@/Pages/Dashboard/Admin/AddColor"));
+const AddProduct = lazy(() => import("@/Pages/Dashboard/Admin/AddProduct"));
+const AddSize = lazy(() => import("@/Pages/Dashboard/Admin/AddSize"));
+const AddSubcategory = lazy(() => import("@/Pages/Dashboard/Admin/AddSubcategory"));
+const AllBrands = lazy(() => import("@/Pages/Dashboard/Admin/AllBrands"));
+const AllCategories = lazy(() => import("@/Pages/Dashboard/Admin/AllCategories"));
+const AllColors = lazy(() => import("@/Pages/Dashboard/Admin/AllColors"));
+const AllProducts = lazy(() => import("@/Pages/Dashboard/Admin/AllProducts"));
+const AllReviews = lazy(() => import("@/Pages/Dashboard/Admin/AllReviews"));
+const AllSizes = lazy(() => import("@/Pages/Dashboard/Admin/AllSizes"));
+const AllSubcategories = lazy(() => import("@/Pages/Dashboard/Admin/AllSubcategories"));
+const AllUsers = lazy(() => import("@/Pages/Dashboard/Admin/AllUsers"));
+const Profile = lazy(() => import("@/Pages/Dashboard/Admin/Profile"));
+const Home = lazy(() => import("@/Pages/Home/Home"));
+const ProductDetailsPage = lazy(() => import("@/Pages/Home/ProductDetailsPage"));
+const CheckoutPage = lazy(() => import("../Pages/Cart/CheckoutPage"));
+const AllOrders = lazy(() => import("@/Pages/Dashboard/Admin/AllOrders"));
+const MyOrders = lazy(() => import("@/Pages/Dashboard/User/MyOrders"));
+const DashboardHome = lazy(() => import("@/Layouts/DashboardHome"));
+const AddCoupon = lazy(() => import("@/Pages/Dashboard/Admin/AddCoupon"));
+const AllCoupons = lazy(() => import("@/Pages/Dashboard/Admin/AllCoupons"));
+const PaymentSuccess = lazy(() => import("@/Pages/Cart/PaymentSuccess"));
+const PaymentCancel = lazy(() => import("@/Pages/Cart/PaymentCancel"));
+const CategoryProducts = lazy(() => import("@/Pages/Home/CategoryProducts"));
+const POSPage = lazy(() => import("@/Pages/POS/POSPage"));
+const AllPOSOrders = lazy(() => import("@/Pages/POS/AllPOSOrders"));
+const StockReport = lazy(() => import("@/Pages/Dashboard/Admin/StockReport"));
+const SalesReport = lazy(() => import("@/Pages/Dashboard/Admin/SalesReport"));
+const AddExpenseCategory = lazy(() => import("@/Pages/Dashboard/Admin/AddExpenseCategory"));
+const AllExpenseCategory = lazy(() => import("@/Pages/Dashboard/Admin/AllExpenseCategory"));
+const AddExpense = lazy(() => import("@/Pages/Dashboard/Admin/AddExpense"));
+const AllExpense = lazy(() => import("@/Pages/Dashboard/Admin/AllExpense"));
+const ExpenseReport = lazy(() => import("@/Pages/Dashboard/Admin/ExpenseReport"));
+const AllCustomersWithSegments = lazy(() => import("@/Pages/Dashboard/Admin/AllCustomersWithSegments"));
+const AddDamageProduct = lazy(() => import("@/Pages/Dashboard/Admin/AddDamageProduct"));
+const AllDamageProducts = lazy(() => import("@/Pages/Dashboard/Admin/AllDamageProducts"));
+const AddReturnProduct = lazy(() => import("@/Pages/Dashboard/Admin/AddReturnProduct"));
+const AllReturnProducts = lazy(() => import("@/Pages/Dashboard/Admin/AllReturnProducts"));
+const AddSlider = lazy(() => import("@/Pages/Dashboard/Admin/AddSlider"));
+const AllSliders = lazy(() => import("@/Pages/Dashboard/Admin/AllSliders"));
+const AllFooterInfo = lazy(() => import("@/Pages/Dashboard/Admin/AllFooterInfo"));
+const AddFooterInfo = lazy(() => import("@/Pages/Dashboard/Admin/AddFooterInfo"));
+const SubcategoryProducts = lazy(() => import("@/Pages/Home/SubcategoryProducts"));
+const About = lazy(() => import("@/Pages/Home/About"));
+const Contact = lazy(() => import("@/Pages/Home/Contact"));
+const AddOffer = lazy(() => import("@/Pages/Dashboard/Admin/AddOffer"));
+const AllOffers = lazy(() => import("@/Pages/Dashboard/Admin/AllOffers"));
+const CourierSettings = lazy(() => import("@/Pages/Courier/CourierSettings"));
+const Favourite = lazy(() => import("@/Pages/Dashboard/User/Favourite"));
+const ProfitLossReport = lazy(() => import("@/Pages/Dashboard/Admin/ProfitLossReport"));
+const AddPolicy = lazy(() => import("@/Pages/Dashboard/Admin/AddPolicy"));
+const AllPolicies = lazy(() => import("@/Pages/Dashboard/Admin/AllPolicies"));
+const PrivacyPolicy = lazy(() => import("@/Shared/PrivacyPolicy"));
+const RefundPolicy = lazy(() => import("@/Shared/RefundPolicy"));
+const TermsConditions = lazy(() => import("@/Shared/TermsConditions"));
+const IncompleteOrders = lazy(() => import("@/Pages/Dashboard/Admin/IncompleteOrders"));
+const AddLandingPage = lazy(() => import("@/Pages/Dashboard/Admin/AddLandingPage"));
+const AllLandingPages = lazy(() => import("@/Pages/Dashboard/Admin/AllLandingPages"));
+const LandingPage = lazy(() => import("@/Pages/LandingPage/LandingPage"));
+const OrderSuccess = lazy(() => import("@/Pages/Dashboard/User/OrderSuccess"));
+const ShippingSettings = lazy(() => import("@/Pages/Dashboard/Admin/ShippingSettings"));
+const OrderSuccessPage = lazy(() => import("@/Pages/Dashboard/User/OrderSuccessPage"));
+const GTMSettings = lazy(() => import("@/Pages/Dashboard/Admin/GTMSettings"));
+const EditProfile = lazy(() => import("@/Pages/Dashboard/Admin/EditProfile"));
+const NoticeSettings = lazy(() => import("@/Pages/Dashboard/Admin/NoticeSettings"));
+const TrackOrderPage = lazy(() => import("@/Pages/Dashboard/User/TrackOrderPage"));
 
 export const router = createBrowserRouter([
   {
@@ -152,6 +157,10 @@ export const router = createBrowserRouter([
         path: "/myorder",
         element: <OrderSuccessPage />,
       },
+      {
+  path: "/track-order",
+  element: <TrackOrderPage />
+}
     ],
   },
   {
@@ -355,6 +364,10 @@ export const router = createBrowserRouter([
       {
         path: "gtmSettings",
         element: <GTMSettings />,
+      },
+      {
+        path: "popupSettings",
+        element: <NoticeSettings />,
       },
     ],
   },

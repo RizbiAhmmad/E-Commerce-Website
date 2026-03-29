@@ -72,6 +72,7 @@ const GTMSettings = () => {
             name="enableGtm"
             checked={formData.enableGtm}
             onChange={handleChange}
+            className="w-5 h-5 accent-green-500 cursor-pointer"
           />
           <label>Enable GTM</label>
         </div>

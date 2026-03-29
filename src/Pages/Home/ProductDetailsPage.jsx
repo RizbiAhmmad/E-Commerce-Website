@@ -7,8 +7,6 @@ import Loading from "@/Shared/Loading";
 import { AuthContext } from "@/provider/AuthProvider";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
-import { IoCartOutline } from "react-icons/io5";
-import { GrView } from "react-icons/gr";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import { Lens } from "@/components/lightswind/lens";
 

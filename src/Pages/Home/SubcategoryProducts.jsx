@@ -11,6 +11,11 @@ import useAxiosPublic from "@/Hooks/useAxiosPublic";
 import { MdFlashOn } from "react-icons/md";
 import { HiMiniShoppingBag } from "react-icons/hi2";
 
+const pushGTM = (data) => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(data);
+};
+
 const SubcategoryProducts = () => {
   const { subId } = useParams();
   const [products, setProducts] = useState([]);
@@ -57,7 +62,7 @@ const SubcategoryProducts = () => {
 
   // Price filter
   const filteredProducts = sortedProducts.filter(
-    (p) => p.newPrice >= priceRange[0] && p.newPrice <= priceRange[1]
+    (p) => p.newPrice >= priceRange[0] && p.newPrice <= priceRange[1],
   );
 
   // Pagination logic
@@ -65,7 +70,7 @@ const SubcategoryProducts = () => {
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(
     indexOfFirstProduct,
-    indexOfLastProduct
+    indexOfLastProduct,
   );
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
@@ -76,6 +81,17 @@ const SubcategoryProducts = () => {
   // Single product card (same as CategoryProducts)
   const SingleProduct = ({ product }) => {
     const [isFavorite, setIsFavorite] = useState(false);
+
+    const [selectedSize, setSelectedSize] = useState("");
+    const [selectedColor, setSelectedColor] = useState("");
+    const [quantity, setQuantity] = useState(1);
+
+    const [showModal, setShowModal] = useState(false);
+    const [actionType, setActionType] = useState("");
+
+    const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
+    const axiosPublic = useAxiosPublic();
 
     const oldPriceNum = Number(product.oldPrice);
     const newPriceNum = Number(product.newPrice);
@@ -88,8 +104,7 @@ const SubcategoryProducts = () => {
     const formatPrice = (price) =>
       `৳ ${price.toLocaleString("en-US", { minimumFractionDigits: 0 })}`;
 
-    const handleAddToCart = async (e) => {
-      e.stopPropagation();
+    const handleAddToCartAction = async (e) => {
       if (!user) {
         Swal.fire({
           icon: "error",
@@ -98,15 +113,59 @@ const SubcategoryProducts = () => {
         navigate("/login");
         return;
       }
+
+      if (!selectedSize) {
+        Swal.fire({
+          icon: "warning",
+          title: "Please select a size",
+        });
+        return;
+      }
+
+      if (!selectedColor) {
+        Swal.fire({
+          icon: "warning",
+          title: "Please select a color",
+        });
+        return;
+      }
+
+      if (quantity < 1) {
+        Swal.fire({
+          icon: "warning",
+          title: "Invalid quantity",
+        });
+        return;
+      }
+
       try {
         const cartData = {
           name: user.displayName || "Anonymous",
           email: user.email,
           productId: product._id,
-          quantity: 1,
+          quantity,
+          selectedSize,
+          selectedColor,
+          selected: true,
         };
+
         const res = await axiosPublic.post("/cart", cartData);
         if (res.data.insertedId) {
+          pushGTM({
+            event: "add_to_cart",
+            ecommerce: {
+              items: [
+                {
+                  item_id: product._id,
+                  item_name: product.name,
+                  price: Number(product.newPrice),
+                  quantity: quantity,
+                },
+              ],
+            },
+          });
+          // console.log("GTM Fired: add to cart");
+
           Swal.fire({
             icon: "success",
             title: "Added to cart successfully",
@@ -117,19 +176,51 @@ const SubcategoryProducts = () => {
         }
       } catch (error) {
         console.error(error);
-        Swal.fire({ icon: "error", title: "Failed to add to cart" });
+        Swal.fire({
+          icon: "error",
+          title: "Failed to add to cart",
+        });
       }
     };
 
-    const handleBuyNow = (e) => {
-      e.stopPropagation();
+    const handleBuyNowAction = () => {
+      if (!selectedSize) {
+        Swal.fire({ icon: "warning", title: "Please select a size" });
+        return;
+      }
+
+      if (!selectedColor) {
+        Swal.fire({ icon: "warning", title: "Please select a color" });
+        return;
+      }
+
+      pushGTM({
+        event: "begin_checkout",
+        ecommerce: {
+          currency: "BDT",
+          value: Number(product.newPrice) * quantity,
+          items: [
+            {
+              item_id: product._id,
+              item_name: product.name,
+              price: Number(product.newPrice),
+              quantity: quantity,
+              item_variant: `${selectedSize}-${selectedColor}`,
+            },
+          ],
+        },
+      });
+
+      console.log("begin_checkout Fired");
 
       const buyItem = {
         productId: product._id,
-        quantity: 1,
-        selectedColor: "",
-        selectedSize: "",
+        quantity,
+        selectedColor,
+        selectedSize,
       };
+
+      setShowModal(false);
 
       navigate("/checkout", {
         state: {
@@ -141,117 +232,305 @@ const SubcategoryProducts = () => {
       });
     };
 
+    const handleConfirm = async () => {
+      if (!selectedSize) {
+        Swal.fire({ icon: "warning", title: "Select size" });
+        return;
+      }
+
+      if (!selectedColor) {
+        Swal.fire({ icon: "warning", title: "Select color" });
+        return;
+      }
+
+      if (quantity < 1) {
+        Swal.fire({ icon: "warning", title: "Invalid quantity" });
+        return;
+      }
+
+      setShowModal(false);
+
+      if (actionType === "cart") {
+        await handleAddToCartAction();
+      }
+
+      if (actionType === "buy") {
+        handleBuyNowAction();
+      }
+    };
     return (
-      <div
-        onClick={() => navigate(`/product/${product._id}`)}
-        className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300"
-      >
-        {/* Image */}
-        <div className="relative overflow-hidden rounded-md">
-          <motion.img
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
-            alt={product.name}
-            src={product.images?.[0] || "https://via.placeholder.com/300"}
-            className="w-full aspect-square object-cover rounded-md"
-          />
+      <>
+        <div
+          onClick={() => navigate(`/product/${product._id}`)}
+          className="border border-gray-700 dark:border-gray-300 rounded-xl p-2 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300"
+        >
+          {/* Image */}
+          <div className="relative overflow-hidden rounded-md">
+            <motion.img
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              alt={product.name}
+              src={product.images?.[0] || "https://via.placeholder.com/300"}
+              className="w-full aspect-square object-cover rounded-md"
+            />
 
-          {/* Discount Badge */}
-          {hasDiscount && (
-            <motion.div
-              initial={{ rotateY: 90, opacity: 0 }}
-              animate={{ rotateY: 0, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="absolute top-0 left-0 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
-            >
-              {discountPercent}% OFF
-            </motion.div>
-          )}
-
-          {/* Favorite */}
-          {/* <div
-            onClick={(e) => e.stopPropagation()}
-            className="p-2 rounded-full bg-gray-100 absolute top-2 right-2"
-          >
-            {isFavorite ? (
-              <IoIosHeart
-                onClick={() => setIsFavorite(false)}
-                className="text-[#0FABCA] text-[1.4rem] cursor-pointer"
-              />
-            ) : (
-              <IoMdHeartEmpty
-                onClick={() => setIsFavorite(true)}
-                className="text-black text-[1.4rem] cursor-pointer"
-              />
+            {/* Discount Badge */}
+            {hasDiscount && (
+              <motion.div
+                initial={{ rotateY: 90, opacity: 0 }}
+                animate={{ rotateY: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="absolute top-0 left-0 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-10"
+              >
+                {discountPercent}% OFF
+              </motion.div>
             )}
-          </div> */}
-        </div>
 
-        {/* Info */}
-        <div className="mt-1 p-1">
-          {/* <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
-            {product.name}
-          </h3> */}
-          <div className="mt-1 mb-1">
-            <h3
-              className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
-                 leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
-            >
-              {product.name}
-            </h3>
+            {/* Favorite */}
+            {/* <div
+                onClick={(e) => e.stopPropagation()}
+                className="p-2 rounded-full bg-gray-100 absolute top-2 right-2"
+              >
+                {isFavorite ? (
+                  <IoIosHeart
+                    onClick={() => setIsFavorite(false)}
+                    className="text-[#0FABCA] text-[1.4rem] cursor-pointer"
+                  />
+                ) : (
+                  <IoMdHeartEmpty
+                    onClick={() => setIsFavorite(true)}
+                    className="text-black text-[1.4rem] cursor-pointer"
+                  />
+                )}
+              </div> */}
           </div>
 
-          <div className="flex items-end justify-between my-1 flex-wrap gap-2">
-            <div>
-              <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
-                {!product.stock || Number(product.stock) === 0 ? (
-                  <span className="text-red-500 font-semibold">
-                    Out of stock
-                  </span>
-                ) : (
-                  <span className="text-green-500 font-semibold">In Stock</span>
-                )}
-              </span>
+          {/* Info */}
+          <div className="mt-1 p-1">
+            {/* <h3 className="text-[1.1rem] dark:text-white font-medium line-clamp-1">
+                {product.name}
+              </h3> */}
+            <div className="mt-1 mb-1">
+              <h3
+                className="text-[1rem] md:text-[1.05rem] font-medium dark:text-white 
+                     leading-tight whitespace-nowrap overflow-hidden text-ellipsis"
+              >
+                {product.name}
+              </h3>
+            </div>
 
-              <div className="mt-1 min-h-[30px] flex items-center gap-2 flex-wrap">
-                {hasDiscount ? (
-                  <>
-                    <span className="text-red-500 line-through">
-                      {formatPrice(oldPriceNum)}
+            <div className="flex items-end justify-between my-1 flex-wrap gap-2">
+              <div>
+                <span className="text-gray-400 dark:text-slate-400 text-[0.9rem]">
+                  {!product.stock || Number(product.stock) === 0 ? (
+                    <span className="text-red-500 font-semibold">
+                      Out of stock
                     </span>
-                    <span className="font-bold text-black dark:text-white">
+                  ) : (
+                    <span className="text-green-500 font-semibold">
+                      In Stock
+                    </span>
+                  )}
+                </span>
+
+                <div className="mt-1 min-h-[30px] flex items-center gap-2 flex-wrap">
+                  {hasDiscount ? (
+                    <>
+                      <span className="text-red-500 line-through">
+                        {formatPrice(oldPriceNum)}
+                      </span>
+                      <span className="font-bold text-black dark:text-white">
+                        {formatPrice(newPriceNum)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="font-bold dark:text-white text-black">
                       {formatPrice(newPriceNum)}
                     </span>
-                  </>
-                ) : (
-                  <span className="font-bold dark:text-white text-black">
-                    {formatPrice(newPriceNum)}
-                  </span>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-6 flex-shrink-0"
-            >
-              <button
-                onClick={handleAddToCart}
-                className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-6 flex-shrink-0"
               >
-                <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
-              </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActionType("cart");
+                    setShowModal(true);
+                  }}
+                  className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                >
+                  <IoCartOutline className="text-[1.5rem] text-[#0FABCA] hover:text-white" />
+                </button>
 
-              <button
-                onClick={handleBuyNow}
-                className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
-              >
-                <HiMiniShoppingBag className="text-[1.6rem] text-[#0FABCA] hover:text-white" />
-              </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActionType("buy");
+                    setShowModal(true);
+                  }}
+                  className="p-2 border-2 border-[#0FABCA] rounded-full hover:bg-[#0FABCA] transition-all duration-200"
+                >
+                  <HiMiniShoppingBag className="text-[1.6rem] text-[#0FABCA] hover:text-white" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        {showModal && (
+          <div
+            onClick={() => setShowModal(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-2"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 160, damping: 18 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-[90%] max-w-[280px] sm:max-w-sm
+                     rounded-2xl
+                     bg-white/95 dark:bg-gray-900/95
+                     backdrop-blur-xl
+                     shadow-2xl
+                     p-3 sm:p-4"
+            >
+              <h2
+                className="text-base sm:text-lg font-bold text-center mb-3
+                       bg-gradient-to-r from-cyan-500 to-blue-600
+                       bg-clip-text text-transparent"
+              >
+                Choose Your Item
+              </h2>
+
+              {/* SIZE */}
+              {product.sizes?.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-xs font-semibold mb-1">Size</p>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-3 py-1 rounded-full text-xs border transition
+                      ${
+                        selectedSize === size
+                          ? "bg-cyan-500 text-white border-cyan-500"
+                          : "border-gray-300 dark:border-gray-600"
+                      }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* COLOR */}
+              {product.colors?.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-xs font-semibold mb-1">Color</p>
+                  <div className="flex gap-3">
+                    {product.colors.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 transition
+                      ${
+                        selectedColor === color
+                          ? "border-black scale-110"
+                          : "border-gray-300"
+                      }`}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* QUANTITY */}
+              <div className="mb-4">
+                <p className="text-xs font-semibold mb-1">Qty</p>
+
+                <div
+                  className="flex items-center justify-between 
+                      bg-gray-100 dark:bg-gray-800 
+                      rounded-full px-2 py-1"
+                >
+                  {/* Minus Button */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setQuantity((prev) => (prev > 1 ? prev - 1 : 1))
+                    }
+                    className="w-9 h-9 flex items-center justify-center 
+                     text-lg font-bold text-cyan-600 
+                     active:scale-90 transition"
+                  >
+                    −
+                  </button>
+
+                  {/* Input Field */}
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (!isNaN(value) && value >= 1) {
+                        setQuantity(value);
+                      } else if (e.target.value === "") {
+                        setQuantity("");
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!quantity || quantity < 1) {
+                        setQuantity(1);
+                      }
+                    }}
+                    className="w-16 text-center bg-transparent 
+                     text-sm font-bold 
+                     focus:outline-none"
+                  />
+
+                  {/* Plus Button */}
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((prev) => prev + 1)}
+                    className="w-9 h-9 flex items-center justify-center 
+                     text-lg font-bold text-cyan-600 
+                     active:scale-90 transition"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* ACTION */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 py-1.5 text-sm rounded-full border"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleConfirm}
+                  className="flex-1 py-1.5 text-sm rounded-full
+                         bg-gradient-to-r from-cyan-500 to-blue-600
+                         text-white font-semibold"
+                >
+                  Confirm
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </>
     );
   };
 

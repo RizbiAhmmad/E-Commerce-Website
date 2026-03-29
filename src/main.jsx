@@ -1,4 +1,4 @@
-import { StrictMode, useLayoutEffect } from "react"; 
+import { StrictMode, useLayoutEffect, Suspense } from "react"; 
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { router } from "./routes/router.jsx";
@@ -7,6 +7,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import AuthProvider from "./provider/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import Loading from "./Shared/Loading";
 
 const queryClient = new QueryClient();
 
@@ -63,7 +64,9 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
           <GTMProvider>
-            <RouterProvider router={router} />
+            <Suspense fallback={<div><Loading></Loading></div>}>
+              <RouterProvider router={router} />
+            </Suspense>
           </GTMProvider>
         </ThemeProvider>
       </QueryClientProvider>

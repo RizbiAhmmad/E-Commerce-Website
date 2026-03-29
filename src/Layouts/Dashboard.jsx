@@ -20,6 +20,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
+import { PiLetterCircleP } from "react-icons/pi";
 import {
   MdIncompleteCircle,
   MdInventory,
@@ -419,6 +420,14 @@ const Dashboard = () => {
                     className="flex items-center px-2 py-2 space-x-3"
                   >
                     <SiGoogleanalytics /> <span>GTM Settings</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/popupSettings"
+                    className="flex items-center px-2 py-2 space-x-3"
+                  >
+                    <PiLetterCircleP /> <span>PopUp Settings</span>
                   </NavLink>
                 </li>
                 <li>

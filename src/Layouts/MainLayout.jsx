@@ -16,7 +16,7 @@ const MainLayout = () => {
       <ScrollToTop />
       <NoticePopup/>
       {!noHeaderFooter && <Navbar />}
-      {/* <Navbar /> */}
+
       <GTMPageView></GTMPageView>
       <Outlet />
       {!noHeaderFooter && <Footer />}

@@ -4,12 +4,13 @@ import Swal from "sweetalert2";
 import { FaEdit, FaPlus, FaTrashAlt, FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "@/Hooks/useAxiosPublic";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const AllExpense = () => {
   const navigate = useNavigate();
   const axiosPublic = useAxiosPublic();
 
-  // Fetch expenses
   const { data: expenses = [], refetch } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
@@ -20,6 +21,7 @@ const AllExpense = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
+
   const [formData, setFormData] = useState({
     category: "",
     name: "",
@@ -28,29 +30,77 @@ const AllExpense = () => {
     date: "",
   });
 
-  //  Search
   const [searchTerm, setSearchTerm] = useState("");
 
-  //  Pagination
+  const [dateFilter, setDateFilter] = useState({
+    startDate: "",
+    endDate: "",
+  });
+
+  const [appliedDateFilter, setAppliedDateFilter] = useState({
+    startDate: "",
+    endDate: "",
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const expensesPerPage = 20;
 
-  //  Filter expenses by category or name
-  const filteredExpenses = expenses.filter((exp) =>
-    `${exp.category} ${exp.name}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const handleApplyFilter = () => {
+    setAppliedDateFilter(dateFilter);
+    setCurrentPage(1);
+  };
 
-  //  Calculate total cost of filtered expenses
+  const filteredExpenses = expenses.filter((exp) => {
+    const matchesSearch = `${exp.category} ${exp.name}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    if (!appliedDateFilter.startDate || !appliedDateFilter.endDate) {
+      return matchesSearch;
+    }
+
+    const expenseDate = new Date(exp.date);
+    const start = new Date(appliedDateFilter.startDate);
+    const end = new Date(appliedDateFilter.endDate);
+
+    return matchesSearch && expenseDate >= start && expenseDate <= end;
+  });
+
   const totalCost = filteredExpenses.reduce(
     (sum, exp) => sum + Number(exp.price || 0),
     0
   );
 
-  // Page slicing
+  const exportToExcel = () => {
+    const data = filteredExpenses.map((exp) => ({
+      Category: exp.category,
+      Name: exp.name,
+      Price: exp.price,
+      Note: exp.note,
+      Date: new Date(exp.date).toLocaleDateString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    saveAs(blob, "Expense_Report.xlsx");
+  };
+
   const indexOfLastExpense = currentPage * expensesPerPage;
   const indexOfFirstExpense = indexOfLastExpense - expensesPerPage;
+
   const currentExpenses = filteredExpenses.slice(
     indexOfFirstExpense,
     indexOfLastExpense
@@ -83,34 +133,34 @@ const AllExpense = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
     try {
       await axiosPublic.put(`/expenses/${selectedExpense._id}`, {
         ...formData,
         price: Number(formData.price),
       });
-      Swal.fire("Updated!", "Expense has been updated.", "success");
+
+      Swal.fire("Updated!", "Expense updated successfully", "success");
+
       setIsModalOpen(false);
       refetch();
-    } catch (err) {
-      Swal.fire("Error", "Failed to update expense", "error");
+    } catch {
+      Swal.fire("Error", "Failed to update", "error");
     }
   };
 
   const handleDelete = (id) => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "This expense will be deleted!",
+      title: "Delete Expense?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Delete",
     }).then((result) => {
       if (result.isConfirmed) {
         axiosPublic.delete(`/expenses/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             refetch();
-            Swal.fire("Deleted!", "Expense removed.", "success");
+            Swal.fire("Deleted!", "", "success");
           }
         });
       }
@@ -118,46 +168,85 @@ const AllExpense = () => {
   };
 
   return (
-    <div className="max-w-6xl p-6 mx-auto">
-      <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b-2 border-gray-200">
+    <div className="max-w-7xl p-6 mx-auto">
+      <h2 className="pb-4 mb-8 text-4xl font-bold text-center border-b">
         All Expenses
       </h2>
 
-      {/* Search + Add Expense Button */}
-      <div className="flex flex-col gap-3 mb-4 md:flex-row md:items-center md:justify-between">
-        {/*  Search */}
-        <div className="flex items-center w-full md:w-1/2 border rounded-xl px-3 py-2">
-          <FaSearch className="text-gray-400 mr-2" />
-          <input
-            type="text"
-            placeholder="Search by category or name..."
-            className="w-full outline-none"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
-        </div>
+      {/* Top Controls */}
+<div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
 
-        {/*  Add Expense Button */}
-        <button
-          onClick={() => navigate("/dashboard/addExpense")}
-          className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-cyan-500 rounded-xl hover:bg-cyan-600 w-full md:w-auto"
-        >
-          <FaPlus /> Add Expense
-        </button>
-      </div>
+  {/* LEFT - Search */}
+  <div className="flex items-center border rounded-xl px-3 py-2 w-full lg:w-72">
+    <FaSearch className="text-gray-400 mr-2" />
+    <input
+      type="text"
+      placeholder="Search expense..."
+      className="outline-none w-full"
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+      }}
+    />
+  </div>
 
-      {/*  Total Cost */}
-      <div className="mb-4 text-lg font-semibold text-gray-700">
+  {/* MIDDLE - Filter */}
+  <div className="flex flex-wrap items-center justify-center gap-3">
+
+    <input
+      type="date"
+      value={dateFilter.startDate}
+      onChange={(e) =>
+        setDateFilter({ ...dateFilter, startDate: e.target.value })
+      }
+      className="border px-3 py-2 rounded-lg"
+    />
+
+    <input
+      type="date"
+      value={dateFilter.endDate}
+      onChange={(e) =>
+        setDateFilter({ ...dateFilter, endDate: e.target.value })
+      }
+      className="border px-3 py-2 rounded-lg"
+    />
+
+    <button
+      onClick={handleApplyFilter}
+      className="bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600"
+    >
+      Filter
+    </button>
+
+    <button
+      onClick={exportToExcel}
+      className="bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-green-600"
+    >
+      Export
+    </button>
+
+  </div>
+
+  {/* RIGHT - Add Expense */}
+  <button
+    onClick={() => navigate("/dashboard/addExpense")}
+    className="flex items-center justify-center gap-2 px-5 py-2 text-white bg-cyan-500 rounded-xl hover:bg-cyan-600"
+  >
+    <FaPlus /> Add Expense
+  </button>
+
+</div>
+
+      {/* Total */}
+      <div className="mb-4 text-lg font-semibold">
         Total Cost: <span className="text-cyan-500">৳ {totalCost}</span>
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-        <table className="w-full text-sm text-left table-auto">
-          <thead className="tracking-wider text-gray-700 uppercase bg-gray-100">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-100 uppercase text-gray-700">
             <tr>
               <th className="px-6 py-3">#</th>
               <th className="px-6 py-3">Category</th>
@@ -168,39 +257,30 @@ const AllExpense = () => {
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+
+          <tbody className="divide-y">
             {currentExpenses.map((exp, index) => (
-              <tr
-                key={exp._id}
-                className="transition duration-200 hover:bg-gray-50"
-              >
+              <tr key={exp._id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">{indexOfFirstExpense + index + 1}</td>
-                <td className="px-6 py-4 font-semibold text-gray-800">
-                  {exp.category}
-                </td>
+                <td className="px-6 py-4 font-semibold">{exp.category}</td>
                 <td className="px-6 py-4">{exp.name}</td>
                 <td className="px-6 py-4">৳ {exp.price}</td>
                 <td className="px-6 py-4">{exp.note}</td>
                 <td className="px-6 py-4">
                   {new Date(exp.date).toLocaleDateString()}
                 </td>
+
                 <td className="flex gap-4 px-6 py-4">
                   <button onClick={() => openEditModal(exp)}>
-                    <FaEdit className="text-2xl text-cyan-500 hover:text-cyan-600" />
+                    <FaEdit className="text-cyan-500 text-xl" />
                   </button>
+
                   <button onClick={() => handleDelete(exp._id)}>
-                    <FaTrashAlt className="text-2xl text-red-500 hover:text-red-700" />
+                    <FaTrashAlt className="text-red-500 text-xl" />
                   </button>
                 </td>
               </tr>
             ))}
-            {filteredExpenses.length === 0 && (
-              <tr>
-                <td colSpan="6" className="py-6 text-center text-gray-500">
-                  No expenses found.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
@@ -209,110 +289,22 @@ const AllExpense = () => {
       <div className="mt-6 flex justify-center items-center gap-4">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-lg font-semibold text-white ${
-            currentPage === 1
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-cyan-500 hover:bg-cyan-600"
-          }`}
+          className="px-4 py-2 bg-cyan-500 text-white rounded-lg"
         >
           Previous
         </button>
 
-        <span className="px-4 py-2 rounded-lg bg-gray-100">
+        <span className="px-4 py-2 bg-gray-100 rounded-lg">
           Page {currentPage} of {totalPages || 1}
         </span>
 
         <button
           onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages || totalPages === 0}
-          className={`px-4 py-2 rounded-lg font-semibold text-white ${
-            currentPage === totalPages || totalPages === 0
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-cyan-500 hover:bg-cyan-600"
-          }`}
+          className="px-4 py-2 bg-cyan-500 text-white rounded-lg"
         >
           Next
         </button>
       </div>
-
-      {/*  Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-2 right-2 text-gray-500 text-xl"
-            >
-              ✖
-            </button>
-            <h3 className="mb-4 text-xl font-semibold">Edit Expense</h3>
-            <form onSubmit={handleUpdate} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium">Category</label>
-                <input
-                  type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Price</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Note</label>
-                <input
-                  type="text"
-                  name="note"
-                  value={formData.note}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Date</label>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleModalChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="px-4 py-2 text-white bg-cyan-500 rounded hover:bg-cyan-600"
-              >
-                Update Expense
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

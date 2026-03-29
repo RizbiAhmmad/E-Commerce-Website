@@ -12,7 +12,7 @@ const IncompleteOrders = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
-    const [currentUserRole, setCurrentUserRole] = useState(null);
+  const [currentUserRole, setCurrentUserRole] = useState(null);
 
   const { data: products = [] } = useQuery({
     queryKey: ["products"],
@@ -30,7 +30,7 @@ const IncompleteOrders = () => {
       return res.data;
     },
   });
-    
+
   useEffect(() => {
     if (user?.email) {
       axiosPublic
@@ -44,7 +44,6 @@ const IncompleteOrders = () => {
     }
   }, [user, axiosPublic]);
 
-
   //  Flatten data for table (each order may have multiple cart items)
   const flatData = incompleteOrders.flatMap((order) =>
     order.cartItems?.map((item) => {
@@ -57,6 +56,8 @@ const IncompleteOrders = () => {
         phone: order.phone,
         address: order.address,
 
+        updatedAt: order.updatedAt,
+
         productName: product?.name || "(Missing Product)",
         productImage: product?.images?.[0] || "https://via.placeholder.com/50",
         price: product?.newPrice || 0,
@@ -67,14 +68,14 @@ const IncompleteOrders = () => {
         quantity: item.quantity,
         _id: order._id,
       };
-    })
+    }),
   );
 
   //  Search
   const filtered = flatData.filter((item) =>
     `${item.fullName} ${item.email} ${item.productName}`
       .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+      .includes(searchTerm.toLowerCase()),
   );
 
   // Pagination
@@ -136,8 +137,8 @@ const IncompleteOrders = () => {
           <thead className="bg-gray-100">
             <tr>
               <th className="px-4 py-3">#</th>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Email</th>
+              <th className="px-4 py-3">Customer</th>
+              
               <th className="px-4 py-3">Phone</th>
               <th className="px-4 py-3">Address</th>
               <th className="px-4 py-3">Product Image</th>
@@ -147,6 +148,7 @@ const IncompleteOrders = () => {
               <th className="px-4 py-3">Qty</th>
               <th className="px-4 py-3">Price</th>
               <th className="px-4 py-3">Total</th>
+              <th className="px-4 py-3">Date</th>
               <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
@@ -155,10 +157,16 @@ const IncompleteOrders = () => {
             {currentItems.map((item, index) => (
               <tr key={index} className="hover:bg-gray-50">
                 <td className="px-4 py-3">{firstIndex + index + 1}</td>
-                <td className="px-4 py-3 font-semibold">
-                  {item.fullName || "-"}
-                </td>
-                <td className="px-4 py-3">{item.email || "-"}</td>
+                <td className="px-4 py-3">
+  <div className="flex flex-col">
+    <span className="font-semibold text-gray-800">
+      {item.fullName || "-"}
+    </span>
+    <span className="text-xs text-gray-500">
+      {item.email || "-"}
+    </span>
+  </div>
+</td>
                 <td className="px-4 py-3">{item.phone || "-"}</td>
                 <td className="px-4 py-3">{item.address || "-"}</td>
                 <td className="px-4 py-3">
@@ -176,13 +184,18 @@ const IncompleteOrders = () => {
                 <td className="px-4 py-3 font-semibold text-green-600">
                   ৳ {item.total}
                 </td>
+                <td className="px-4 py-3">
+                  <span className="px-2 py-1 text-xs bg-gray-100 rounded-full">
+                    {new Date(item.updatedAt).toLocaleDateString()}
+                  </span>
+                </td>
 
                 <td className="px-4 py-3">
-                   {currentUserRole === "admin" && (
-                  <button onClick={() => handleDelete(item.sessionId)}>
-                    <FaTrashAlt className="text-red-500 text-lg hover:text-red-700" />
-                  </button>
-                   )}
+                  {currentUserRole === "admin" && (
+                    <button onClick={() => handleDelete(item.sessionId)}>
+                      <FaTrashAlt className="text-red-500 text-lg hover:text-red-700" />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

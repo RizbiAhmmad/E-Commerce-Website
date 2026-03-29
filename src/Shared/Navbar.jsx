@@ -200,7 +200,7 @@ const Navbar = () => {
       setTrackOpen(false);
 
       // Navigate
-      navigate("/myorder", { state: { orderData } });
+      navigate("/track-order", { state: { orderData } });
     } catch (error) {
       Swal.fire("Not Found", "Invalid Order ID", "error");
     }
