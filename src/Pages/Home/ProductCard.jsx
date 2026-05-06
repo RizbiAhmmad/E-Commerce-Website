@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, memo } from "react";
 import { FaStar } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
 import { IoIosHeart, IoMdHeartEmpty } from "react-icons/io";
@@ -156,7 +156,7 @@ const ProductCard = () => {
   );
 };
 
-const SingleProduct = ({ product, brandName, averageRating }) => {
+const SingleProduct = memo(({ product, brandName, averageRating }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const [selectedSize, setSelectedSize] = useState("");
